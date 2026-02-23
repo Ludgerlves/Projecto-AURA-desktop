@@ -1,19 +1,41 @@
 
 import { prisma } from "../prisma"
-
-export async function getProfessoresDisponibilidade() {
-    const professorDiaSemana = await prisma.professor.findMany({
-        include: {
+ export async function getProfessoresDisponibilidade() {
+    const professores = await prisma.professor.findMany({
+        select:{
+            id_professor: true,
+            nome: true,
+            telefone: true,
+            email: true,
             Disponibilidade:{
-                where: {
-                    DiaSemana : {
-                        nome: 'Segunda-Feira'
-                    }
-                }
-            }
-        }
-    })
-    return professorDiaSemana
-}
+                select:{
+                    DiaSemana:{select: {nome:true} },
+                    ordem: true,
+                },
+                distinct: ["diaSemana"],
 
-console.log(getProfessoresDisponibilidade())
+            },
+            ProfTurma:{
+                select:{
+                    Turma: {select:{nome:true,idTurma:true} }
+                },
+            },
+            
+        },
+
+    })
+    return professores.map((professor)=>({
+        id_professor: professor.id_professor,
+        nome: professor.nome,
+        email: professor.email,
+        telefone: professor.telefone,
+        Disponibilidade: professor.Disponibilidade.map((d)=> ({
+            ordem: d.ordem,
+            diaSemana: d.DiaSemana,
+        })),
+        turmas: professor.ProfTurma.map((pt)=>pt.Turma),
+    }))
+  }
+getProfessoresDisponibilidade().then((res)=>
+    console.log(JSON.stringify(res, null, 2))
+)
