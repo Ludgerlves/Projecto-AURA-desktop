@@ -1,0 +1,185 @@
+{
+  "node": {
+    "401362242dc07434db4bd18ca6db000791a00c6060": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "criarTurma",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "criarTurma",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "60a45e49521408eb68e6ef959bb27b36f0ad478c84": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "atualizarTurma",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "atualizarTurma",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "40700913d8454dc676a06d1bb035a5e43021214393": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "apagarTurma",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "apagarTurma",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "404dfd5a06407be82e0098d9991d6f27736c5e9d15": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "criarClasse",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "criarClasse",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "60268b92d1968f45ece5a5fe6d324e0a051c6f71a3": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "atualizarClasse",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "atualizarClasse",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "40a2fea04414fa9e6ba89ca8edfc0fc8aead1e786d": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "apagarClasse",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "apagarClasse",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "4041f370acd6cee127e52b30bdd3f45ec8981b03fc": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "criarCurso",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "criarCurso",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "6086d47b6a98fd8d91401e9da0262422ec5ed6bbbb": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "atualizarCurso",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "atualizarCurso",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "40121a29b01f5904b843756c0b2e34ede6f789e092": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "apagarCurso",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "apagarCurso",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "00644ed54d0afa299b4a1b2965f8c4dfea9cd5179d": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "listarCursos",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "listarCursos",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "00844caa86dce9655057e12df5b11d0148e81d1df7": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "listarClasses",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "listarClasses",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    },
+    "00fcfb73f794f6cf8aadd4d1b9f186b96671a131a5": {
+      "workers": {
+        "app/turmas/page": {
+          "moduleId": 67122,
+          "async": true,
+          "exportedName": "listarTodasTurmas",
+          "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+        }
+      },
+      "layer": {
+        "app/turmas/page": "rsc"
+      },
+      "exportedName": "listarTodasTurmas",
+      "filename": "Projecto-AURA/app/turmas/turma-action.ts"
+    }
+  },
+  "edge": {}
+}

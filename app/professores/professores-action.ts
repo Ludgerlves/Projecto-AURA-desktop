@@ -1,9 +1,8 @@
 'use server'
 
 import { professorService } from "@/lib/Service/Professores"
-import { createProfessorFormSchema, baseCreateProfessorSchema, updateProfessorSchema } from "@/lib/Validation/Usuario"
+import { createProfessorFormSchema, baseCreateProfessorSchema, updateProfessorSchema, disponibilidadeItemSchema } from "@/lib/Validation/Usuario"
 import { z } from 'zod';
-import { workos } from '@/lib/workos';
 import { revalidatePath } from 'next/cache';
 import { prisma } from "@/lib/prisma";
 
@@ -20,6 +19,16 @@ function parseDisciplinaIds(formData: FormData): number[] {
     return raw.map(v => parseInt(String(v), 10)).filter(n => !isNaN(n));
 }
 
+function parseDisponibilidade(formData: FormData): { diaSemana: string; periodoId: string; ordem: number }[] {
+    const raw = formData.get('disponibilidade') as string | null;
+    if (!raw) return [];
+    try {
+        return JSON.parse(raw);
+    } catch {
+        return [];
+    }
+}
+
 export async function criarProfessor(
     formData: FormData
 ): Promise<ActionResponse> {
@@ -29,12 +38,14 @@ export async function criarProfessor(
         const email = formData.get('email') as string;
         const disciplinaIds = parseDisciplinaIds(formData);
         const telefone = formData.get('telefone') as string;
+        const disponibilidade = parseDisponibilidade(formData);
 
         const formValidation = createProfessorFormSchema.safeParse({
             nome,
             email,
             disciplinaIds,
             telefone,
+            disponibilidade,
         });
 
         if (!formValidation.success) {
@@ -51,6 +62,7 @@ export async function criarProfessor(
             email,
             telefone,
             disciplinaIds,
+            disponibilidade,
         };
 
         // 4. Validar pelo schema central e usar o service
@@ -100,12 +112,14 @@ export async function atualizarProfessor(
         const email = formData.get('email') as string | null;
         const telefone = formData.get('telefone') as string | null;
         const disciplinaIds = parseDisciplinaIds(formData);
+        const disponibilidade = parseDisponibilidade(formData);
 
         const validateData = updateProfessorSchema.parse({
             nome: nome || undefined,
             email: email || undefined,
             telefone: telefone || undefined,
             disciplinaIds: disciplinaIds.length > 0 ? disciplinaIds : undefined,
+            disponibilidade: disponibilidade.length > 0 ? disponibilidade : undefined,
         });
         const professor = await professorService.atualizarProfessor(id, validateData)
         revalidatePath('/professores');
@@ -126,9 +140,7 @@ export async function atualizarProfessor(
 }
 export async function apagarProfessor(id:number): Promise<ActionResponse> {
     try {
-        const professor = await professorService.showProfessor(id);
-
-        
+        await professorService.showProfessor(id);
         const result = await professorService.apagarProfessor(id);
         revalidatePath('/professores');
         return{ success: true, data: result, message: 'Professor apagado com sucesso'};
@@ -157,3 +169,35 @@ export async function listarDisciplinas() {
         orderBy: { nome: 'asc' }
     });
 }
+
+export async function atualizarDisponibilidade(
+    professorId: number,
+    slots: { diaSemana: string; periodoId: string; ordem: number }[]
+): Promise<ActionResponse> {
+    try {
+        const validated = z.array(disponibilidadeItemSchema).parse(slots);
+        await professorService.atualizarProfessor(professorId, {
+            disponibilidade: validated,
+        });
+        revalidatePath('/professores');
+        return { success: true, message: 'Disponibilidade atualizada com sucesso' };
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            return { success: false, message: 'Dados de disponibilidade inválidos' };
+        }
+        return { success: false, message: error.message || 'Erro inesperado' };
+    }
+}
+
+export async function listarDiasSemana() {
+    return await prisma.diaSemana.findMany({
+        orderBy: { nome: 'asc' }
+    });
+}
+
+export async function listarPeriodos() {
+    return await prisma.periodo.findMany({
+        orderBy: { periodo: 'asc' }
+    });
+}
+

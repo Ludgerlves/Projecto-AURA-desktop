@@ -10,7 +10,11 @@ export default async function ProfessoresPage() {
 
   return (
     <DashboardLayout>
-      <ProfessoresContent professores={professores} disciplinas={disciplinas} />
+      <ProfessoresContent
+        professores={professores}
+        disciplinas={disciplinas}
+      />
     </DashboardLayout>
   )
 }
+

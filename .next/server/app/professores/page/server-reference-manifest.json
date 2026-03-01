@@ -1,0 +1,155 @@
+{
+  "node": {
+    "409e026afba752a0875b4b9577041e81a5d0c7139c": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "criarProfessor",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "criarProfessor",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "60324f1c2275d8735abac8973c4729414eedcf2c99": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "atualizarProfessor",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "atualizarProfessor",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "40dd7fa50bf6eaded15e52cc15157656c6e8c5b1b9": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "apagarProfessor",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "apagarProfessor",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "6002acab1ed9184945b04b29849cdbc95b9b801060": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "atualizarDisponibilidade",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "atualizarDisponibilidade",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "00908a0d06182c519f8fbbedee9aa60e3dc29624e0": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "listarDisciplinas",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "listarDisciplinas",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "00a412a15f5e7d4d9c7d1549836eef6637327623c1": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "listarPeriodos",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "listarPeriodos",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "00b96107115e65871d4ba52db3caa3aee71c82879d": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "listarTodos",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "listarTodos",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "00f7cbdccfd5c8111ddc49fe31841a227301aab8b1": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "listarDiasSemana",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "listarDiasSemana",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "40077bbacbed5a977884189fb3afa4e5e44a39c9d5": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "showProfessor",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "showProfessor",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    },
+    "60043d1ee4c0d2e542d1da2085c703ba4dc53cec7b": {
+      "workers": {
+        "app/professores/page": {
+          "moduleId": 43839,
+          "async": true,
+          "exportedName": "criarProfessorAction",
+          "filename": "Projecto-AURA/app/professores/professores-action.ts"
+        }
+      },
+      "layer": {
+        "app/professores/page": "rsc"
+      },
+      "exportedName": "criarProfessorAction",
+      "filename": "Projecto-AURA/app/professores/professores-action.ts"
+    }
+  },
+  "edge": {}
+}

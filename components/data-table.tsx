@@ -27,6 +27,13 @@ interface Column<T> {
   render?: (item: T) => React.ReactNode
 }
 
+interface ExtraAction<T> {
+  label: string
+  icon?: React.ReactNode
+  onClick: (item: T) => void
+  className?: string
+}
+
 interface DataTableProps<T> {
   data: T[]
   columns: Column<T>[]
@@ -34,6 +41,7 @@ interface DataTableProps<T> {
   searchPlaceholder?: string
   onEdit?: (item: T) => void
   onDelete?: (item: T) => void
+  extraActions?: ExtraAction<T>[]
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -43,6 +51,7 @@ export function DataTable<T extends { id: string | number }>({
   searchPlaceholder = "Pesquisar...",
   onEdit,
   onDelete,
+  extraActions,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
@@ -122,6 +131,16 @@ export function DataTable<T extends { id: string | number }>({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          {extraActions?.map((action, index) => (
+                            <DropdownMenuItem
+                              key={index}
+                              onClick={() => action.onClick(item)}
+                              className={action.className}
+                            >
+                              {action.icon}
+                              {action.label}
+                            </DropdownMenuItem>
+                          ))}
                           {onEdit && (
                             <DropdownMenuItem onClick={() => onEdit(item)}>
                               <Pencil className="mr-2 h-4 w-4" />

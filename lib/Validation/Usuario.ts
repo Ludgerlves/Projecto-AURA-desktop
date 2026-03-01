@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const disponibilidadeItemSchema = z.object({
+    diaSemana: z.string().min(1, "Dia da semana é obrigatório"),
+    periodoId: z.string().min(1, "Período é obrigatório"),
+    ordem: z.number().int().positive().default(1),
+});
+
 export const baseCreateProfessorSchema = z.object({
     nome: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
     email: z.string().email("Email inválido").optional().nullable(),
@@ -7,7 +13,7 @@ export const baseCreateProfessorSchema = z.object({
         .transform((v) => v.replace(/\D/g, ""))
         .refine((v) => v.length >= 8 && v.length <= 15, "Telefone inválido"),
     disciplinaIds: z.array(z.number().int().positive()).min(1, "O professor deve ter pelo menos uma disciplina"),
-    
+    disponibilidade: z.array(disponibilidadeItemSchema).optional(),
 });
 
 export const createProfessorFormSchema = z.object({
@@ -17,6 +23,7 @@ export const createProfessorFormSchema = z.object({
     telefone: z.string()
         .transform((v) => v.replace(/\D/g, ""))
         .refine((v) => v.length >= 8 && v.length <= 15, "Telefone inválido"),
+    disponibilidade: z.array(disponibilidadeItemSchema).optional(),
 });
 
 export const updateProfessorSchema = z.object({
@@ -27,7 +34,8 @@ export const updateProfessorSchema = z.object({
         .refine((v) => v.length >= 8 && v.length <= 15, "Telefone inválido")
         .optional(),
     disciplinaIds: z.array(z.number().int().positive()).min(1, "O professor deve ter pelo menos uma disciplina").optional(),
-}).refine((data) => data.nome || data.email || data.telefone || data.disciplinaIds, {
+    disponibilidade: z.array(disponibilidadeItemSchema).optional(),
+}).refine((data) => data.nome || data.email || data.telefone || data.disciplinaIds || data.disponibilidade, {
     message: "Informe ao menos um campo para atualizar",
     path: ["nome"],
 });
@@ -37,3 +45,4 @@ export const updateProfessorSchema = z.object({
 export type CreateProfessorData = z.infer<typeof baseCreateProfessorSchema>;
 //export type CreateAdminData = z.infer<typeof createAdminSchema>;
 export type UpdateProfessorData = z.infer<typeof updateProfessorSchema>;
+export type DisponibilidadeItem = z.infer<typeof disponibilidadeItemSchema>;
