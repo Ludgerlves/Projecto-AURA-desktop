@@ -100,8 +100,8 @@ model ProfDisciplinas {
   idProfDisciplina Int        @id @default(autoincrement())
   professorId      Int
   disciplinaId     Int
-  Disciplina       Disciplina @relation(fields: [disciplinaId], references: [idDisciplina])
-  Professor        Professor  @relation(fields: [professorId], references: [id_professor])
+  Disciplina       Disciplina @relation(fields: [disciplinaId], references: [idDisciplina], onDelete: Cascade)
+  Professor        Professor  @relation(fields: [professorId], references: [id_professor], onDelete: Cascade)
 
   @@unique([professorId, disciplinaId])
 }

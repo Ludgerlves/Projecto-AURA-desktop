@@ -25,7 +25,7 @@ export class DisciplinaCRUD {
         });
     }
 
-    async apagar(id: number) {
+    async apagar(id:number) {
         await prisma.disciplina.delete({
             where: { idDisciplina: id },
         });

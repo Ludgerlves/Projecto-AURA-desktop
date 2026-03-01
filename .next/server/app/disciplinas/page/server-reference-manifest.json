@@ -1,0 +1,80 @@
+{
+  "node": {
+    "405aa6f7a142b00392f79886853886f662357712bd": {
+      "workers": {
+        "app/disciplinas/page": {
+          "moduleId": 2211,
+          "async": true,
+          "exportedName": "criarDisciplina",
+          "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+        }
+      },
+      "layer": {
+        "app/disciplinas/page": "rsc"
+      },
+      "exportedName": "criarDisciplina",
+      "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+    },
+    "6096e016372983776e4c33b30f605b69acab4c7891": {
+      "workers": {
+        "app/disciplinas/page": {
+          "moduleId": 2211,
+          "async": true,
+          "exportedName": "atualizarDisciplina",
+          "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+        }
+      },
+      "layer": {
+        "app/disciplinas/page": "rsc"
+      },
+      "exportedName": "atualizarDisciplina",
+      "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+    },
+    "400d0606c0df2bd8f06846e0a1c1ee8776c9ddfd43": {
+      "workers": {
+        "app/disciplinas/page": {
+          "moduleId": 2211,
+          "async": true,
+          "exportedName": "apagarDisciplina",
+          "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+        }
+      },
+      "layer": {
+        "app/disciplinas/page": "rsc"
+      },
+      "exportedName": "apagarDisciplina",
+      "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+    },
+    "000000a925281ae58bc95f13bcd3e75a5c3055478a": {
+      "workers": {
+        "app/disciplinas/page": {
+          "moduleId": 2211,
+          "async": true,
+          "exportedName": "listarTodas",
+          "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+        }
+      },
+      "layer": {
+        "app/disciplinas/page": "rsc"
+      },
+      "exportedName": "listarTodas",
+      "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+    },
+    "6054b42b51cec7f317e6da3860716bad546b747a4a": {
+      "workers": {
+        "app/disciplinas/page": {
+          "moduleId": 2211,
+          "async": true,
+          "exportedName": "criarDisciplinaAction",
+          "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+        }
+      },
+      "layer": {
+        "app/disciplinas/page": "rsc"
+      },
+      "exportedName": "criarDisciplinaAction",
+      "filename": "Projecto-AURA/app/disciplinas/disciplinas-action.ts"
+    }
+  },
+  "edge": {}
+}
