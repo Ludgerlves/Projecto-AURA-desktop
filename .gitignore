@@ -3,4 +3,5 @@ cat > .gitignore << 'EOF'
 node_modules/
 .env
 .env.local
+docker-compose.yml
 EOF
