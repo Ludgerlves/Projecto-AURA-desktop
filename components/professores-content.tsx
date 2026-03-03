@@ -43,9 +43,16 @@ import {
   atualizarProfessor,
   apagarProfessor,
   atualizarDisponibilidade,
+  
 } from "@/app/professores/professores-action"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu"
 
 const DIAS_SEMANA = [
   "Segunda-feira",
@@ -69,17 +76,31 @@ type Periodo = (typeof PERIODOS)[number]
 const TOTAL_TEMPOS = 6
 
 interface Disciplina {
-  idDisciplina: number
   nome: string
+}
+
+interface TurmaData {
+  idTurma: number
+  nome: string
+  classe: string
+  curso: string
 }
 
 interface DisponibilidadeData {
   idDisponibilidade: number
   diaSemana: string
-  periodoId: string
+  periodo: string
   ordem: number
   DiaSemana: { nome: string }
   Periodo: { periodo: string }
+}
+
+interface ProfTurmaDisciplinaData {
+  idProfTurma: number
+  turmaId: number
+  disciplinaNome: string
+  disciplina: { nome: string }
+  Turma: { idTurma: number; nome: string }
 }
 
 interface ProfessorData {
@@ -87,15 +108,13 @@ interface ProfessorData {
   nome: string
   email: string | null
   telefone: string | null
-  ProfDisciplinas: {
-    Disciplina: Disciplina
-  }[]
+  ProfTurmaDisciplina: ProfTurmaDisciplinaData[]
   Disponibilidade: DisponibilidadeData[]
 }
 
 interface DisponibilidadeSlot {
   diaSemana: string
-  periodoId: string
+  periodo: string
   ordem: number
 }
 
@@ -106,7 +125,7 @@ interface ProfessorRow {
   email: string
   telefone: string
   disciplinas: string[]
-  disciplinaIds: number[]
+  turmas: { turmaId: number; turmaNome: string; disciplinaNome: string }[]
   disponibilidade: DisponibilidadeSlot[]
   periodo: string
   temposByDay: Record<string, number[]>
@@ -133,11 +152,15 @@ function mapProfessores(professores: ProfessorData[]): ProfessorRow[] {
       nome: p.nome,
       email: p.email || "",
       telefone: p.telefone || "",
-      disciplinas: p.ProfDisciplinas.map((pd) => pd.Disciplina.nome),
-      disciplinaIds: p.ProfDisciplinas.map((pd) => pd.Disciplina.idDisciplina),
+      disciplinas: p.ProfTurmaDisciplina.map((ptd) => ptd.disciplinaNome),
+      turmas: p.ProfTurmaDisciplina.map((ptd) => ({
+        turmaId: ptd.Turma.idTurma,
+        turmaNome: ptd.Turma.nome,
+        disciplinaNome: ptd.disciplinaNome,
+      })),
       disponibilidade: p.Disponibilidade.map((d) => ({
         diaSemana: d.diaSemana,
-        periodoId: d.periodoId,
+        periodo: d.periodo,
         ordem: d.ordem,
       })),
       periodo,
@@ -361,18 +384,20 @@ function MiniDisponibilidadeGrid({
 interface ProfessoresContentProps {
   professores: ProfessorData[]
   disciplinas: Disciplina[]
+  turmas: TurmaData[]
 }
 
-export function ProfessoresContent({ professores, disciplinas }: ProfessoresContentProps) {
+export function ProfessoresContent({ professores, disciplinas, turmas }: ProfessoresContentProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
   const [editingProfessor, setEditingProfessor] = useState<ProfessorRow | null>(null)
+  const [turmaSelecionada, setTurmaSelecionada] = useState<number | null>(null)
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
     telefone: "",
-    disciplinaIds: [] as number[],
+    disciplina: [] as string[],
     periodo: "Manhã" as Periodo,
     selectedTempos: {} as Record<string, number[]>,
   })
@@ -498,12 +523,12 @@ export function ProfessoresContent({ professores, disciplinas }: ProfessoresCont
   // -- Build disponibilidade slots --
   const buildDisponibilidade = (
     tempos: Record<string, number[]>,
-    periodo: string
+    Periodo: string
   ): DisponibilidadeSlot[] => {
     const slots: DisponibilidadeSlot[] = []
     for (const [dia, ordens] of Object.entries(tempos)) {
       for (const ordem of ordens) {
-        slots.push({ diaSemana: dia, periodoId: periodo, ordem })
+        slots.push({ diaSemana: dia, periodo: Periodo, ordem })
       }
     }
     return slots
@@ -541,12 +566,12 @@ export function ProfessoresContent({ professores, disciplinas }: ProfessoresCont
   ]
 
   // -- Dialog handlers --
-  const toggleDisciplina = (id: number) => {
+  const toggleDisciplina = (nome: string) => {
     setFormData((prev) => ({
       ...prev,
-      disciplinaIds: prev.disciplinaIds.includes(id)
-        ? prev.disciplinaIds.filter((d) => d !== id)
-        : [...prev.disciplinaIds, id],
+      disciplinas: prev.disciplina.includes(nome)
+        ? prev.disciplina.filter((d) => d !== nome)
+        : [...prev.disciplina, nome],
     }))
   }
 
@@ -556,11 +581,19 @@ export function ProfessoresContent({ professores, disciplinas }: ProfessoresCont
 
     const disponibilidade = buildDisponibilidade(formData.selectedTempos, formData.periodo)
 
+    // Build profTurmaDisciplina from selected turma + disciplines
+    const profTurmaDisciplina = turmaSelecionada
+      ? formData.disciplina.map((nome) => ({
+          turmaId: turmaSelecionada,
+          disciplinaNome: nome,
+        }))
+      : []
+
     const fd = new FormData()
     fd.append("nome", formData.nome)
     fd.append("email", formData.email)
     fd.append("telefone", formData.telefone)
-    formData.disciplinaIds.forEach((id) => fd.append("disciplinaIds", String(id)))
+    fd.append("profTurmaDisciplina", JSON.stringify(profTurmaDisciplina))
     fd.append("disponibilidade", JSON.stringify(disponibilidade))
 
     startTransition(async () => {
@@ -584,11 +617,12 @@ export function ProfessoresContent({ professores, disciplinas }: ProfessoresCont
     setFormData({
       nome: "",
       email: "",
-      disciplinaIds: [],
+      disciplina: [],
       telefone: "",
       periodo: "Manhã",
       selectedTempos: {},
     })
+    setTurmaSelecionada(null)
     setEditingProfessor(null)
     setError(null)
     setIsOpen(false)
@@ -610,7 +644,7 @@ export function ProfessoresContent({ professores, disciplinas }: ProfessoresCont
       nome: professor.nome,
       telefone: professor.telefone,
       email: professor.email,
-      disciplinaIds: professor.disciplinaIds,
+      disciplina: professor.disciplinas   ,
       periodo: (professor.periodo as Periodo) || "Manhã",
       selectedTempos,
     })
@@ -726,6 +760,28 @@ export function ProfessoresContent({ professores, disciplinas }: ProfessoresCont
                         required
                       />
                     </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="Turma">Turma</Label>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" className="w-full justify-between">
+                            {turmaSelecionada
+                              ? turmas.find(t => t.idTurma === turmaSelecionada)?.nome ?? "Selecionar turma"
+                              : "Selecionar turma"}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-56">
+                          {turmas.map((t) => (
+                            <DropdownMenuItem key={t.idTurma} onClick={() => setTurmaSelecionada(t.idTurma)}>
+                              {t.nome}
+                            </DropdownMenuItem>
+                          ))}
+                          {turmas.length === 0 && (
+                            <DropdownMenuItem disabled>Nenhuma turma registada</DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
                         <Label htmlFor="email">Email</Label>
@@ -753,21 +809,31 @@ export function ProfessoresContent({ professores, disciplinas }: ProfessoresCont
                     <div className="grid gap-2">
                       <Label>Disciplinas</Label>
                       <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-md border p-3">
-                        {disciplinas.map((d) => (
-                          <div key={d.idDisciplina} className="flex items-center gap-2">
-                            <Checkbox
-                              id={`disc-${d.idDisciplina}`}
-                              checked={formData.disciplinaIds.includes(d.idDisciplina)}
-                              onCheckedChange={() => toggleDisciplina(d.idDisciplina)}
-                            />
-                            <Label
-                              htmlFor={`disc-${d.idDisciplina}`}
-                              className="text-sm font-normal cursor-pointer"
-                            >
-                              {d.nome}
-                            </Label>
-                          </div>
-                        ))}
+                        {disciplinas.map((d) => {
+                          const disciplina = d.nome
+                          return (
+                            <div key={d.nome} className="flex items-center gap-2">
+                              <Checkbox
+                                id={`disc-${d.nome}`}
+                                checked={
+                                  disciplina
+                                    ? formData.disciplina.includes(disciplina)
+                                    : false
+                                }
+                                onCheckedChange={() => {
+                                  if (disciplina) toggleDisciplina(disciplina)
+                                }}
+                                disabled={!disciplina}
+                              />
+                              <Label
+                                htmlFor={`disc-${d.nome}`}
+                                className="text-sm font-normal cursor-pointer"
+                              >
+                                {d.nome}
+                              </Label>
+                            </div>
+                          )
+                        })}
                         {disciplinas.length === 0 && (
                           <p className="text-sm text-muted-foreground col-span-2">
                             Nenhuma disciplina registada.

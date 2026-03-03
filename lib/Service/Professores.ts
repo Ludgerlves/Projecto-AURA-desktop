@@ -11,16 +11,6 @@ const DIAS_SEMANA = [
 
 const PERIODOS = ["Manhã", "Tarde"];
 
-const professorInclude = {
-    Professor: {
-        include: {
-            ProfDisciplinas: {
-                include: { Disciplina: true }
-            }
-        }
-    }
-} as const;
-
 async function ensureDisponibilidadeRefsExist() {
     await Promise.all([
         ...DIAS_SEMANA.map((nome) =>
@@ -51,16 +41,17 @@ export class ProfessorCRUD{
                 email: data.email,
                 updated_at: new Date(),
                 telefone: data.telefone,
-                ProfDisciplinas: {
-                    create: data.disciplinaIds.map(id => ({
-                        disciplinaId: id,
+                ProfTurmaDisciplina: {
+                    create: data.profTurmaDisciplina.map(id => ({
+                        turmaId: id.turmaId,
+                        disciplinaNome: id.disciplinaNome,
                     })),
                 },
                 ...(data.disponibilidade && data.disponibilidade.length > 0 ? {
                     Disponibilidade: {
                         create: data.disponibilidade.map(d => ({
                             diaSemana: d.diaSemana,
-                            periodoId: d.periodoId,
+                            periodo: d.periodo,
                             ordem: d.ordem,
                         })),
                     },
@@ -77,14 +68,15 @@ export class ProfessorCRUD{
             throw new Error("Professor não encontrado");
         }
 
-        if (data.disciplinaIds) {
-            await prisma.profDisciplinas.deleteMany({
+        if (data.profTurmaDisciplina) {
+            await prisma.profTurmaDisciplina.deleteMany({
                 where: { professorId: existente.id_professor }
             });
-            await prisma.profDisciplinas.createMany({
-                data: data.disciplinaIds.map(id => ({
+            await prisma.profTurmaDisciplina.createMany({
+                data: data.profTurmaDisciplina.map(id => ({
                     professorId: existente.id_professor!,
-                    disciplinaId: id,
+                    disciplinaNome: id.disciplinaNome,
+                    turmaId: id.turmaId,
                 })),
             });
         }
@@ -99,7 +91,7 @@ export class ProfessorCRUD{
                     data: data.disponibilidade.map(d => ({
                         professorId: existente.id_professor,
                         diaSemana: d.diaSemana,
-                        periodoId: d.periodoId,
+                        periodo: d.periodo,
                         ordem: d.ordem,
                     })),
                 });
@@ -130,14 +122,20 @@ export class ProfessorCRUD{
                 nome: true,
                 email: true,
                 telefone: true,
-                ProfDisciplinas: {
-                    include: { Disciplina: true }
+                ProfTurmaDisciplina: {
+                    select: {
+                        idProfTurma: true,
+                        turmaId: true,
+                        disciplinaNome: true,
+                        disciplina: { select: { nome: true } },
+                        Turma: { select: { idTurma: true, nome: true } },
+                    },
                 },
                 Disponibilidade: {
                     select: {
                         idDisponibilidade: true,
                         diaSemana: true,
-                        periodoId: true,
+                        periodo: true,
                         ordem: true,
                         DiaSemana: { select: { nome: true } },
                         Periodo: { select: { periodo: true } },
@@ -150,14 +148,13 @@ export class ProfessorCRUD{
     async apagarProfessor(id_professor: number){
         const professor = await prisma.professor.findUnique({
             where: {id_professor},
-            include: {ProfDisciplinas: true}
+            include: {ProfTurmaDisciplina: true}
         })
         if(!professor){
             throw new Error("Professor não encontrado");
         }
 
-        await prisma.profDisciplinas.deleteMany({where: { professorId: professor.id_professor }})
-        await prisma.profTurma.deleteMany({where:{professorId:id_professor}})
+        await prisma.profTurmaDisciplina.deleteMany({where: { professorId: professor.id_professor }})
         await prisma.disponibilidade.deleteMany({where:{professorId:id_professor}})
         await prisma.tempoLectivo.deleteMany({where:{professorId: id_professor}})
         await prisma.professor.delete({where: {id_professor: professor.id_professor}})
@@ -167,4 +164,3 @@ export class ProfessorCRUD{
 
 }
 export const professorService = new ProfessorCRUD()
-
