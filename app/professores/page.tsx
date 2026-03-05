@@ -1,10 +1,9 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { ProfessoresContent } from "@/components/professores-content"
-import { listarTodos, listarDisciplinas, listarTurmas } from "./professores-action"
+import { listarTodos, listarTurmas } from "./professores-action"
 export default async function ProfessoresPage() {
-  const [professores, disciplinas, turmas] = await Promise.all([
+  const [professores, turmas] = await Promise.all([
     listarTodos(),
-    listarDisciplinas(),
     listarTurmas(),
   ])
 
@@ -12,7 +11,6 @@ export default async function ProfessoresPage() {
     <DashboardLayout>
       <ProfessoresContent
         professores={professores}
-        disciplinas={disciplinas}
         turmas={turmas}
       />
     </DashboardLayout>

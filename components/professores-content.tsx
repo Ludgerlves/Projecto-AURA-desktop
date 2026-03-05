@@ -43,7 +43,7 @@ import {
   atualizarProfessor,
   apagarProfessor,
   atualizarDisponibilidade,
-  
+
 } from "@/app/professores/professores-action"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -84,6 +84,7 @@ interface TurmaData {
   nome: string
   classe: string
   curso: string
+  TurmaDisciplina: { id_Turma: number; Disciplina: string }[]
 }
 
 interface DisponibilidadeData {
@@ -383,11 +384,10 @@ function MiniDisponibilidadeGrid({
 // ---------------------------------------------------------------------------
 interface ProfessoresContentProps {
   professores: ProfessorData[]
-  disciplinas: Disciplina[]
   turmas: TurmaData[]
 }
 
-export function ProfessoresContent({ professores, disciplinas, turmas }: ProfessoresContentProps) {
+export function ProfessoresContent({ professores, turmas }: ProfessoresContentProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
@@ -566,14 +566,14 @@ export function ProfessoresContent({ professores, disciplinas, turmas }: Profess
   ]
 
   // -- Dialog handlers --
-  const toggleDisciplina = (nome: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      disciplinas: prev.disciplina.includes(nome)
-        ? prev.disciplina.filter((d) => d !== nome)
-        : [...prev.disciplina, nome],
-    }))
-  }
+  const toggleDisciplina = (nome: string, checked: boolean) => {
+  setFormData((prev) => ({
+    ...prev,
+    disciplina: checked
+      ? [...prev.disciplina, nome] 
+      : prev.disciplina.filter((d) => d !== nome), 
+  }))
+}
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -584,9 +584,9 @@ export function ProfessoresContent({ professores, disciplinas, turmas }: Profess
     // Build profTurmaDisciplina from selected turma + disciplines
     const profTurmaDisciplina = turmaSelecionada
       ? formData.disciplina.map((nome) => ({
-          turmaId: turmaSelecionada,
-          disciplinaNome: nome,
-        }))
+        turmaId: turmaSelecionada,
+        disciplinaNome: nome,
+      }))
       : []
 
     const fd = new FormData()
@@ -644,7 +644,7 @@ export function ProfessoresContent({ professores, disciplinas, turmas }: Profess
       nome: professor.nome,
       telefone: professor.telefone,
       email: professor.email,
-      disciplina: professor.disciplinas   ,
+      disciplina: professor.disciplinas,
       periodo: (professor.periodo as Periodo) || "Manhã",
       selectedTempos,
     })
@@ -806,41 +806,59 @@ export function ProfessoresContent({ professores, disciplinas, turmas }: Profess
                       </div>
                     </div>
 
-                    <div className="grid gap-2">
-                      <Label>Disciplinas</Label>
-                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-md border p-3">
-                        {disciplinas.map((d) => {
-                          const disciplina = d.nome
+                    {turmaSelecionada ? (
+                      <div className="grid gap-2">
+                        <Label className="flex items-center gap-2">
+                          Disciplinas
+                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {turmas.find(t => t.idTurma === turmaSelecionada)?.nome}
+                          </Badge>
+                        </Label>
+                        {(() => {
+                          const turmaDiscs = turmas.find(t => t.idTurma === turmaSelecionada)?.TurmaDisciplina || []
+                          if (turmaDiscs.length === 0) {
+                            return (
+                              <div className="rounded-md border border-dashed border-border p-4 text-center">
+                                <p className="text-sm text-muted-foreground">
+                                  Nenhuma disciplina associada a esta turma.
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  Associe disciplinas na página de Disciplinas.
+                                </p>
+                              </div>
+                            )
+                          }
                           return (
-                            <div key={d.nome} className="flex items-center gap-2">
-                              <Checkbox
-                                id={`disc-${d.nome}`}
-                                checked={
-                                  disciplina
-                                    ? formData.disciplina.includes(disciplina)
-                                    : false
-                                }
-                                onCheckedChange={() => {
-                                  if (disciplina) toggleDisciplina(disciplina)
-                                }}
-                                disabled={!disciplina}
-                              />
-                              <Label
-                                htmlFor={`disc-${d.nome}`}
-                                className="text-sm font-normal cursor-pointer"
-                              >
-                                {d.nome}
-                              </Label>
+                            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-md border p-3">
+                              {turmaDiscs.map((td) => (
+                                <div key={td.Disciplina} className="flex items-center gap-2">
+                                  <Checkbox
+                                    id={`disc-${td.Disciplina}`}
+                                    checked={formData.disciplina.includes(td.Disciplina)}
+                                    onCheckedChange={(checked) => toggleDisciplina(td.Disciplina,checked==true )}
+                                  />
+                                  <Label
+                                    htmlFor={`disc-${td.Disciplina}`}
+                                    className="text-sm font-normal cursor-pointer"
+                                  >
+                                    {td.Disciplina}
+                                  </Label>
+                                </div>
+                              ))}
                             </div>
                           )
-                        })}
-                        {disciplinas.length === 0 && (
-                          <p className="text-sm text-muted-foreground col-span-2">
-                            Nenhuma disciplina registada.
-                          </p>
-                        )}
+                        })()}
                       </div>
-                    </div>
+                    ) : (
+                      <div className="grid gap-2">
+                        <Label>Disciplinas</Label>
+                        <div className="rounded-md border border-dashed border-border p-4 text-center">
+                          <p className="text-sm text-muted-foreground">
+                            Selecione uma turma para ver as disciplinas disponíveis.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
 
@@ -1010,16 +1028,16 @@ export function ProfessoresContent({ professores, disciplinas, turmas }: Profess
                   (sum, arr) => sum + arr.length,
                   0
                 ) > 0 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs h-7"
-                    onClick={() => setSheetTempos({})}
-                  >
-                    Limpar tudo
-                  </Button>
-                )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs h-7"
+                      onClick={() => setSheetTempos({})}
+                    >
+                      Limpar tudo
+                    </Button>
+                  )}
               </div>
 
               {sheetError && (

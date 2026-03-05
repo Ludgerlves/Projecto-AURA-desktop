@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
 export type ActionResponse<T = any> = {
     success: boolean;
     data?: T | undefined;
-    errors?: Record <string, string[] | undefined> | undefined;
+    errors?: Record<string, string[] | undefined> | undefined;
     message?: string;
 };
 
@@ -91,7 +91,7 @@ export async function criarProfessorAction(
 export async function atualizarProfessor(
     id: number,
     formData: FormData
-):Promise<ActionResponse>{
+): Promise<ActionResponse> {
     try {
         const nome = formData.get('nome') as string | null;
         const email = formData.get('email') as string | null;
@@ -108,7 +108,7 @@ export async function atualizarProfessor(
         });
         const professor = await professorService.atualizarProfessor(id, validateData)
         revalidatePath('/professores');
-        return{
+        return {
             success: true, data: professor, message: 'Professor atualizado com sucesso',
         };
     } catch (error: any) {
@@ -123,16 +123,16 @@ export async function atualizarProfessor(
         return { success: false, message: error.message || 'Erro inesperado' };
     }
 }
-export async function apagarProfessor(id:number): Promise<ActionResponse> {
+export async function apagarProfessor(id: number): Promise<ActionResponse> {
     try {
         await professorService.showProfessor(id);
         const result = await professorService.apagarProfessor(id);
         revalidatePath('/professores');
-        return{ success: true, data: result, message: 'Professor apagado com sucesso'};
+        return { success: true, data: result, message: 'Professor apagado com sucesso' };
 
 
     } catch (error: any) {
-        return{ success: false, message: error.message}
+        return { success: false, message: error.message }
     }
 
 }
@@ -141,7 +141,7 @@ export async function listarTodos() {
     return await professorService.listarTodos();
 }
 
-export async function showProfessor(id:number) {
+export async function showProfessor(id: number) {
     try {
         return await professorService.showProfessor(id);
     } catch (error) {
@@ -186,12 +186,15 @@ export async function listarPeriodos() {
     });
 }
 
-export async function listProfTurmaDisciplina(){
+export async function listProfTurmaDisciplina() {
     return await prisma.profTurmaDisciplina.findMany()
 }
 
 export async function listarTurmas() {
     return await prisma.turma.findMany({
-        orderBy: { nome: 'asc' }
+        orderBy: { nome: 'asc' },
+        include: {
+            TurmaDisciplina: true,
+        },
     });
 }
