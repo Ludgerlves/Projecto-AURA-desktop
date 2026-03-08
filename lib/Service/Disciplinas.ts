@@ -6,16 +6,16 @@ export class DisciplinaCRUD {
         return await prisma.disciplina.create({ data });
     }
 
-    async atualizar(id: number, data: UpdateDisciplinaData) {
+    async atualizar(nome: string, data: UpdateDisciplinaData) {
         return await prisma.disciplina.update({
-            where: { idDisciplina: id },
+            where: { nome },
             data,
         });
     }
 
-    async mostrar(id: number) {
+    async mostrar(nome: string) {
         return await prisma.disciplina.findUnique({
-            where: { idDisciplina: id },
+            where: { nome },
         });
     }
 
@@ -25,9 +25,13 @@ export class DisciplinaCRUD {
         });
     }
 
-    async apagar(id:number) {
+    async apagar(nome: string) {
+        // Delete TurmaDisciplina associations first
+        await prisma.turmaDisciplina.deleteMany({
+            where: { Disciplina: nome },
+        });
         await prisma.disciplina.delete({
-            where: { idDisciplina: id },
+            where: { nome },
         });
         return { message: "Disciplina eliminada com sucesso" };
     }

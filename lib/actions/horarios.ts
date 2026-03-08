@@ -1,41 +1,31 @@
-
+'use server'
 import { prisma } from "../prisma"
- export async function getProfessoresDisponibilidade() {
-    const professores = await prisma.professor.findMany({
-        select:{
-            id_professor: true,
-            nome: true,
-            telefone: true,
-            email: true,
-            Disponibilidade:{
-                select:{
-                    DiaSemana:{select: {nome:true} },
-                    ordem: true,
-                },
-                distinct: ["diaSemana"],
+ 
+const ORDEM_DIAS = [
+  "segunda-feira",
+  "terça-feira",
+  "quarta-feira",
+  "quinta-feira",
+  "sexta-feira",
+];
 
-            },
-            ProfTurma:{
-                select:{
-                    Turma: {select:{nome:true,idTurma:true} }
-                },
-            },
-            
-        },
+const temposDia = 6;
 
+export async function gerarTemposLectivos(turmaId:number,salaId: number, periodo: string ) {
+    const profturma = await prisma.profTurmaDisciplina.findMany({
+        where: {turmaId},
+        include:{
+            Professor:{
+                include:{
+                    Disponibilidade:{
+                        where:{periodo},
+                        orderBy: {ordem: "asc"},
+                    }
+                }
+            }
+        }
     })
-    return professores.map((professor)=>({
-        id_professor: professor.id_professor,
-        nome: professor.nome,
-        email: professor.email,
-        telefone: professor.telefone,
-        Disponibilidade: professor.Disponibilidade.map((d)=> ({
-            ordem: d.ordem,
-            diaSemana: d.DiaSemana,
-        })),
-        turmas: professor.ProfTurma.map((pt)=>pt.Turma),
-    }))
-  }
-getProfessoresDisponibilidade().then((res)=>
-    console.log(JSON.stringify(res, null, 2))
-)
+    gerarTemposLectivos(1,1,"Tarde").then((res)=>
+        console.log(JSON.stringify, res, null, 2)
+    )
+}

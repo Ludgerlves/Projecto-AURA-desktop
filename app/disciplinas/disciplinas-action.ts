@@ -63,7 +63,7 @@ export async function atualizarDisciplina(
         const validatedData = updateDisciplinaSchema.parse({
             nome: nome || undefined,
         });
-        const disciplina = await disciplinaService.atualizar(id, validatedData);
+        const disciplina = await disciplinaService.atualizar(nome, validatedData);
 
         revalidatePath('/disciplinas');
 
@@ -85,9 +85,9 @@ export async function atualizarDisciplina(
     }
 }
 
-export async function apagarDisciplina(id: number): Promise<ActionResponse> {
+export async function apagarDisciplina(nome: string): Promise<ActionResponse> {
     try {
-        const result = await disciplinaService.apagar(id);
+        const result = await disciplinaService.apagar(nome);
         revalidatePath('/disciplinas');
         return { success: true, data: result, message: 'Disciplina apagada com sucesso!' };
     } catch (error: any) {
@@ -97,4 +97,43 @@ export async function apagarDisciplina(id: number): Promise<ActionResponse> {
 
 export async function listarTodas() {
     return await disciplinaService.listarTodas();
+}
+
+export async function listarTurmas() {
+    const { prisma } = await import("@/lib/prisma");
+    return await prisma.turma.findMany({
+        orderBy: { nome: 'asc' },
+        include: {
+            TurmaDisciplina: true,
+        },
+    });
+}
+
+export async function atualizarTurmasDaDisciplina(
+    disciplinaNome: string,
+    turmaIds: number[]
+): Promise<ActionResponse> {
+    try {
+        const { prisma } = await import("@/lib/prisma");
+
+        // Remove old associations
+        await prisma.turmaDisciplina.deleteMany({
+            where: { Disciplina: disciplinaNome },
+        });
+
+        // Create new associations
+        if (turmaIds.length > 0) {
+            await prisma.turmaDisciplina.createMany({
+                data: turmaIds.map((id) => ({
+                    id_Turma: id,
+                    Disciplina: disciplinaNome,
+                })),
+            });
+        }
+
+        revalidatePath('/disciplinas');
+        return { success: true, message: 'Turmas da disciplina atualizadas com sucesso!' };
+    } catch (error: any) {
+        return { success: false, message: error.message || 'Erro inesperado' };
+    }
 }

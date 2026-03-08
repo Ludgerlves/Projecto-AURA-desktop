@@ -1,7 +1,7 @@
 'use server'
 
 import { professorService } from "@/lib/Service/Professores"
-import { createProfessorFormSchema, baseCreateProfessorSchema, updateProfessorSchema, disponibilidadeItemSchema } from "@/lib/Validation/Usuario"
+import { baseCreateProfessorSchema, updateProfessorSchema, disponibilidadeItemSchema } from "@/lib/Validation/Usuario"
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { prisma } from "@/lib/prisma";
@@ -10,13 +10,18 @@ import { prisma } from "@/lib/prisma";
 export type ActionResponse<T = any> = {
     success: boolean;
     data?: T | undefined;
-    errors?: Record <string, string[] | undefined> | undefined;
+    errors?: Record<string, string[] | undefined> | undefined;
     message?: string;
 };
 
-function parseDisciplinaIds(formData: FormData): number[] {
-    const raw = formData.getAll('disciplinaIds');
-    return raw.map(v => parseInt(String(v), 10)).filter(n => !isNaN(n));
+function parseProfTurmaDisciplina(formData: FormData): { turmaId: number; disciplinaNome: string }[] {
+    const raw = formData.get('profTurmaDisciplina') as string | null;
+    if (!raw) return [];
+    try {
+        return JSON.parse(raw);
+    } catch {
+        return [];
+    }
 }
 
 function parseDisponibilidade(formData: FormData): { diaSemana: string; periodoId: string; ordem: number }[] {
@@ -33,43 +38,23 @@ export async function criarProfessor(
     formData: FormData
 ): Promise<ActionResponse> {
     try {
-        // 1. Validação do formulário
         const nome = formData.get('nome') as string;
         const email = formData.get('email') as string;
-        const disciplinaIds = parseDisciplinaIds(formData);
         const telefone = formData.get('telefone') as string;
+        const profTurmaDisciplina = parseProfTurmaDisciplina(formData);
         const disponibilidade = parseDisponibilidade(formData);
 
-        const formValidation = createProfessorFormSchema.safeParse({
-            nome,
-            email,
-            disciplinaIds,
-            telefone,
-            disponibilidade,
-        });
-
-        if (!formValidation.success) {
-            return {
-                success: false,
-                errors: formValidation.error.flatten().fieldErrors,
-                message: 'Erro de validação no formulário',
-            };
-        }
-
-        // 3. Preparar dados para o Service
         const professorData = {
             nome,
             email,
             telefone,
-            disciplinaIds,
+            profTurmaDisciplina,
             disponibilidade,
         };
 
-        // 4. Validar pelo schema central e usar o service
         const validatedData = baseCreateProfessorSchema.parse(professorData);
         const professor = await professorService.criarProfessor(validatedData);
 
-        // 5. Revalidar cache
         revalidatePath('/professores');
 
         return {
@@ -106,24 +91,24 @@ export async function criarProfessorAction(
 export async function atualizarProfessor(
     id: number,
     formData: FormData
-):Promise<ActionResponse>{
+): Promise<ActionResponse> {
     try {
         const nome = formData.get('nome') as string | null;
         const email = formData.get('email') as string | null;
         const telefone = formData.get('telefone') as string | null;
-        const disciplinaIds = parseDisciplinaIds(formData);
+        const profTurmaDisciplina = parseProfTurmaDisciplina(formData);
         const disponibilidade = parseDisponibilidade(formData);
 
         const validateData = updateProfessorSchema.parse({
             nome: nome || undefined,
             email: email || undefined,
             telefone: telefone || undefined,
-            disciplinaIds: disciplinaIds.length > 0 ? disciplinaIds : undefined,
+            profTurmaDisciplina: profTurmaDisciplina.length > 0 ? profTurmaDisciplina : undefined,
             disponibilidade: disponibilidade.length > 0 ? disponibilidade : undefined,
         });
         const professor = await professorService.atualizarProfessor(id, validateData)
         revalidatePath('/professores');
-        return{
+        return {
             success: true, data: professor, message: 'Professor atualizado com sucesso',
         };
     } catch (error: any) {
@@ -138,16 +123,16 @@ export async function atualizarProfessor(
         return { success: false, message: error.message || 'Erro inesperado' };
     }
 }
-export async function apagarProfessor(id:number): Promise<ActionResponse> {
+export async function apagarProfessor(id: number): Promise<ActionResponse> {
     try {
         await professorService.showProfessor(id);
         const result = await professorService.apagarProfessor(id);
         revalidatePath('/professores');
-        return{ success: true, data: result, message: 'Professor apagado com sucesso'};
+        return { success: true, data: result, message: 'Professor apagado com sucesso' };
 
 
     } catch (error: any) {
-        return{ success: false, message: error.message}
+        return { success: false, message: error.message }
     }
 
 }
@@ -156,7 +141,7 @@ export async function listarTodos() {
     return await professorService.listarTodos();
 }
 
-export async function showProfessor(id:number) {
+export async function showProfessor(id: number) {
     try {
         return await professorService.showProfessor(id);
     } catch (error) {
@@ -172,7 +157,7 @@ export async function listarDisciplinas() {
 
 export async function atualizarDisponibilidade(
     professorId: number,
-    slots: { diaSemana: string; periodoId: string; ordem: number }[]
+    slots: { diaSemana: string; periodo: string; ordem: number }[]
 ): Promise<ActionResponse> {
     try {
         const validated = z.array(disponibilidadeItemSchema).parse(slots);
@@ -201,3 +186,15 @@ export async function listarPeriodos() {
     });
 }
 
+export async function listProfTurmaDisciplina() {
+    return await prisma.profTurmaDisciplina.findMany()
+}
+
+export async function listarTurmas() {
+    return await prisma.turma.findMany({
+        orderBy: { nome: 'asc' },
+        include: {
+            TurmaDisciplina: true,
+        },
+    });
+}

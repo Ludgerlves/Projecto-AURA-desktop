@@ -2,8 +2,13 @@ import { z } from "zod";
 
 export const disponibilidadeItemSchema = z.object({
     diaSemana: z.string().min(1, "Dia da semana é obrigatório"),
-    periodoId: z.string().min(1, "Período é obrigatório"),
+    periodo: z.string().min(1, "Período é obrigatório"),
     ordem: z.number().int().positive().default(1),
+});
+
+export const profTurmaDisciplinaItemSchema = z.object({
+    turmaId: z.number().int().positive("Turma é obrigatória"),
+    disciplinaNome: z.string().min(1, "Disciplina é obrigatória"),
 });
 
 export const baseCreateProfessorSchema = z.object({
@@ -12,19 +17,11 @@ export const baseCreateProfessorSchema = z.object({
     telefone: z.string()
         .transform((v) => v.replace(/\D/g, ""))
         .refine((v) => v.length >= 8 && v.length <= 15, "Telefone inválido"),
-    disciplinaIds: z.array(z.number().int().positive()).min(1, "O professor deve ter pelo menos uma disciplina"),
+    profTurmaDisciplina: z.array(profTurmaDisciplinaItemSchema).min(1, "O professor deve ter pelo menos uma atribuição turma-disciplina"),
     disponibilidade: z.array(disponibilidadeItemSchema).optional(),
 });
 
-export const createProfessorFormSchema = z.object({
-    nome: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
-    email: z.string().email("Email inválido"),
-    disciplinaIds: z.array(z.number().int().positive()).min(1, "O professor deve ter pelo menos uma disciplina"),
-    telefone: z.string()
-        .transform((v) => v.replace(/\D/g, ""))
-        .refine((v) => v.length >= 8 && v.length <= 15, "Telefone inválido"),
-    disponibilidade: z.array(disponibilidadeItemSchema).optional(),
-});
+
 
 export const updateProfessorSchema = z.object({
     nome: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").optional(),
@@ -33,9 +30,9 @@ export const updateProfessorSchema = z.object({
         .transform((v) => v.replace(/\D/g, ""))
         .refine((v) => v.length >= 8 && v.length <= 15, "Telefone inválido")
         .optional(),
-    disciplinaIds: z.array(z.number().int().positive()).min(1, "O professor deve ter pelo menos uma disciplina").optional(),
+    profTurmaDisciplina: z.array(profTurmaDisciplinaItemSchema).min(1, "O professor deve ter pelo menos uma atribuição turma-disciplina").optional(),
     disponibilidade: z.array(disponibilidadeItemSchema).optional(),
-}).refine((data) => data.nome || data.email || data.telefone || data.disciplinaIds || data.disponibilidade, {
+}).refine((data) => data.nome || data.email || data.telefone || data.profTurmaDisciplina || data.disponibilidade, {
     message: "Informe ao menos um campo para atualizar",
     path: ["nome"],
 });
