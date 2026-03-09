@@ -98,7 +98,7 @@ export function DataTable<T extends { id: string | number }>({
                 </TableHead>
               ))}
               {(onEdit || onDelete) && (
-                <TableHead className="w-12 text-muted-foreground">Acoes</TableHead>
+                <TableHead className="w-12 text-muted-foreground"> Acções </TableHead>
               )}
             </TableRow>
           </TableHeader>
