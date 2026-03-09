@@ -1,0 +1,3 @@
+module.exports=[56827,a=>{"use strict";let b=(0,a.i(22136).default)("BookMarked",[["path",{d:"M10 2v8l3-3 3 3V2",key:"sqw3rj"}],["path",{d:"M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20",key:"k3hazp"}]]);a.s(["BookMarked",()=>b],56827)},53309,a=>{"use strict";a.i(89610),a.i(82257),a.i(46036),a.i(36667),a.i(22510),a.i(12422),a.i(20241),a.i(31268),a.i(56827);let b=Error("Cannot find module '@/app/curso/curso'");throw b.code="MODULE_NOT_FOUND",b}];
+
+//# sourceMappingURL=Projecto-AURA_2fac334e._.js.map

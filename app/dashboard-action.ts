@@ -5,11 +5,13 @@ import { listarTodos } from './professores/professores-action'
 import { listarTodasTurmas } from './turmas/turma-action'
 import { listarTodas } from './disciplinas/disciplinas-action'
 import { salaService } from '@/lib/Service/Sala'
+import { gerarHorarios } from '@/lib/actions/gerarHorario'
 
 
 // * Obtém estatísticas do dashboard
 
 export async function getDashboardStats() {
+  await gerarHorarios
   const [professores, turmas, disciplinas, salas] = await Promise.all([
     listarTodos(),
     listarTodasTurmas(),

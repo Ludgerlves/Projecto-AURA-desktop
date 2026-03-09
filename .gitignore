@@ -5,3 +5,7 @@ node_modules/
 .env.local
 docker-compose.yml
 EOF
+node_modules
+.next
+.env
+/lib/generated
