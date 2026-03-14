@@ -64,8 +64,8 @@ enum Periodo {
 
 model Professor {
   id_professor Int      @id @default(autoincrement())
-  nome         String   @db.VarChar(100)
-  email        String   @db.VarChar(100) 
+  nome         String   @db.VarChar(100) 
+  email        String   @db.VarChar(100) @unique
   telefone     String   @db.VarChar(15)
   updated_at   DateTime @updatedAt
 
