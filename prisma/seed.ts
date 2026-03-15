@@ -39,22 +39,25 @@ async function main() {
 
   for (const classe of classes) {
     for (const curso of cursos) {
+      if ((classe.nome_classe !== "13ª Classe") || (curso.nome_curso !== "Ciências Físicas e Biológicas" && curso.nome_curso !== "Ciências Económicas e Jurídicas")) {
+
       const nome_turma = `${classe.nome_classe} ${curso.nome_curso}`;
 
-     const turma = await prisma.turma.upsert({
-        where: { nome_turma },
-        update: { nome_classe: classe.nome_classe, nome_curso: curso.nome_curso },
-        create: { 
-          nome_turma, 
-          nome_classe: classe.nome_classe, 
-          nome_curso: curso.nome_curso 
-        },
-      });
+      const turma = await prisma.turma.upsert({
+          where: { nome_turma },
+          update: { nome_classe: classe.nome_classe, nome_curso: curso.nome_curso },
+          create: { 
+            nome_turma, 
+            nome_classe: classe.nome_classe, 
+            nome_curso: curso.nome_curso 
+          },
+        });
 
-      turmas.push(turma);
+        turmas.push(turma);
+      }
     }
   }
-  console.log(`✅ ${classes.length*cursos.length} turmas criadas/verificadas`);
+  console.log(`✅ ${turmas.length} turmas criadas/verificadas`);
 
   // 4. Criar Salas
   const salasData = [
