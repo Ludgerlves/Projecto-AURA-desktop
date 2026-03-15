@@ -9,9 +9,9 @@ export  {prisma};
 
 async function main() {
   // 1. Criar Classes
-  const classesData = ["10ª Classe", "11ª Classe", "12ª Classe", "13ª Classe"];
+  const classesData = [ { nome: "10ª", sufixo: "Classe" }, { nome: "11ª", sufixo: "Classe" }, { nome: "12ª", sufixo: "Classe" }, { nome: "13ª", sufixo: "Classe" } ];
   const classes = [];
-  for (const nome of classesData) {
+  for (const { nome } of classesData) {
     const classe = await prisma.classe.upsert({
       where: { nome_classe: nome },
       update: { nome_classe: nome },
