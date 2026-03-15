@@ -14,6 +14,7 @@ export class SalaCRUD{
     async showSala(id: number){
         return await prisma.sala.findUnique({
             where: {idSala: id},
+            
         })
     }
     async listarTodasSalas(){
