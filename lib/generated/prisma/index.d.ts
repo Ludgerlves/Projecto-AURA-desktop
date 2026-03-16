@@ -49,15 +49,23 @@ export type Professor = $Result.DefaultSelection<Prisma.$ProfessorPayload>
  */
 export type Periodo = $Result.DefaultSelection<Prisma.$PeriodoPayload>
 /**
- * Model ProfDisciplinas
- * 
+ * Model ProfTurmaDisciplina
+ * *
+ *  * model ProfDisciplinas {
+ *  * idProfDisciplina Int        @id @default(autoincrement())
+ *  * professorId      Int
+ *  * disciplina     String
+ *  * Disciplina       Disciplina @relation(fields: [disciplina], references: [nome], onDelete: Cascade)
+ *  * Professor        Professor  @relation(fields: [professorId], references: [id_professor], onDelete: Cascade)
+ *  * @@unique([professorId, disciplina])
+ *  * }
  */
-export type ProfDisciplinas = $Result.DefaultSelection<Prisma.$ProfDisciplinasPayload>
+export type ProfTurmaDisciplina = $Result.DefaultSelection<Prisma.$ProfTurmaDisciplinaPayload>
 /**
- * Model ProfTurma
+ * Model TurmaDisciplina
  * 
  */
-export type ProfTurma = $Result.DefaultSelection<Prisma.$ProfTurmaPayload>
+export type TurmaDisciplina = $Result.DefaultSelection<Prisma.$TurmaDisciplinaPayload>
 /**
  * Model Sala
  * 
@@ -262,24 +270,24 @@ export class PrismaClient<
   get periodo(): Prisma.PeriodoDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.profDisciplinas`: Exposes CRUD operations for the **ProfDisciplinas** model.
+   * `prisma.profTurmaDisciplina`: Exposes CRUD operations for the **ProfTurmaDisciplina** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more ProfDisciplinas
-    * const profDisciplinas = await prisma.profDisciplinas.findMany()
+    * // Fetch zero or more ProfTurmaDisciplinas
+    * const profTurmaDisciplinas = await prisma.profTurmaDisciplina.findMany()
     * ```
     */
-  get profDisciplinas(): Prisma.ProfDisciplinasDelegate<ExtArgs, ClientOptions>;
+  get profTurmaDisciplina(): Prisma.ProfTurmaDisciplinaDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.profTurma`: Exposes CRUD operations for the **ProfTurma** model.
+   * `prisma.turmaDisciplina`: Exposes CRUD operations for the **TurmaDisciplina** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more ProfTurmas
-    * const profTurmas = await prisma.profTurma.findMany()
+    * // Fetch zero or more TurmaDisciplinas
+    * const turmaDisciplinas = await prisma.turmaDisciplina.findMany()
     * ```
     */
-  get profTurma(): Prisma.ProfTurmaDelegate<ExtArgs, ClientOptions>;
+  get turmaDisciplina(): Prisma.TurmaDisciplinaDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.sala`: Exposes CRUD operations for the **Sala** model.
@@ -751,8 +759,8 @@ export namespace Prisma {
     Disponibilidade: 'Disponibilidade',
     Professor: 'Professor',
     Periodo: 'Periodo',
-    ProfDisciplinas: 'ProfDisciplinas',
-    ProfTurma: 'ProfTurma',
+    ProfTurmaDisciplina: 'ProfTurmaDisciplina',
+    TurmaDisciplina: 'TurmaDisciplina',
     Sala: 'Sala',
     TempoLectivo: 'TempoLectivo',
     Turma: 'Turma'
@@ -771,7 +779,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "classe" | "curso" | "diaSemana" | "disciplina" | "disponibilidade" | "professor" | "periodo" | "profDisciplinas" | "profTurma" | "sala" | "tempoLectivo" | "turma"
+      modelProps: "classe" | "curso" | "diaSemana" | "disciplina" | "disponibilidade" | "professor" | "periodo" | "profTurmaDisciplina" | "turmaDisciplina" | "sala" | "tempoLectivo" | "turma"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1293,151 +1301,151 @@ export namespace Prisma {
           }
         }
       }
-      ProfDisciplinas: {
-        payload: Prisma.$ProfDisciplinasPayload<ExtArgs>
-        fields: Prisma.ProfDisciplinasFieldRefs
+      ProfTurmaDisciplina: {
+        payload: Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>
+        fields: Prisma.ProfTurmaDisciplinaFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.ProfDisciplinasFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload> | null
+            args: Prisma.ProfTurmaDisciplinaFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.ProfDisciplinasFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>
+            args: Prisma.ProfTurmaDisciplinaFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>
           }
           findFirst: {
-            args: Prisma.ProfDisciplinasFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload> | null
+            args: Prisma.ProfTurmaDisciplinaFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.ProfDisciplinasFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>
+            args: Prisma.ProfTurmaDisciplinaFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>
           }
           findMany: {
-            args: Prisma.ProfDisciplinasFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>[]
+            args: Prisma.ProfTurmaDisciplinaFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>[]
           }
           create: {
-            args: Prisma.ProfDisciplinasCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>
+            args: Prisma.ProfTurmaDisciplinaCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>
           }
           createMany: {
-            args: Prisma.ProfDisciplinasCreateManyArgs<ExtArgs>
+            args: Prisma.ProfTurmaDisciplinaCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.ProfDisciplinasCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>[]
+            args: Prisma.ProfTurmaDisciplinaCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>[]
           }
           delete: {
-            args: Prisma.ProfDisciplinasDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>
+            args: Prisma.ProfTurmaDisciplinaDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>
           }
           update: {
-            args: Prisma.ProfDisciplinasUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>
+            args: Prisma.ProfTurmaDisciplinaUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>
           }
           deleteMany: {
-            args: Prisma.ProfDisciplinasDeleteManyArgs<ExtArgs>
+            args: Prisma.ProfTurmaDisciplinaDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.ProfDisciplinasUpdateManyArgs<ExtArgs>
+            args: Prisma.ProfTurmaDisciplinaUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.ProfDisciplinasUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>[]
+            args: Prisma.ProfTurmaDisciplinaUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>[]
           }
           upsert: {
-            args: Prisma.ProfDisciplinasUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfDisciplinasPayload>
+            args: Prisma.ProfTurmaDisciplinaUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProfTurmaDisciplinaPayload>
           }
           aggregate: {
-            args: Prisma.ProfDisciplinasAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateProfDisciplinas>
+            args: Prisma.ProfTurmaDisciplinaAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProfTurmaDisciplina>
           }
           groupBy: {
-            args: Prisma.ProfDisciplinasGroupByArgs<ExtArgs>
-            result: $Utils.Optional<ProfDisciplinasGroupByOutputType>[]
+            args: Prisma.ProfTurmaDisciplinaGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProfTurmaDisciplinaGroupByOutputType>[]
           }
           count: {
-            args: Prisma.ProfDisciplinasCountArgs<ExtArgs>
-            result: $Utils.Optional<ProfDisciplinasCountAggregateOutputType> | number
+            args: Prisma.ProfTurmaDisciplinaCountArgs<ExtArgs>
+            result: $Utils.Optional<ProfTurmaDisciplinaCountAggregateOutputType> | number
           }
         }
       }
-      ProfTurma: {
-        payload: Prisma.$ProfTurmaPayload<ExtArgs>
-        fields: Prisma.ProfTurmaFieldRefs
+      TurmaDisciplina: {
+        payload: Prisma.$TurmaDisciplinaPayload<ExtArgs>
+        fields: Prisma.TurmaDisciplinaFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.ProfTurmaFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload> | null
+            args: Prisma.TurmaDisciplinaFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.ProfTurmaFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>
+            args: Prisma.TurmaDisciplinaFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>
           }
           findFirst: {
-            args: Prisma.ProfTurmaFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload> | null
+            args: Prisma.TurmaDisciplinaFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.ProfTurmaFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>
+            args: Prisma.TurmaDisciplinaFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>
           }
           findMany: {
-            args: Prisma.ProfTurmaFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>[]
+            args: Prisma.TurmaDisciplinaFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>[]
           }
           create: {
-            args: Prisma.ProfTurmaCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>
+            args: Prisma.TurmaDisciplinaCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>
           }
           createMany: {
-            args: Prisma.ProfTurmaCreateManyArgs<ExtArgs>
+            args: Prisma.TurmaDisciplinaCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.ProfTurmaCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>[]
+            args: Prisma.TurmaDisciplinaCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>[]
           }
           delete: {
-            args: Prisma.ProfTurmaDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>
+            args: Prisma.TurmaDisciplinaDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>
           }
           update: {
-            args: Prisma.ProfTurmaUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>
+            args: Prisma.TurmaDisciplinaUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>
           }
           deleteMany: {
-            args: Prisma.ProfTurmaDeleteManyArgs<ExtArgs>
+            args: Prisma.TurmaDisciplinaDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.ProfTurmaUpdateManyArgs<ExtArgs>
+            args: Prisma.TurmaDisciplinaUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.ProfTurmaUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>[]
+            args: Prisma.TurmaDisciplinaUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>[]
           }
           upsert: {
-            args: Prisma.ProfTurmaUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$ProfTurmaPayload>
+            args: Prisma.TurmaDisciplinaUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TurmaDisciplinaPayload>
           }
           aggregate: {
-            args: Prisma.ProfTurmaAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateProfTurma>
+            args: Prisma.TurmaDisciplinaAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTurmaDisciplina>
           }
           groupBy: {
-            args: Prisma.ProfTurmaGroupByArgs<ExtArgs>
-            result: $Utils.Optional<ProfTurmaGroupByOutputType>[]
+            args: Prisma.TurmaDisciplinaGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TurmaDisciplinaGroupByOutputType>[]
           }
           count: {
-            args: Prisma.ProfTurmaCountArgs<ExtArgs>
-            result: $Utils.Optional<ProfTurmaCountAggregateOutputType> | number
+            args: Prisma.TurmaDisciplinaCountArgs<ExtArgs>
+            result: $Utils.Optional<TurmaDisciplinaCountAggregateOutputType> | number
           }
         }
       }
@@ -1778,8 +1786,8 @@ export namespace Prisma {
     disponibilidade?: DisponibilidadeOmit
     professor?: ProfessorOmit
     periodo?: PeriodoOmit
-    profDisciplinas?: ProfDisciplinasOmit
-    profTurma?: ProfTurmaOmit
+    profTurmaDisciplina?: ProfTurmaDisciplinaOmit
+    turmaDisciplina?: TurmaDisciplinaOmit
     sala?: SalaOmit
     tempoLectivo?: TempoLectivoOmit
     turma?: TurmaOmit
@@ -1965,12 +1973,12 @@ export namespace Prisma {
    */
 
   export type DisciplinaCountOutputType = {
-    ProfDisciplinas: number
+    ProfTurmaDisciplina: number
     TempoLectivo: number
   }
 
   export type DisciplinaCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ProfDisciplinas?: boolean | DisciplinaCountOutputTypeCountProfDisciplinasArgs
+    ProfTurmaDisciplina?: boolean | DisciplinaCountOutputTypeCountProfTurmaDisciplinaArgs
     TempoLectivo?: boolean | DisciplinaCountOutputTypeCountTempoLectivoArgs
   }
 
@@ -1988,8 +1996,8 @@ export namespace Prisma {
   /**
    * DisciplinaCountOutputType without action
    */
-  export type DisciplinaCountOutputTypeCountProfDisciplinasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProfDisciplinasWhereInput
+  export type DisciplinaCountOutputTypeCountProfTurmaDisciplinaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProfTurmaDisciplinaWhereInput
   }
 
   /**
@@ -2006,15 +2014,13 @@ export namespace Prisma {
 
   export type ProfessorCountOutputType = {
     Disponibilidade: number
-    ProfDisciplinas: number
-    ProfTurma: number
+    ProfTurmaDisciplina: number
     TempoLectivo: number
   }
 
   export type ProfessorCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Disponibilidade?: boolean | ProfessorCountOutputTypeCountDisponibilidadeArgs
-    ProfDisciplinas?: boolean | ProfessorCountOutputTypeCountProfDisciplinasArgs
-    ProfTurma?: boolean | ProfessorCountOutputTypeCountProfTurmaArgs
+    ProfTurmaDisciplina?: boolean | ProfessorCountOutputTypeCountProfTurmaDisciplinaArgs
     TempoLectivo?: boolean | ProfessorCountOutputTypeCountTempoLectivoArgs
   }
 
@@ -2039,15 +2045,8 @@ export namespace Prisma {
   /**
    * ProfessorCountOutputType without action
    */
-  export type ProfessorCountOutputTypeCountProfDisciplinasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProfDisciplinasWhereInput
-  }
-
-  /**
-   * ProfessorCountOutputType without action
-   */
-  export type ProfessorCountOutputTypeCountProfTurmaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProfTurmaWhereInput
+  export type ProfessorCountOutputTypeCountProfTurmaDisciplinaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProfTurmaDisciplinaWhereInput
   }
 
   /**
@@ -2134,13 +2133,15 @@ export namespace Prisma {
    */
 
   export type TurmaCountOutputType = {
-    ProfTurma: number
+    ProfTurmaDisciplina: number
     TempoLectivo: number
+    TurmaDisciplina: number
   }
 
   export type TurmaCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ProfTurma?: boolean | TurmaCountOutputTypeCountProfTurmaArgs
+    ProfTurmaDisciplina?: boolean | TurmaCountOutputTypeCountProfTurmaDisciplinaArgs
     TempoLectivo?: boolean | TurmaCountOutputTypeCountTempoLectivoArgs
+    TurmaDisciplina?: boolean | TurmaCountOutputTypeCountTurmaDisciplinaArgs
   }
 
   // Custom InputTypes
@@ -2157,8 +2158,8 @@ export namespace Prisma {
   /**
    * TurmaCountOutputType without action
    */
-  export type TurmaCountOutputTypeCountProfTurmaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProfTurmaWhereInput
+  export type TurmaCountOutputTypeCountProfTurmaDisciplinaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProfTurmaDisciplinaWhereInput
   }
 
   /**
@@ -2166,6 +2167,13 @@ export namespace Prisma {
    */
   export type TurmaCountOutputTypeCountTempoLectivoArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: TempoLectivoWhereInput
+  }
+
+  /**
+   * TurmaCountOutputType without action
+   */
+  export type TurmaCountOutputTypeCountTurmaDisciplinaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TurmaDisciplinaWhereInput
   }
 
 
@@ -5261,57 +5269,33 @@ export namespace Prisma {
 
   export type AggregateDisciplina = {
     _count: DisciplinaCountAggregateOutputType | null
-    _avg: DisciplinaAvgAggregateOutputType | null
-    _sum: DisciplinaSumAggregateOutputType | null
     _min: DisciplinaMinAggregateOutputType | null
     _max: DisciplinaMaxAggregateOutputType | null
   }
 
-  export type DisciplinaAvgAggregateOutputType = {
-    idDisciplina: number | null
-  }
-
-  export type DisciplinaSumAggregateOutputType = {
-    idDisciplina: number | null
-  }
-
   export type DisciplinaMinAggregateOutputType = {
-    idDisciplina: number | null
     nome: string | null
   }
 
   export type DisciplinaMaxAggregateOutputType = {
-    idDisciplina: number | null
     nome: string | null
   }
 
   export type DisciplinaCountAggregateOutputType = {
-    idDisciplina: number
     nome: number
     _all: number
   }
 
 
-  export type DisciplinaAvgAggregateInputType = {
-    idDisciplina?: true
-  }
-
-  export type DisciplinaSumAggregateInputType = {
-    idDisciplina?: true
-  }
-
   export type DisciplinaMinAggregateInputType = {
-    idDisciplina?: true
     nome?: true
   }
 
   export type DisciplinaMaxAggregateInputType = {
-    idDisciplina?: true
     nome?: true
   }
 
   export type DisciplinaCountAggregateInputType = {
-    idDisciplina?: true
     nome?: true
     _all?: true
   }
@@ -5354,18 +5338,6 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to average
-    **/
-    _avg?: DisciplinaAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: DisciplinaSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
      * Select which fields to find the minimum value
     **/
     _min?: DisciplinaMinAggregateInputType
@@ -5396,18 +5368,13 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: DisciplinaCountAggregateInputType | true
-    _avg?: DisciplinaAvgAggregateInputType
-    _sum?: DisciplinaSumAggregateInputType
     _min?: DisciplinaMinAggregateInputType
     _max?: DisciplinaMaxAggregateInputType
   }
 
   export type DisciplinaGroupByOutputType = {
-    idDisciplina: number
     nome: string
     _count: DisciplinaCountAggregateOutputType | null
-    _avg: DisciplinaAvgAggregateOutputType | null
-    _sum: DisciplinaSumAggregateOutputType | null
     _min: DisciplinaMinAggregateOutputType | null
     _max: DisciplinaMaxAggregateOutputType | null
   }
@@ -5427,31 +5394,27 @@ export namespace Prisma {
 
 
   export type DisciplinaSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idDisciplina?: boolean
     nome?: boolean
-    ProfDisciplinas?: boolean | Disciplina$ProfDisciplinasArgs<ExtArgs>
+    ProfTurmaDisciplina?: boolean | Disciplina$ProfTurmaDisciplinaArgs<ExtArgs>
     TempoLectivo?: boolean | Disciplina$TempoLectivoArgs<ExtArgs>
     _count?: boolean | DisciplinaCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["disciplina"]>
 
   export type DisciplinaSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idDisciplina?: boolean
     nome?: boolean
   }, ExtArgs["result"]["disciplina"]>
 
   export type DisciplinaSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idDisciplina?: boolean
     nome?: boolean
   }, ExtArgs["result"]["disciplina"]>
 
   export type DisciplinaSelectScalar = {
-    idDisciplina?: boolean
     nome?: boolean
   }
 
-  export type DisciplinaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idDisciplina" | "nome", ExtArgs["result"]["disciplina"]>
+  export type DisciplinaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"nome", ExtArgs["result"]["disciplina"]>
   export type DisciplinaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ProfDisciplinas?: boolean | Disciplina$ProfDisciplinasArgs<ExtArgs>
+    ProfTurmaDisciplina?: boolean | Disciplina$ProfTurmaDisciplinaArgs<ExtArgs>
     TempoLectivo?: boolean | Disciplina$TempoLectivoArgs<ExtArgs>
     _count?: boolean | DisciplinaCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -5461,11 +5424,10 @@ export namespace Prisma {
   export type $DisciplinaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Disciplina"
     objects: {
-      ProfDisciplinas: Prisma.$ProfDisciplinasPayload<ExtArgs>[]
+      ProfTurmaDisciplina: Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>[]
       TempoLectivo: Prisma.$TempoLectivoPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
-      idDisciplina: number
       nome: string
     }, ExtArgs["result"]["disciplina"]>
     composites: {}
@@ -5550,8 +5512,8 @@ export namespace Prisma {
      * // Get first 10 Disciplinas
      * const disciplinas = await prisma.disciplina.findMany({ take: 10 })
      * 
-     * // Only select the `idDisciplina`
-     * const disciplinaWithIdDisciplinaOnly = await prisma.disciplina.findMany({ select: { idDisciplina: true } })
+     * // Only select the `nome`
+     * const disciplinaWithNomeOnly = await prisma.disciplina.findMany({ select: { nome: true } })
      * 
      */
     findMany<T extends DisciplinaFindManyArgs>(args?: SelectSubset<T, DisciplinaFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DisciplinaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -5595,9 +5557,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Create many Disciplinas and only return the `idDisciplina`
-     * const disciplinaWithIdDisciplinaOnly = await prisma.disciplina.createManyAndReturn({
-     *   select: { idDisciplina: true },
+     * // Create many Disciplinas and only return the `nome`
+     * const disciplinaWithNomeOnly = await prisma.disciplina.createManyAndReturn({
+     *   select: { nome: true },
      *   data: [
      *     // ... provide data here
      *   ]
@@ -5686,9 +5648,9 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more Disciplinas and only return the `idDisciplina`
-     * const disciplinaWithIdDisciplinaOnly = await prisma.disciplina.updateManyAndReturn({
-     *   select: { idDisciplina: true },
+     * // Update zero or more Disciplinas and only return the `nome`
+     * const disciplinaWithNomeOnly = await prisma.disciplina.updateManyAndReturn({
+     *   select: { nome: true },
      *   where: {
      *     // ... provide filter here
      *   },
@@ -5861,7 +5823,7 @@ export namespace Prisma {
    */
   export interface Prisma__DisciplinaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    ProfDisciplinas<T extends Disciplina$ProfDisciplinasArgs<ExtArgs> = {}>(args?: Subset<T, Disciplina$ProfDisciplinasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ProfTurmaDisciplina<T extends Disciplina$ProfTurmaDisciplinaArgs<ExtArgs> = {}>(args?: Subset<T, Disciplina$ProfTurmaDisciplinaArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     TempoLectivo<T extends Disciplina$TempoLectivoArgs<ExtArgs> = {}>(args?: Subset<T, Disciplina$TempoLectivoArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TempoLectivoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5892,7 +5854,6 @@ export namespace Prisma {
    * Fields of the Disciplina model
    */
   interface DisciplinaFieldRefs {
-    readonly idDisciplina: FieldRef<"Disciplina", 'Int'>
     readonly nome: FieldRef<"Disciplina", 'String'>
   }
     
@@ -6282,27 +6243,27 @@ export namespace Prisma {
   }
 
   /**
-   * Disciplina.ProfDisciplinas
+   * Disciplina.ProfTurmaDisciplina
    */
-  export type Disciplina$ProfDisciplinasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Disciplina$ProfTurmaDisciplinaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfDisciplinas
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfDisciplinas
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    where?: ProfDisciplinasWhereInput
-    orderBy?: ProfDisciplinasOrderByWithRelationInput | ProfDisciplinasOrderByWithRelationInput[]
-    cursor?: ProfDisciplinasWhereUniqueInput
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
+    where?: ProfTurmaDisciplinaWhereInput
+    orderBy?: ProfTurmaDisciplinaOrderByWithRelationInput | ProfTurmaDisciplinaOrderByWithRelationInput[]
+    cursor?: ProfTurmaDisciplinaWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: ProfDisciplinasScalarFieldEnum | ProfDisciplinasScalarFieldEnum[]
+    distinct?: ProfTurmaDisciplinaScalarFieldEnum | ProfTurmaDisciplinaScalarFieldEnum[]
   }
 
   /**
@@ -6375,7 +6336,7 @@ export namespace Prisma {
   export type DisponibilidadeMinAggregateOutputType = {
     idDisponibilidade: number | null
     diaSemana: string | null
-    periodoId: string | null
+    periodo: string | null
     ordem: number | null
     professorId: number | null
   }
@@ -6383,7 +6344,7 @@ export namespace Prisma {
   export type DisponibilidadeMaxAggregateOutputType = {
     idDisponibilidade: number | null
     diaSemana: string | null
-    periodoId: string | null
+    periodo: string | null
     ordem: number | null
     professorId: number | null
   }
@@ -6391,7 +6352,7 @@ export namespace Prisma {
   export type DisponibilidadeCountAggregateOutputType = {
     idDisponibilidade: number
     diaSemana: number
-    periodoId: number
+    periodo: number
     ordem: number
     professorId: number
     _all: number
@@ -6413,7 +6374,7 @@ export namespace Prisma {
   export type DisponibilidadeMinAggregateInputType = {
     idDisponibilidade?: true
     diaSemana?: true
-    periodoId?: true
+    periodo?: true
     ordem?: true
     professorId?: true
   }
@@ -6421,7 +6382,7 @@ export namespace Prisma {
   export type DisponibilidadeMaxAggregateInputType = {
     idDisponibilidade?: true
     diaSemana?: true
-    periodoId?: true
+    periodo?: true
     ordem?: true
     professorId?: true
   }
@@ -6429,7 +6390,7 @@ export namespace Prisma {
   export type DisponibilidadeCountAggregateInputType = {
     idDisponibilidade?: true
     diaSemana?: true
-    periodoId?: true
+    periodo?: true
     ordem?: true
     professorId?: true
     _all?: true
@@ -6524,7 +6485,7 @@ export namespace Prisma {
   export type DisponibilidadeGroupByOutputType = {
     idDisponibilidade: number
     diaSemana: string
-    periodoId: string
+    periodo: string
     ordem: number
     professorId: number
     _count: DisponibilidadeCountAggregateOutputType | null
@@ -6551,7 +6512,7 @@ export namespace Prisma {
   export type DisponibilidadeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     idDisponibilidade?: boolean
     diaSemana?: boolean
-    periodoId?: boolean
+    periodo?: boolean
     ordem?: boolean
     professorId?: boolean
     DiaSemana?: boolean | DiaSemanaDefaultArgs<ExtArgs>
@@ -6562,7 +6523,7 @@ export namespace Prisma {
   export type DisponibilidadeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     idDisponibilidade?: boolean
     diaSemana?: boolean
-    periodoId?: boolean
+    periodo?: boolean
     ordem?: boolean
     professorId?: boolean
     DiaSemana?: boolean | DiaSemanaDefaultArgs<ExtArgs>
@@ -6573,7 +6534,7 @@ export namespace Prisma {
   export type DisponibilidadeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     idDisponibilidade?: boolean
     diaSemana?: boolean
-    periodoId?: boolean
+    periodo?: boolean
     ordem?: boolean
     professorId?: boolean
     DiaSemana?: boolean | DiaSemanaDefaultArgs<ExtArgs>
@@ -6584,12 +6545,12 @@ export namespace Prisma {
   export type DisponibilidadeSelectScalar = {
     idDisponibilidade?: boolean
     diaSemana?: boolean
-    periodoId?: boolean
+    periodo?: boolean
     ordem?: boolean
     professorId?: boolean
   }
 
-  export type DisponibilidadeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idDisponibilidade" | "diaSemana" | "periodoId" | "ordem" | "professorId", ExtArgs["result"]["disponibilidade"]>
+  export type DisponibilidadeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idDisponibilidade" | "diaSemana" | "periodo" | "ordem" | "professorId", ExtArgs["result"]["disponibilidade"]>
   export type DisponibilidadeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     DiaSemana?: boolean | DiaSemanaDefaultArgs<ExtArgs>
     Periodo?: boolean | PeriodoDefaultArgs<ExtArgs>
@@ -6616,7 +6577,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       idDisponibilidade: number
       diaSemana: string
-      periodoId: string
+      periodo: string
       ordem: number
       professorId: number
     }, ExtArgs["result"]["disponibilidade"]>
@@ -7047,7 +7008,7 @@ export namespace Prisma {
   interface DisponibilidadeFieldRefs {
     readonly idDisponibilidade: FieldRef<"Disponibilidade", 'Int'>
     readonly diaSemana: FieldRef<"Disponibilidade", 'String'>
-    readonly periodoId: FieldRef<"Disponibilidade", 'String'>
+    readonly periodo: FieldRef<"Disponibilidade", 'String'>
     readonly ordem: FieldRef<"Disponibilidade", 'Int'>
     readonly professorId: FieldRef<"Disponibilidade", 'Int'>
   }
@@ -7671,8 +7632,7 @@ export namespace Prisma {
     created_at?: boolean
     updated_at?: boolean
     Disponibilidade?: boolean | Professor$DisponibilidadeArgs<ExtArgs>
-    ProfDisciplinas?: boolean | Professor$ProfDisciplinasArgs<ExtArgs>
-    ProfTurma?: boolean | Professor$ProfTurmaArgs<ExtArgs>
+    ProfTurmaDisciplina?: boolean | Professor$ProfTurmaDisciplinaArgs<ExtArgs>
     TempoLectivo?: boolean | Professor$TempoLectivoArgs<ExtArgs>
     _count?: boolean | ProfessorCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["professor"]>
@@ -7707,8 +7667,7 @@ export namespace Prisma {
   export type ProfessorOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_professor" | "nome" | "email" | "telefone" | "created_at" | "updated_at", ExtArgs["result"]["professor"]>
   export type ProfessorInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     Disponibilidade?: boolean | Professor$DisponibilidadeArgs<ExtArgs>
-    ProfDisciplinas?: boolean | Professor$ProfDisciplinasArgs<ExtArgs>
-    ProfTurma?: boolean | Professor$ProfTurmaArgs<ExtArgs>
+    ProfTurmaDisciplina?: boolean | Professor$ProfTurmaDisciplinaArgs<ExtArgs>
     TempoLectivo?: boolean | Professor$TempoLectivoArgs<ExtArgs>
     _count?: boolean | ProfessorCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -7719,8 +7678,7 @@ export namespace Prisma {
     name: "Professor"
     objects: {
       Disponibilidade: Prisma.$DisponibilidadePayload<ExtArgs>[]
-      ProfDisciplinas: Prisma.$ProfDisciplinasPayload<ExtArgs>[]
-      ProfTurma: Prisma.$ProfTurmaPayload<ExtArgs>[]
+      ProfTurmaDisciplina: Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>[]
       TempoLectivo: Prisma.$TempoLectivoPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -8125,8 +8083,7 @@ export namespace Prisma {
   export interface Prisma__ProfessorClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     Disponibilidade<T extends Professor$DisponibilidadeArgs<ExtArgs> = {}>(args?: Subset<T, Professor$DisponibilidadeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DisponibilidadePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    ProfDisciplinas<T extends Professor$ProfDisciplinasArgs<ExtArgs> = {}>(args?: Subset<T, Professor$ProfDisciplinasArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    ProfTurma<T extends Professor$ProfTurmaArgs<ExtArgs> = {}>(args?: Subset<T, Professor$ProfTurmaArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ProfTurmaDisciplina<T extends Professor$ProfTurmaDisciplinaArgs<ExtArgs> = {}>(args?: Subset<T, Professor$ProfTurmaDisciplinaArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     TempoLectivo<T extends Professor$TempoLectivoArgs<ExtArgs> = {}>(args?: Subset<T, Professor$TempoLectivoArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TempoLectivoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8575,51 +8532,27 @@ export namespace Prisma {
   }
 
   /**
-   * Professor.ProfDisciplinas
+   * Professor.ProfTurmaDisciplina
    */
-  export type Professor$ProfDisciplinasArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Professor$ProfTurmaDisciplinaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfDisciplinas
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfDisciplinas
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    where?: ProfDisciplinasWhereInput
-    orderBy?: ProfDisciplinasOrderByWithRelationInput | ProfDisciplinasOrderByWithRelationInput[]
-    cursor?: ProfDisciplinasWhereUniqueInput
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
+    where?: ProfTurmaDisciplinaWhereInput
+    orderBy?: ProfTurmaDisciplinaOrderByWithRelationInput | ProfTurmaDisciplinaOrderByWithRelationInput[]
+    cursor?: ProfTurmaDisciplinaWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: ProfDisciplinasScalarFieldEnum | ProfDisciplinasScalarFieldEnum[]
-  }
-
-  /**
-   * Professor.ProfTurma
-   */
-  export type Professor$ProfTurmaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfTurma
-     */
-    select?: ProfTurmaSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfTurma
-     */
-    omit?: ProfTurmaOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfTurmaInclude<ExtArgs> | null
-    where?: ProfTurmaWhereInput
-    orderBy?: ProfTurmaOrderByWithRelationInput | ProfTurmaOrderByWithRelationInput[]
-    cursor?: ProfTurmaWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: ProfTurmaScalarFieldEnum | ProfTurmaScalarFieldEnum[]
+    distinct?: ProfTurmaDisciplinaScalarFieldEnum | ProfTurmaDisciplinaScalarFieldEnum[]
   }
 
   /**
@@ -9712,1320 +9645,256 @@ export namespace Prisma {
 
 
   /**
-   * Model ProfDisciplinas
+   * Model ProfTurmaDisciplina
    */
 
-  export type AggregateProfDisciplinas = {
-    _count: ProfDisciplinasCountAggregateOutputType | null
-    _avg: ProfDisciplinasAvgAggregateOutputType | null
-    _sum: ProfDisciplinasSumAggregateOutputType | null
-    _min: ProfDisciplinasMinAggregateOutputType | null
-    _max: ProfDisciplinasMaxAggregateOutputType | null
+  export type AggregateProfTurmaDisciplina = {
+    _count: ProfTurmaDisciplinaCountAggregateOutputType | null
+    _avg: ProfTurmaDisciplinaAvgAggregateOutputType | null
+    _sum: ProfTurmaDisciplinaSumAggregateOutputType | null
+    _min: ProfTurmaDisciplinaMinAggregateOutputType | null
+    _max: ProfTurmaDisciplinaMaxAggregateOutputType | null
   }
 
-  export type ProfDisciplinasAvgAggregateOutputType = {
-    idProfDisciplina: number | null
+  export type ProfTurmaDisciplinaAvgAggregateOutputType = {
+    idProfTurma: number | null
     professorId: number | null
-    disciplinaId: number | null
+    turmaId: number | null
   }
 
-  export type ProfDisciplinasSumAggregateOutputType = {
-    idProfDisciplina: number | null
+  export type ProfTurmaDisciplinaSumAggregateOutputType = {
+    idProfTurma: number | null
     professorId: number | null
-    disciplinaId: number | null
+    turmaId: number | null
   }
 
-  export type ProfDisciplinasMinAggregateOutputType = {
-    idProfDisciplina: number | null
+  export type ProfTurmaDisciplinaMinAggregateOutputType = {
+    idProfTurma: number | null
     professorId: number | null
-    disciplinaId: number | null
+    turmaId: number | null
+    disciplinaNome: string | null
   }
 
-  export type ProfDisciplinasMaxAggregateOutputType = {
-    idProfDisciplina: number | null
+  export type ProfTurmaDisciplinaMaxAggregateOutputType = {
+    idProfTurma: number | null
     professorId: number | null
-    disciplinaId: number | null
+    turmaId: number | null
+    disciplinaNome: string | null
   }
 
-  export type ProfDisciplinasCountAggregateOutputType = {
-    idProfDisciplina: number
+  export type ProfTurmaDisciplinaCountAggregateOutputType = {
+    idProfTurma: number
     professorId: number
-    disciplinaId: number
+    turmaId: number
+    disciplinaNome: number
     _all: number
   }
 
 
-  export type ProfDisciplinasAvgAggregateInputType = {
-    idProfDisciplina?: true
+  export type ProfTurmaDisciplinaAvgAggregateInputType = {
+    idProfTurma?: true
     professorId?: true
-    disciplinaId?: true
+    turmaId?: true
   }
 
-  export type ProfDisciplinasSumAggregateInputType = {
-    idProfDisciplina?: true
+  export type ProfTurmaDisciplinaSumAggregateInputType = {
+    idProfTurma?: true
     professorId?: true
-    disciplinaId?: true
+    turmaId?: true
   }
 
-  export type ProfDisciplinasMinAggregateInputType = {
-    idProfDisciplina?: true
+  export type ProfTurmaDisciplinaMinAggregateInputType = {
+    idProfTurma?: true
     professorId?: true
-    disciplinaId?: true
+    turmaId?: true
+    disciplinaNome?: true
   }
 
-  export type ProfDisciplinasMaxAggregateInputType = {
-    idProfDisciplina?: true
+  export type ProfTurmaDisciplinaMaxAggregateInputType = {
+    idProfTurma?: true
     professorId?: true
-    disciplinaId?: true
+    turmaId?: true
+    disciplinaNome?: true
   }
 
-  export type ProfDisciplinasCountAggregateInputType = {
-    idProfDisciplina?: true
+  export type ProfTurmaDisciplinaCountAggregateInputType = {
+    idProfTurma?: true
     professorId?: true
-    disciplinaId?: true
+    turmaId?: true
+    disciplinaNome?: true
     _all?: true
   }
 
-  export type ProfDisciplinasAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which ProfDisciplinas to aggregate.
+     * Filter which ProfTurmaDisciplina to aggregate.
      */
-    where?: ProfDisciplinasWhereInput
+    where?: ProfTurmaDisciplinaWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of ProfDisciplinas to fetch.
+     * Determine the order of ProfTurmaDisciplinas to fetch.
      */
-    orderBy?: ProfDisciplinasOrderByWithRelationInput | ProfDisciplinasOrderByWithRelationInput[]
+    orderBy?: ProfTurmaDisciplinaOrderByWithRelationInput | ProfTurmaDisciplinaOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: ProfDisciplinasWhereUniqueInput
+    cursor?: ProfTurmaDisciplinaWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` ProfDisciplinas from the position of the cursor.
+     * Take `±n` ProfTurmaDisciplinas from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` ProfDisciplinas.
+     * Skip the first `n` ProfTurmaDisciplinas.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned ProfDisciplinas
+     * Count returned ProfTurmaDisciplinas
     **/
-    _count?: true | ProfDisciplinasCountAggregateInputType
+    _count?: true | ProfTurmaDisciplinaCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: ProfDisciplinasAvgAggregateInputType
+    _avg?: ProfTurmaDisciplinaAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: ProfDisciplinasSumAggregateInputType
+    _sum?: ProfTurmaDisciplinaSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: ProfDisciplinasMinAggregateInputType
+    _min?: ProfTurmaDisciplinaMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: ProfDisciplinasMaxAggregateInputType
+    _max?: ProfTurmaDisciplinaMaxAggregateInputType
   }
 
-  export type GetProfDisciplinasAggregateType<T extends ProfDisciplinasAggregateArgs> = {
-        [P in keyof T & keyof AggregateProfDisciplinas]: P extends '_count' | 'count'
+  export type GetProfTurmaDisciplinaAggregateType<T extends ProfTurmaDisciplinaAggregateArgs> = {
+        [P in keyof T & keyof AggregateProfTurmaDisciplina]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateProfDisciplinas[P]>
-      : GetScalarType<T[P], AggregateProfDisciplinas[P]>
+        : GetScalarType<T[P], AggregateProfTurmaDisciplina[P]>
+      : GetScalarType<T[P], AggregateProfTurmaDisciplina[P]>
   }
 
 
 
 
-  export type ProfDisciplinasGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProfDisciplinasWhereInput
-    orderBy?: ProfDisciplinasOrderByWithAggregationInput | ProfDisciplinasOrderByWithAggregationInput[]
-    by: ProfDisciplinasScalarFieldEnum[] | ProfDisciplinasScalarFieldEnum
-    having?: ProfDisciplinasScalarWhereWithAggregatesInput
+  export type ProfTurmaDisciplinaGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProfTurmaDisciplinaWhereInput
+    orderBy?: ProfTurmaDisciplinaOrderByWithAggregationInput | ProfTurmaDisciplinaOrderByWithAggregationInput[]
+    by: ProfTurmaDisciplinaScalarFieldEnum[] | ProfTurmaDisciplinaScalarFieldEnum
+    having?: ProfTurmaDisciplinaScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: ProfDisciplinasCountAggregateInputType | true
-    _avg?: ProfDisciplinasAvgAggregateInputType
-    _sum?: ProfDisciplinasSumAggregateInputType
-    _min?: ProfDisciplinasMinAggregateInputType
-    _max?: ProfDisciplinasMaxAggregateInputType
+    _count?: ProfTurmaDisciplinaCountAggregateInputType | true
+    _avg?: ProfTurmaDisciplinaAvgAggregateInputType
+    _sum?: ProfTurmaDisciplinaSumAggregateInputType
+    _min?: ProfTurmaDisciplinaMinAggregateInputType
+    _max?: ProfTurmaDisciplinaMaxAggregateInputType
   }
 
-  export type ProfDisciplinasGroupByOutputType = {
-    idProfDisciplina: number
+  export type ProfTurmaDisciplinaGroupByOutputType = {
+    idProfTurma: number
     professorId: number
-    disciplinaId: number
-    _count: ProfDisciplinasCountAggregateOutputType | null
-    _avg: ProfDisciplinasAvgAggregateOutputType | null
-    _sum: ProfDisciplinasSumAggregateOutputType | null
-    _min: ProfDisciplinasMinAggregateOutputType | null
-    _max: ProfDisciplinasMaxAggregateOutputType | null
+    turmaId: number
+    disciplinaNome: string
+    _count: ProfTurmaDisciplinaCountAggregateOutputType | null
+    _avg: ProfTurmaDisciplinaAvgAggregateOutputType | null
+    _sum: ProfTurmaDisciplinaSumAggregateOutputType | null
+    _min: ProfTurmaDisciplinaMinAggregateOutputType | null
+    _max: ProfTurmaDisciplinaMaxAggregateOutputType | null
   }
 
-  type GetProfDisciplinasGroupByPayload<T extends ProfDisciplinasGroupByArgs> = Prisma.PrismaPromise<
+  type GetProfTurmaDisciplinaGroupByPayload<T extends ProfTurmaDisciplinaGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<ProfDisciplinasGroupByOutputType, T['by']> &
+      PickEnumerable<ProfTurmaDisciplinaGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof ProfDisciplinasGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof ProfTurmaDisciplinaGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], ProfDisciplinasGroupByOutputType[P]>
-            : GetScalarType<T[P], ProfDisciplinasGroupByOutputType[P]>
+              : GetScalarType<T[P], ProfTurmaDisciplinaGroupByOutputType[P]>
+            : GetScalarType<T[P], ProfTurmaDisciplinaGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type ProfDisciplinasSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idProfDisciplina?: boolean
+  export type ProfTurmaDisciplinaSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    idProfTurma?: boolean
     professorId?: boolean
-    disciplinaId?: boolean
-    Disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
+    turmaId?: boolean
+    disciplinaNome?: boolean
+    disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
     Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["profDisciplinas"]>
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["profTurmaDisciplina"]>
 
-  export type ProfDisciplinasSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idProfDisciplina?: boolean
+  export type ProfTurmaDisciplinaSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    idProfTurma?: boolean
     professorId?: boolean
-    disciplinaId?: boolean
-    Disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
+    turmaId?: boolean
+    disciplinaNome?: boolean
+    disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
     Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["profDisciplinas"]>
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["profTurmaDisciplina"]>
 
-  export type ProfDisciplinasSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idProfDisciplina?: boolean
+  export type ProfTurmaDisciplinaSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    idProfTurma?: boolean
     professorId?: boolean
-    disciplinaId?: boolean
-    Disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
+    turmaId?: boolean
+    disciplinaNome?: boolean
+    disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
     Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["profDisciplinas"]>
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["profTurmaDisciplina"]>
 
-  export type ProfDisciplinasSelectScalar = {
-    idProfDisciplina?: boolean
+  export type ProfTurmaDisciplinaSelectScalar = {
+    idProfTurma?: boolean
     professorId?: boolean
-    disciplinaId?: boolean
+    turmaId?: boolean
+    disciplinaNome?: boolean
   }
 
-  export type ProfDisciplinasOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idProfDisciplina" | "professorId" | "disciplinaId", ExtArgs["result"]["profDisciplinas"]>
-  export type ProfDisciplinasInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
+  export type ProfTurmaDisciplinaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idProfTurma" | "professorId" | "turmaId" | "disciplinaNome", ExtArgs["result"]["profTurmaDisciplina"]>
+  export type ProfTurmaDisciplinaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
     Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
   }
-  export type ProfDisciplinasIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
+  export type ProfTurmaDisciplinaIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
     Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
   }
-  export type ProfDisciplinasIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
+  export type ProfTurmaDisciplinaIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
     Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
   }
 
-  export type $ProfDisciplinasPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "ProfDisciplinas"
+  export type $ProfTurmaDisciplinaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProfTurmaDisciplina"
     objects: {
-      Disciplina: Prisma.$DisciplinaPayload<ExtArgs>
-      Professor: Prisma.$ProfessorPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      idProfDisciplina: number
-      professorId: number
-      disciplinaId: number
-    }, ExtArgs["result"]["profDisciplinas"]>
-    composites: {}
-  }
-
-  type ProfDisciplinasGetPayload<S extends boolean | null | undefined | ProfDisciplinasDefaultArgs> = $Result.GetResult<Prisma.$ProfDisciplinasPayload, S>
-
-  type ProfDisciplinasCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ProfDisciplinasFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ProfDisciplinasCountAggregateInputType | true
-    }
-
-  export interface ProfDisciplinasDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProfDisciplinas'], meta: { name: 'ProfDisciplinas' } }
-    /**
-     * Find zero or one ProfDisciplinas that matches the filter.
-     * @param {ProfDisciplinasFindUniqueArgs} args - Arguments to find a ProfDisciplinas
-     * @example
-     * // Get one ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends ProfDisciplinasFindUniqueArgs>(args: SelectSubset<T, ProfDisciplinasFindUniqueArgs<ExtArgs>>): Prisma__ProfDisciplinasClient<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one ProfDisciplinas that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {ProfDisciplinasFindUniqueOrThrowArgs} args - Arguments to find a ProfDisciplinas
-     * @example
-     * // Get one ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends ProfDisciplinasFindUniqueOrThrowArgs>(args: SelectSubset<T, ProfDisciplinasFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProfDisciplinasClient<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first ProfDisciplinas that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfDisciplinasFindFirstArgs} args - Arguments to find a ProfDisciplinas
-     * @example
-     * // Get one ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends ProfDisciplinasFindFirstArgs>(args?: SelectSubset<T, ProfDisciplinasFindFirstArgs<ExtArgs>>): Prisma__ProfDisciplinasClient<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first ProfDisciplinas that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfDisciplinasFindFirstOrThrowArgs} args - Arguments to find a ProfDisciplinas
-     * @example
-     * // Get one ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends ProfDisciplinasFindFirstOrThrowArgs>(args?: SelectSubset<T, ProfDisciplinasFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProfDisciplinasClient<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more ProfDisciplinas that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfDisciplinasFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.findMany()
-     * 
-     * // Get first 10 ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.findMany({ take: 10 })
-     * 
-     * // Only select the `idProfDisciplina`
-     * const profDisciplinasWithIdProfDisciplinaOnly = await prisma.profDisciplinas.findMany({ select: { idProfDisciplina: true } })
-     * 
-     */
-    findMany<T extends ProfDisciplinasFindManyArgs>(args?: SelectSubset<T, ProfDisciplinasFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a ProfDisciplinas.
-     * @param {ProfDisciplinasCreateArgs} args - Arguments to create a ProfDisciplinas.
-     * @example
-     * // Create one ProfDisciplinas
-     * const ProfDisciplinas = await prisma.profDisciplinas.create({
-     *   data: {
-     *     // ... data to create a ProfDisciplinas
-     *   }
-     * })
-     * 
-     */
-    create<T extends ProfDisciplinasCreateArgs>(args: SelectSubset<T, ProfDisciplinasCreateArgs<ExtArgs>>): Prisma__ProfDisciplinasClient<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many ProfDisciplinas.
-     * @param {ProfDisciplinasCreateManyArgs} args - Arguments to create many ProfDisciplinas.
-     * @example
-     * // Create many ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends ProfDisciplinasCreateManyArgs>(args?: SelectSubset<T, ProfDisciplinasCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many ProfDisciplinas and returns the data saved in the database.
-     * @param {ProfDisciplinasCreateManyAndReturnArgs} args - Arguments to create many ProfDisciplinas.
-     * @example
-     * // Create many ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many ProfDisciplinas and only return the `idProfDisciplina`
-     * const profDisciplinasWithIdProfDisciplinaOnly = await prisma.profDisciplinas.createManyAndReturn({
-     *   select: { idProfDisciplina: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends ProfDisciplinasCreateManyAndReturnArgs>(args?: SelectSubset<T, ProfDisciplinasCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a ProfDisciplinas.
-     * @param {ProfDisciplinasDeleteArgs} args - Arguments to delete one ProfDisciplinas.
-     * @example
-     * // Delete one ProfDisciplinas
-     * const ProfDisciplinas = await prisma.profDisciplinas.delete({
-     *   where: {
-     *     // ... filter to delete one ProfDisciplinas
-     *   }
-     * })
-     * 
-     */
-    delete<T extends ProfDisciplinasDeleteArgs>(args: SelectSubset<T, ProfDisciplinasDeleteArgs<ExtArgs>>): Prisma__ProfDisciplinasClient<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one ProfDisciplinas.
-     * @param {ProfDisciplinasUpdateArgs} args - Arguments to update one ProfDisciplinas.
-     * @example
-     * // Update one ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends ProfDisciplinasUpdateArgs>(args: SelectSubset<T, ProfDisciplinasUpdateArgs<ExtArgs>>): Prisma__ProfDisciplinasClient<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more ProfDisciplinas.
-     * @param {ProfDisciplinasDeleteManyArgs} args - Arguments to filter ProfDisciplinas to delete.
-     * @example
-     * // Delete a few ProfDisciplinas
-     * const { count } = await prisma.profDisciplinas.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends ProfDisciplinasDeleteManyArgs>(args?: SelectSubset<T, ProfDisciplinasDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more ProfDisciplinas.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfDisciplinasUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends ProfDisciplinasUpdateManyArgs>(args: SelectSubset<T, ProfDisciplinasUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more ProfDisciplinas and returns the data updated in the database.
-     * @param {ProfDisciplinasUpdateManyAndReturnArgs} args - Arguments to update many ProfDisciplinas.
-     * @example
-     * // Update many ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more ProfDisciplinas and only return the `idProfDisciplina`
-     * const profDisciplinasWithIdProfDisciplinaOnly = await prisma.profDisciplinas.updateManyAndReturn({
-     *   select: { idProfDisciplina: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends ProfDisciplinasUpdateManyAndReturnArgs>(args: SelectSubset<T, ProfDisciplinasUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one ProfDisciplinas.
-     * @param {ProfDisciplinasUpsertArgs} args - Arguments to update or create a ProfDisciplinas.
-     * @example
-     * // Update or create a ProfDisciplinas
-     * const profDisciplinas = await prisma.profDisciplinas.upsert({
-     *   create: {
-     *     // ... data to create a ProfDisciplinas
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the ProfDisciplinas we want to update
-     *   }
-     * })
-     */
-    upsert<T extends ProfDisciplinasUpsertArgs>(args: SelectSubset<T, ProfDisciplinasUpsertArgs<ExtArgs>>): Prisma__ProfDisciplinasClient<$Result.GetResult<Prisma.$ProfDisciplinasPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of ProfDisciplinas.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfDisciplinasCountArgs} args - Arguments to filter ProfDisciplinas to count.
-     * @example
-     * // Count the number of ProfDisciplinas
-     * const count = await prisma.profDisciplinas.count({
-     *   where: {
-     *     // ... the filter for the ProfDisciplinas we want to count
-     *   }
-     * })
-    **/
-    count<T extends ProfDisciplinasCountArgs>(
-      args?: Subset<T, ProfDisciplinasCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], ProfDisciplinasCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a ProfDisciplinas.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfDisciplinasAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends ProfDisciplinasAggregateArgs>(args: Subset<T, ProfDisciplinasAggregateArgs>): Prisma.PrismaPromise<GetProfDisciplinasAggregateType<T>>
-
-    /**
-     * Group by ProfDisciplinas.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfDisciplinasGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends ProfDisciplinasGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ProfDisciplinasGroupByArgs['orderBy'] }
-        : { orderBy?: ProfDisciplinasGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, ProfDisciplinasGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProfDisciplinasGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the ProfDisciplinas model
-   */
-  readonly fields: ProfDisciplinasFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for ProfDisciplinas.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__ProfDisciplinasClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    Disciplina<T extends DisciplinaDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DisciplinaDefaultArgs<ExtArgs>>): Prisma__DisciplinaClient<$Result.GetResult<Prisma.$DisciplinaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    Professor<T extends ProfessorDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProfessorDefaultArgs<ExtArgs>>): Prisma__ProfessorClient<$Result.GetResult<Prisma.$ProfessorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the ProfDisciplinas model
-   */
-  interface ProfDisciplinasFieldRefs {
-    readonly idProfDisciplina: FieldRef<"ProfDisciplinas", 'Int'>
-    readonly professorId: FieldRef<"ProfDisciplinas", 'Int'>
-    readonly disciplinaId: FieldRef<"ProfDisciplinas", 'Int'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * ProfDisciplinas findUnique
-   */
-  export type ProfDisciplinasFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * Filter, which ProfDisciplinas to fetch.
-     */
-    where: ProfDisciplinasWhereUniqueInput
-  }
-
-  /**
-   * ProfDisciplinas findUniqueOrThrow
-   */
-  export type ProfDisciplinasFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * Filter, which ProfDisciplinas to fetch.
-     */
-    where: ProfDisciplinasWhereUniqueInput
-  }
-
-  /**
-   * ProfDisciplinas findFirst
-   */
-  export type ProfDisciplinasFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * Filter, which ProfDisciplinas to fetch.
-     */
-    where?: ProfDisciplinasWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ProfDisciplinas to fetch.
-     */
-    orderBy?: ProfDisciplinasOrderByWithRelationInput | ProfDisciplinasOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for ProfDisciplinas.
-     */
-    cursor?: ProfDisciplinasWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ProfDisciplinas from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ProfDisciplinas.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of ProfDisciplinas.
-     */
-    distinct?: ProfDisciplinasScalarFieldEnum | ProfDisciplinasScalarFieldEnum[]
-  }
-
-  /**
-   * ProfDisciplinas findFirstOrThrow
-   */
-  export type ProfDisciplinasFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * Filter, which ProfDisciplinas to fetch.
-     */
-    where?: ProfDisciplinasWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ProfDisciplinas to fetch.
-     */
-    orderBy?: ProfDisciplinasOrderByWithRelationInput | ProfDisciplinasOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for ProfDisciplinas.
-     */
-    cursor?: ProfDisciplinasWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ProfDisciplinas from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ProfDisciplinas.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of ProfDisciplinas.
-     */
-    distinct?: ProfDisciplinasScalarFieldEnum | ProfDisciplinasScalarFieldEnum[]
-  }
-
-  /**
-   * ProfDisciplinas findMany
-   */
-  export type ProfDisciplinasFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * Filter, which ProfDisciplinas to fetch.
-     */
-    where?: ProfDisciplinasWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ProfDisciplinas to fetch.
-     */
-    orderBy?: ProfDisciplinasOrderByWithRelationInput | ProfDisciplinasOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing ProfDisciplinas.
-     */
-    cursor?: ProfDisciplinasWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ProfDisciplinas from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ProfDisciplinas.
-     */
-    skip?: number
-    distinct?: ProfDisciplinasScalarFieldEnum | ProfDisciplinasScalarFieldEnum[]
-  }
-
-  /**
-   * ProfDisciplinas create
-   */
-  export type ProfDisciplinasCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * The data needed to create a ProfDisciplinas.
-     */
-    data: XOR<ProfDisciplinasCreateInput, ProfDisciplinasUncheckedCreateInput>
-  }
-
-  /**
-   * ProfDisciplinas createMany
-   */
-  export type ProfDisciplinasCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many ProfDisciplinas.
-     */
-    data: ProfDisciplinasCreateManyInput | ProfDisciplinasCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * ProfDisciplinas createManyAndReturn
-   */
-  export type ProfDisciplinasCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * The data used to create many ProfDisciplinas.
-     */
-    data: ProfDisciplinasCreateManyInput | ProfDisciplinasCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * ProfDisciplinas update
-   */
-  export type ProfDisciplinasUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * The data needed to update a ProfDisciplinas.
-     */
-    data: XOR<ProfDisciplinasUpdateInput, ProfDisciplinasUncheckedUpdateInput>
-    /**
-     * Choose, which ProfDisciplinas to update.
-     */
-    where: ProfDisciplinasWhereUniqueInput
-  }
-
-  /**
-   * ProfDisciplinas updateMany
-   */
-  export type ProfDisciplinasUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update ProfDisciplinas.
-     */
-    data: XOR<ProfDisciplinasUpdateManyMutationInput, ProfDisciplinasUncheckedUpdateManyInput>
-    /**
-     * Filter which ProfDisciplinas to update
-     */
-    where?: ProfDisciplinasWhereInput
-    /**
-     * Limit how many ProfDisciplinas to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * ProfDisciplinas updateManyAndReturn
-   */
-  export type ProfDisciplinasUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * The data used to update ProfDisciplinas.
-     */
-    data: XOR<ProfDisciplinasUpdateManyMutationInput, ProfDisciplinasUncheckedUpdateManyInput>
-    /**
-     * Filter which ProfDisciplinas to update
-     */
-    where?: ProfDisciplinasWhereInput
-    /**
-     * Limit how many ProfDisciplinas to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * ProfDisciplinas upsert
-   */
-  export type ProfDisciplinasUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * The filter to search for the ProfDisciplinas to update in case it exists.
-     */
-    where: ProfDisciplinasWhereUniqueInput
-    /**
-     * In case the ProfDisciplinas found by the `where` argument doesn't exist, create a new ProfDisciplinas with this data.
-     */
-    create: XOR<ProfDisciplinasCreateInput, ProfDisciplinasUncheckedCreateInput>
-    /**
-     * In case the ProfDisciplinas was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<ProfDisciplinasUpdateInput, ProfDisciplinasUncheckedUpdateInput>
-  }
-
-  /**
-   * ProfDisciplinas delete
-   */
-  export type ProfDisciplinasDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-    /**
-     * Filter which ProfDisciplinas to delete.
-     */
-    where: ProfDisciplinasWhereUniqueInput
-  }
-
-  /**
-   * ProfDisciplinas deleteMany
-   */
-  export type ProfDisciplinasDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which ProfDisciplinas to delete
-     */
-    where?: ProfDisciplinasWhereInput
-    /**
-     * Limit how many ProfDisciplinas to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * ProfDisciplinas without action
-   */
-  export type ProfDisciplinasDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ProfDisciplinas
-     */
-    select?: ProfDisciplinasSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ProfDisciplinas
-     */
-    omit?: ProfDisciplinasOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ProfDisciplinasInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model ProfTurma
-   */
-
-  export type AggregateProfTurma = {
-    _count: ProfTurmaCountAggregateOutputType | null
-    _avg: ProfTurmaAvgAggregateOutputType | null
-    _sum: ProfTurmaSumAggregateOutputType | null
-    _min: ProfTurmaMinAggregateOutputType | null
-    _max: ProfTurmaMaxAggregateOutputType | null
-  }
-
-  export type ProfTurmaAvgAggregateOutputType = {
-    idProfTurma: number | null
-    professorId: number | null
-    turmaId: number | null
-  }
-
-  export type ProfTurmaSumAggregateOutputType = {
-    idProfTurma: number | null
-    professorId: number | null
-    turmaId: number | null
-  }
-
-  export type ProfTurmaMinAggregateOutputType = {
-    idProfTurma: number | null
-    professorId: number | null
-    turmaId: number | null
-  }
-
-  export type ProfTurmaMaxAggregateOutputType = {
-    idProfTurma: number | null
-    professorId: number | null
-    turmaId: number | null
-  }
-
-  export type ProfTurmaCountAggregateOutputType = {
-    idProfTurma: number
-    professorId: number
-    turmaId: number
-    _all: number
-  }
-
-
-  export type ProfTurmaAvgAggregateInputType = {
-    idProfTurma?: true
-    professorId?: true
-    turmaId?: true
-  }
-
-  export type ProfTurmaSumAggregateInputType = {
-    idProfTurma?: true
-    professorId?: true
-    turmaId?: true
-  }
-
-  export type ProfTurmaMinAggregateInputType = {
-    idProfTurma?: true
-    professorId?: true
-    turmaId?: true
-  }
-
-  export type ProfTurmaMaxAggregateInputType = {
-    idProfTurma?: true
-    professorId?: true
-    turmaId?: true
-  }
-
-  export type ProfTurmaCountAggregateInputType = {
-    idProfTurma?: true
-    professorId?: true
-    turmaId?: true
-    _all?: true
-  }
-
-  export type ProfTurmaAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which ProfTurma to aggregate.
-     */
-    where?: ProfTurmaWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of ProfTurmas to fetch.
-     */
-    orderBy?: ProfTurmaOrderByWithRelationInput | ProfTurmaOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: ProfTurmaWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` ProfTurmas from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` ProfTurmas.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned ProfTurmas
-    **/
-    _count?: true | ProfTurmaCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: ProfTurmaAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: ProfTurmaSumAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: ProfTurmaMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: ProfTurmaMaxAggregateInputType
-  }
-
-  export type GetProfTurmaAggregateType<T extends ProfTurmaAggregateArgs> = {
-        [P in keyof T & keyof AggregateProfTurma]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateProfTurma[P]>
-      : GetScalarType<T[P], AggregateProfTurma[P]>
-  }
-
-
-
-
-  export type ProfTurmaGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: ProfTurmaWhereInput
-    orderBy?: ProfTurmaOrderByWithAggregationInput | ProfTurmaOrderByWithAggregationInput[]
-    by: ProfTurmaScalarFieldEnum[] | ProfTurmaScalarFieldEnum
-    having?: ProfTurmaScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: ProfTurmaCountAggregateInputType | true
-    _avg?: ProfTurmaAvgAggregateInputType
-    _sum?: ProfTurmaSumAggregateInputType
-    _min?: ProfTurmaMinAggregateInputType
-    _max?: ProfTurmaMaxAggregateInputType
-  }
-
-  export type ProfTurmaGroupByOutputType = {
-    idProfTurma: number
-    professorId: number
-    turmaId: number
-    _count: ProfTurmaCountAggregateOutputType | null
-    _avg: ProfTurmaAvgAggregateOutputType | null
-    _sum: ProfTurmaSumAggregateOutputType | null
-    _min: ProfTurmaMinAggregateOutputType | null
-    _max: ProfTurmaMaxAggregateOutputType | null
-  }
-
-  type GetProfTurmaGroupByPayload<T extends ProfTurmaGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<ProfTurmaGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof ProfTurmaGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], ProfTurmaGroupByOutputType[P]>
-            : GetScalarType<T[P], ProfTurmaGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type ProfTurmaSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idProfTurma?: boolean
-    professorId?: boolean
-    turmaId?: boolean
-    Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["profTurma"]>
-
-  export type ProfTurmaSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idProfTurma?: boolean
-    professorId?: boolean
-    turmaId?: boolean
-    Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["profTurma"]>
-
-  export type ProfTurmaSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    idProfTurma?: boolean
-    professorId?: boolean
-    turmaId?: boolean
-    Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["profTurma"]>
-
-  export type ProfTurmaSelectScalar = {
-    idProfTurma?: boolean
-    professorId?: boolean
-    turmaId?: boolean
-  }
-
-  export type ProfTurmaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idProfTurma" | "professorId" | "turmaId", ExtArgs["result"]["profTurma"]>
-  export type ProfTurmaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
-  }
-  export type ProfTurmaIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
-  }
-  export type ProfTurmaIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Professor?: boolean | ProfessorDefaultArgs<ExtArgs>
-    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
-  }
-
-  export type $ProfTurmaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "ProfTurma"
-    objects: {
+      disciplina: Prisma.$DisciplinaPayload<ExtArgs>
       Professor: Prisma.$ProfessorPayload<ExtArgs>
       Turma: Prisma.$TurmaPayload<ExtArgs>
     }
@@ -11033,136 +9902,137 @@ export namespace Prisma {
       idProfTurma: number
       professorId: number
       turmaId: number
-    }, ExtArgs["result"]["profTurma"]>
+      disciplinaNome: string
+    }, ExtArgs["result"]["profTurmaDisciplina"]>
     composites: {}
   }
 
-  type ProfTurmaGetPayload<S extends boolean | null | undefined | ProfTurmaDefaultArgs> = $Result.GetResult<Prisma.$ProfTurmaPayload, S>
+  type ProfTurmaDisciplinaGetPayload<S extends boolean | null | undefined | ProfTurmaDisciplinaDefaultArgs> = $Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload, S>
 
-  type ProfTurmaCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<ProfTurmaFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: ProfTurmaCountAggregateInputType | true
+  type ProfTurmaDisciplinaCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProfTurmaDisciplinaFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProfTurmaDisciplinaCountAggregateInputType | true
     }
 
-  export interface ProfTurmaDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProfTurma'], meta: { name: 'ProfTurma' } }
+  export interface ProfTurmaDisciplinaDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProfTurmaDisciplina'], meta: { name: 'ProfTurmaDisciplina' } }
     /**
-     * Find zero or one ProfTurma that matches the filter.
-     * @param {ProfTurmaFindUniqueArgs} args - Arguments to find a ProfTurma
+     * Find zero or one ProfTurmaDisciplina that matches the filter.
+     * @param {ProfTurmaDisciplinaFindUniqueArgs} args - Arguments to find a ProfTurmaDisciplina
      * @example
-     * // Get one ProfTurma
-     * const profTurma = await prisma.profTurma.findUnique({
+     * // Get one ProfTurmaDisciplina
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends ProfTurmaFindUniqueArgs>(args: SelectSubset<T, ProfTurmaFindUniqueArgs<ExtArgs>>): Prisma__ProfTurmaClient<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends ProfTurmaDisciplinaFindUniqueArgs>(args: SelectSubset<T, ProfTurmaDisciplinaFindUniqueArgs<ExtArgs>>): Prisma__ProfTurmaDisciplinaClient<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one ProfTurma that matches the filter or throw an error with `error.code='P2025'`
+     * Find one ProfTurmaDisciplina that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {ProfTurmaFindUniqueOrThrowArgs} args - Arguments to find a ProfTurma
+     * @param {ProfTurmaDisciplinaFindUniqueOrThrowArgs} args - Arguments to find a ProfTurmaDisciplina
      * @example
-     * // Get one ProfTurma
-     * const profTurma = await prisma.profTurma.findUniqueOrThrow({
+     * // Get one ProfTurmaDisciplina
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends ProfTurmaFindUniqueOrThrowArgs>(args: SelectSubset<T, ProfTurmaFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProfTurmaClient<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends ProfTurmaDisciplinaFindUniqueOrThrowArgs>(args: SelectSubset<T, ProfTurmaDisciplinaFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProfTurmaDisciplinaClient<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first ProfTurma that matches the filter.
+     * Find the first ProfTurmaDisciplina that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfTurmaFindFirstArgs} args - Arguments to find a ProfTurma
+     * @param {ProfTurmaDisciplinaFindFirstArgs} args - Arguments to find a ProfTurmaDisciplina
      * @example
-     * // Get one ProfTurma
-     * const profTurma = await prisma.profTurma.findFirst({
+     * // Get one ProfTurmaDisciplina
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends ProfTurmaFindFirstArgs>(args?: SelectSubset<T, ProfTurmaFindFirstArgs<ExtArgs>>): Prisma__ProfTurmaClient<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends ProfTurmaDisciplinaFindFirstArgs>(args?: SelectSubset<T, ProfTurmaDisciplinaFindFirstArgs<ExtArgs>>): Prisma__ProfTurmaDisciplinaClient<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first ProfTurma that matches the filter or
+     * Find the first ProfTurmaDisciplina that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfTurmaFindFirstOrThrowArgs} args - Arguments to find a ProfTurma
+     * @param {ProfTurmaDisciplinaFindFirstOrThrowArgs} args - Arguments to find a ProfTurmaDisciplina
      * @example
-     * // Get one ProfTurma
-     * const profTurma = await prisma.profTurma.findFirstOrThrow({
+     * // Get one ProfTurmaDisciplina
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends ProfTurmaFindFirstOrThrowArgs>(args?: SelectSubset<T, ProfTurmaFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProfTurmaClient<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends ProfTurmaDisciplinaFindFirstOrThrowArgs>(args?: SelectSubset<T, ProfTurmaDisciplinaFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProfTurmaDisciplinaClient<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more ProfTurmas that matches the filter.
+     * Find zero or more ProfTurmaDisciplinas that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfTurmaFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {ProfTurmaDisciplinaFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all ProfTurmas
-     * const profTurmas = await prisma.profTurma.findMany()
+     * // Get all ProfTurmaDisciplinas
+     * const profTurmaDisciplinas = await prisma.profTurmaDisciplina.findMany()
      * 
-     * // Get first 10 ProfTurmas
-     * const profTurmas = await prisma.profTurma.findMany({ take: 10 })
+     * // Get first 10 ProfTurmaDisciplinas
+     * const profTurmaDisciplinas = await prisma.profTurmaDisciplina.findMany({ take: 10 })
      * 
      * // Only select the `idProfTurma`
-     * const profTurmaWithIdProfTurmaOnly = await prisma.profTurma.findMany({ select: { idProfTurma: true } })
+     * const profTurmaDisciplinaWithIdProfTurmaOnly = await prisma.profTurmaDisciplina.findMany({ select: { idProfTurma: true } })
      * 
      */
-    findMany<T extends ProfTurmaFindManyArgs>(args?: SelectSubset<T, ProfTurmaFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends ProfTurmaDisciplinaFindManyArgs>(args?: SelectSubset<T, ProfTurmaDisciplinaFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a ProfTurma.
-     * @param {ProfTurmaCreateArgs} args - Arguments to create a ProfTurma.
+     * Create a ProfTurmaDisciplina.
+     * @param {ProfTurmaDisciplinaCreateArgs} args - Arguments to create a ProfTurmaDisciplina.
      * @example
-     * // Create one ProfTurma
-     * const ProfTurma = await prisma.profTurma.create({
+     * // Create one ProfTurmaDisciplina
+     * const ProfTurmaDisciplina = await prisma.profTurmaDisciplina.create({
      *   data: {
-     *     // ... data to create a ProfTurma
+     *     // ... data to create a ProfTurmaDisciplina
      *   }
      * })
      * 
      */
-    create<T extends ProfTurmaCreateArgs>(args: SelectSubset<T, ProfTurmaCreateArgs<ExtArgs>>): Prisma__ProfTurmaClient<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends ProfTurmaDisciplinaCreateArgs>(args: SelectSubset<T, ProfTurmaDisciplinaCreateArgs<ExtArgs>>): Prisma__ProfTurmaDisciplinaClient<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many ProfTurmas.
-     * @param {ProfTurmaCreateManyArgs} args - Arguments to create many ProfTurmas.
+     * Create many ProfTurmaDisciplinas.
+     * @param {ProfTurmaDisciplinaCreateManyArgs} args - Arguments to create many ProfTurmaDisciplinas.
      * @example
-     * // Create many ProfTurmas
-     * const profTurma = await prisma.profTurma.createMany({
+     * // Create many ProfTurmaDisciplinas
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends ProfTurmaCreateManyArgs>(args?: SelectSubset<T, ProfTurmaCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends ProfTurmaDisciplinaCreateManyArgs>(args?: SelectSubset<T, ProfTurmaDisciplinaCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many ProfTurmas and returns the data saved in the database.
-     * @param {ProfTurmaCreateManyAndReturnArgs} args - Arguments to create many ProfTurmas.
+     * Create many ProfTurmaDisciplinas and returns the data saved in the database.
+     * @param {ProfTurmaDisciplinaCreateManyAndReturnArgs} args - Arguments to create many ProfTurmaDisciplinas.
      * @example
-     * // Create many ProfTurmas
-     * const profTurma = await prisma.profTurma.createManyAndReturn({
+     * // Create many ProfTurmaDisciplinas
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many ProfTurmas and only return the `idProfTurma`
-     * const profTurmaWithIdProfTurmaOnly = await prisma.profTurma.createManyAndReturn({
+     * // Create many ProfTurmaDisciplinas and only return the `idProfTurma`
+     * const profTurmaDisciplinaWithIdProfTurmaOnly = await prisma.profTurmaDisciplina.createManyAndReturn({
      *   select: { idProfTurma: true },
      *   data: [
      *     // ... provide data here
@@ -11172,28 +10042,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends ProfTurmaCreateManyAndReturnArgs>(args?: SelectSubset<T, ProfTurmaCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends ProfTurmaDisciplinaCreateManyAndReturnArgs>(args?: SelectSubset<T, ProfTurmaDisciplinaCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a ProfTurma.
-     * @param {ProfTurmaDeleteArgs} args - Arguments to delete one ProfTurma.
+     * Delete a ProfTurmaDisciplina.
+     * @param {ProfTurmaDisciplinaDeleteArgs} args - Arguments to delete one ProfTurmaDisciplina.
      * @example
-     * // Delete one ProfTurma
-     * const ProfTurma = await prisma.profTurma.delete({
+     * // Delete one ProfTurmaDisciplina
+     * const ProfTurmaDisciplina = await prisma.profTurmaDisciplina.delete({
      *   where: {
-     *     // ... filter to delete one ProfTurma
+     *     // ... filter to delete one ProfTurmaDisciplina
      *   }
      * })
      * 
      */
-    delete<T extends ProfTurmaDeleteArgs>(args: SelectSubset<T, ProfTurmaDeleteArgs<ExtArgs>>): Prisma__ProfTurmaClient<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends ProfTurmaDisciplinaDeleteArgs>(args: SelectSubset<T, ProfTurmaDisciplinaDeleteArgs<ExtArgs>>): Prisma__ProfTurmaDisciplinaClient<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one ProfTurma.
-     * @param {ProfTurmaUpdateArgs} args - Arguments to update one ProfTurma.
+     * Update one ProfTurmaDisciplina.
+     * @param {ProfTurmaDisciplinaUpdateArgs} args - Arguments to update one ProfTurmaDisciplina.
      * @example
-     * // Update one ProfTurma
-     * const profTurma = await prisma.profTurma.update({
+     * // Update one ProfTurmaDisciplina
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -11203,30 +10073,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends ProfTurmaUpdateArgs>(args: SelectSubset<T, ProfTurmaUpdateArgs<ExtArgs>>): Prisma__ProfTurmaClient<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends ProfTurmaDisciplinaUpdateArgs>(args: SelectSubset<T, ProfTurmaDisciplinaUpdateArgs<ExtArgs>>): Prisma__ProfTurmaDisciplinaClient<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more ProfTurmas.
-     * @param {ProfTurmaDeleteManyArgs} args - Arguments to filter ProfTurmas to delete.
+     * Delete zero or more ProfTurmaDisciplinas.
+     * @param {ProfTurmaDisciplinaDeleteManyArgs} args - Arguments to filter ProfTurmaDisciplinas to delete.
      * @example
-     * // Delete a few ProfTurmas
-     * const { count } = await prisma.profTurma.deleteMany({
+     * // Delete a few ProfTurmaDisciplinas
+     * const { count } = await prisma.profTurmaDisciplina.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends ProfTurmaDeleteManyArgs>(args?: SelectSubset<T, ProfTurmaDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends ProfTurmaDisciplinaDeleteManyArgs>(args?: SelectSubset<T, ProfTurmaDisciplinaDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more ProfTurmas.
+     * Update zero or more ProfTurmaDisciplinas.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfTurmaUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {ProfTurmaDisciplinaUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many ProfTurmas
-     * const profTurma = await prisma.profTurma.updateMany({
+     * // Update many ProfTurmaDisciplinas
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -11236,14 +10106,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends ProfTurmaUpdateManyArgs>(args: SelectSubset<T, ProfTurmaUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends ProfTurmaDisciplinaUpdateManyArgs>(args: SelectSubset<T, ProfTurmaDisciplinaUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more ProfTurmas and returns the data updated in the database.
-     * @param {ProfTurmaUpdateManyAndReturnArgs} args - Arguments to update many ProfTurmas.
+     * Update zero or more ProfTurmaDisciplinas and returns the data updated in the database.
+     * @param {ProfTurmaDisciplinaUpdateManyAndReturnArgs} args - Arguments to update many ProfTurmaDisciplinas.
      * @example
-     * // Update many ProfTurmas
-     * const profTurma = await prisma.profTurma.updateManyAndReturn({
+     * // Update many ProfTurmaDisciplinas
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -11252,8 +10122,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more ProfTurmas and only return the `idProfTurma`
-     * const profTurmaWithIdProfTurmaOnly = await prisma.profTurma.updateManyAndReturn({
+     * // Update zero or more ProfTurmaDisciplinas and only return the `idProfTurma`
+     * const profTurmaDisciplinaWithIdProfTurmaOnly = await prisma.profTurmaDisciplina.updateManyAndReturn({
      *   select: { idProfTurma: true },
      *   where: {
      *     // ... provide filter here
@@ -11266,56 +10136,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends ProfTurmaUpdateManyAndReturnArgs>(args: SelectSubset<T, ProfTurmaUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends ProfTurmaDisciplinaUpdateManyAndReturnArgs>(args: SelectSubset<T, ProfTurmaDisciplinaUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one ProfTurma.
-     * @param {ProfTurmaUpsertArgs} args - Arguments to update or create a ProfTurma.
+     * Create or update one ProfTurmaDisciplina.
+     * @param {ProfTurmaDisciplinaUpsertArgs} args - Arguments to update or create a ProfTurmaDisciplina.
      * @example
-     * // Update or create a ProfTurma
-     * const profTurma = await prisma.profTurma.upsert({
+     * // Update or create a ProfTurmaDisciplina
+     * const profTurmaDisciplina = await prisma.profTurmaDisciplina.upsert({
      *   create: {
-     *     // ... data to create a ProfTurma
+     *     // ... data to create a ProfTurmaDisciplina
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the ProfTurma we want to update
+     *     // ... the filter for the ProfTurmaDisciplina we want to update
      *   }
      * })
      */
-    upsert<T extends ProfTurmaUpsertArgs>(args: SelectSubset<T, ProfTurmaUpsertArgs<ExtArgs>>): Prisma__ProfTurmaClient<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends ProfTurmaDisciplinaUpsertArgs>(args: SelectSubset<T, ProfTurmaDisciplinaUpsertArgs<ExtArgs>>): Prisma__ProfTurmaDisciplinaClient<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of ProfTurmas.
+     * Count the number of ProfTurmaDisciplinas.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfTurmaCountArgs} args - Arguments to filter ProfTurmas to count.
+     * @param {ProfTurmaDisciplinaCountArgs} args - Arguments to filter ProfTurmaDisciplinas to count.
      * @example
-     * // Count the number of ProfTurmas
-     * const count = await prisma.profTurma.count({
+     * // Count the number of ProfTurmaDisciplinas
+     * const count = await prisma.profTurmaDisciplina.count({
      *   where: {
-     *     // ... the filter for the ProfTurmas we want to count
+     *     // ... the filter for the ProfTurmaDisciplinas we want to count
      *   }
      * })
     **/
-    count<T extends ProfTurmaCountArgs>(
-      args?: Subset<T, ProfTurmaCountArgs>,
+    count<T extends ProfTurmaDisciplinaCountArgs>(
+      args?: Subset<T, ProfTurmaDisciplinaCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], ProfTurmaCountAggregateOutputType>
+          : GetScalarType<T['select'], ProfTurmaDisciplinaCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a ProfTurma.
+     * Allows you to perform aggregations operations on a ProfTurmaDisciplina.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfTurmaAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {ProfTurmaDisciplinaAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -11335,13 +10205,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends ProfTurmaAggregateArgs>(args: Subset<T, ProfTurmaAggregateArgs>): Prisma.PrismaPromise<GetProfTurmaAggregateType<T>>
+    aggregate<T extends ProfTurmaDisciplinaAggregateArgs>(args: Subset<T, ProfTurmaDisciplinaAggregateArgs>): Prisma.PrismaPromise<GetProfTurmaDisciplinaAggregateType<T>>
 
     /**
-     * Group by ProfTurma.
+     * Group by ProfTurmaDisciplina.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProfTurmaGroupByArgs} args - Group by arguments.
+     * @param {ProfTurmaDisciplinaGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -11356,14 +10226,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends ProfTurmaGroupByArgs,
+      T extends ProfTurmaDisciplinaGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: ProfTurmaGroupByArgs['orderBy'] }
-        : { orderBy?: ProfTurmaGroupByArgs['orderBy'] },
+        ? { orderBy: ProfTurmaDisciplinaGroupByArgs['orderBy'] }
+        : { orderBy?: ProfTurmaDisciplinaGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -11412,21 +10282,22 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ProfTurmaGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProfTurmaGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ProfTurmaDisciplinaGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProfTurmaDisciplinaGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the ProfTurma model
+   * Fields of the ProfTurmaDisciplina model
    */
-  readonly fields: ProfTurmaFieldRefs;
+  readonly fields: ProfTurmaDisciplinaFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for ProfTurma.
+   * The delegate class that acts as a "Promise-like" for ProfTurmaDisciplina.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__ProfTurmaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__ProfTurmaDisciplinaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    disciplina<T extends DisciplinaDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DisciplinaDefaultArgs<ExtArgs>>): Prisma__DisciplinaClient<$Result.GetResult<Prisma.$DisciplinaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     Professor<T extends ProfessorDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ProfessorDefaultArgs<ExtArgs>>): Prisma__ProfessorClient<$Result.GetResult<Prisma.$ProfessorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     Turma<T extends TurmaDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TurmaDefaultArgs<ExtArgs>>): Prisma__TurmaClient<$Result.GetResult<Prisma.$TurmaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
@@ -11455,423 +10326,1477 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the ProfTurma model
+   * Fields of the ProfTurmaDisciplina model
    */
-  interface ProfTurmaFieldRefs {
-    readonly idProfTurma: FieldRef<"ProfTurma", 'Int'>
-    readonly professorId: FieldRef<"ProfTurma", 'Int'>
-    readonly turmaId: FieldRef<"ProfTurma", 'Int'>
+  interface ProfTurmaDisciplinaFieldRefs {
+    readonly idProfTurma: FieldRef<"ProfTurmaDisciplina", 'Int'>
+    readonly professorId: FieldRef<"ProfTurmaDisciplina", 'Int'>
+    readonly turmaId: FieldRef<"ProfTurmaDisciplina", 'Int'>
+    readonly disciplinaNome: FieldRef<"ProfTurmaDisciplina", 'String'>
   }
     
 
   // Custom InputTypes
   /**
-   * ProfTurma findUnique
+   * ProfTurmaDisciplina findUnique
    */
-  export type ProfTurmaFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * Filter, which ProfTurma to fetch.
+     * Filter, which ProfTurmaDisciplina to fetch.
      */
-    where: ProfTurmaWhereUniqueInput
+    where: ProfTurmaDisciplinaWhereUniqueInput
   }
 
   /**
-   * ProfTurma findUniqueOrThrow
+   * ProfTurmaDisciplina findUniqueOrThrow
    */
-  export type ProfTurmaFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * Filter, which ProfTurma to fetch.
+     * Filter, which ProfTurmaDisciplina to fetch.
      */
-    where: ProfTurmaWhereUniqueInput
+    where: ProfTurmaDisciplinaWhereUniqueInput
   }
 
   /**
-   * ProfTurma findFirst
+   * ProfTurmaDisciplina findFirst
    */
-  export type ProfTurmaFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * Filter, which ProfTurma to fetch.
+     * Filter, which ProfTurmaDisciplina to fetch.
      */
-    where?: ProfTurmaWhereInput
+    where?: ProfTurmaDisciplinaWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of ProfTurmas to fetch.
+     * Determine the order of ProfTurmaDisciplinas to fetch.
      */
-    orderBy?: ProfTurmaOrderByWithRelationInput | ProfTurmaOrderByWithRelationInput[]
+    orderBy?: ProfTurmaDisciplinaOrderByWithRelationInput | ProfTurmaDisciplinaOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for ProfTurmas.
+     * Sets the position for searching for ProfTurmaDisciplinas.
      */
-    cursor?: ProfTurmaWhereUniqueInput
+    cursor?: ProfTurmaDisciplinaWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` ProfTurmas from the position of the cursor.
+     * Take `±n` ProfTurmaDisciplinas from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` ProfTurmas.
+     * Skip the first `n` ProfTurmaDisciplinas.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of ProfTurmas.
+     * Filter by unique combinations of ProfTurmaDisciplinas.
      */
-    distinct?: ProfTurmaScalarFieldEnum | ProfTurmaScalarFieldEnum[]
+    distinct?: ProfTurmaDisciplinaScalarFieldEnum | ProfTurmaDisciplinaScalarFieldEnum[]
   }
 
   /**
-   * ProfTurma findFirstOrThrow
+   * ProfTurmaDisciplina findFirstOrThrow
    */
-  export type ProfTurmaFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * Filter, which ProfTurma to fetch.
+     * Filter, which ProfTurmaDisciplina to fetch.
      */
-    where?: ProfTurmaWhereInput
+    where?: ProfTurmaDisciplinaWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of ProfTurmas to fetch.
+     * Determine the order of ProfTurmaDisciplinas to fetch.
      */
-    orderBy?: ProfTurmaOrderByWithRelationInput | ProfTurmaOrderByWithRelationInput[]
+    orderBy?: ProfTurmaDisciplinaOrderByWithRelationInput | ProfTurmaDisciplinaOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for ProfTurmas.
+     * Sets the position for searching for ProfTurmaDisciplinas.
      */
-    cursor?: ProfTurmaWhereUniqueInput
+    cursor?: ProfTurmaDisciplinaWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` ProfTurmas from the position of the cursor.
+     * Take `±n` ProfTurmaDisciplinas from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` ProfTurmas.
+     * Skip the first `n` ProfTurmaDisciplinas.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of ProfTurmas.
+     * Filter by unique combinations of ProfTurmaDisciplinas.
      */
-    distinct?: ProfTurmaScalarFieldEnum | ProfTurmaScalarFieldEnum[]
+    distinct?: ProfTurmaDisciplinaScalarFieldEnum | ProfTurmaDisciplinaScalarFieldEnum[]
   }
 
   /**
-   * ProfTurma findMany
+   * ProfTurmaDisciplina findMany
    */
-  export type ProfTurmaFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * Filter, which ProfTurmas to fetch.
+     * Filter, which ProfTurmaDisciplinas to fetch.
      */
-    where?: ProfTurmaWhereInput
+    where?: ProfTurmaDisciplinaWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of ProfTurmas to fetch.
+     * Determine the order of ProfTurmaDisciplinas to fetch.
      */
-    orderBy?: ProfTurmaOrderByWithRelationInput | ProfTurmaOrderByWithRelationInput[]
+    orderBy?: ProfTurmaDisciplinaOrderByWithRelationInput | ProfTurmaDisciplinaOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing ProfTurmas.
+     * Sets the position for listing ProfTurmaDisciplinas.
      */
-    cursor?: ProfTurmaWhereUniqueInput
+    cursor?: ProfTurmaDisciplinaWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` ProfTurmas from the position of the cursor.
+     * Take `±n` ProfTurmaDisciplinas from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` ProfTurmas.
+     * Skip the first `n` ProfTurmaDisciplinas.
      */
     skip?: number
-    distinct?: ProfTurmaScalarFieldEnum | ProfTurmaScalarFieldEnum[]
+    distinct?: ProfTurmaDisciplinaScalarFieldEnum | ProfTurmaDisciplinaScalarFieldEnum[]
   }
 
   /**
-   * ProfTurma create
+   * ProfTurmaDisciplina create
    */
-  export type ProfTurmaCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * The data needed to create a ProfTurma.
+     * The data needed to create a ProfTurmaDisciplina.
      */
-    data: XOR<ProfTurmaCreateInput, ProfTurmaUncheckedCreateInput>
+    data: XOR<ProfTurmaDisciplinaCreateInput, ProfTurmaDisciplinaUncheckedCreateInput>
   }
 
   /**
-   * ProfTurma createMany
+   * ProfTurmaDisciplina createMany
    */
-  export type ProfTurmaCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many ProfTurmas.
+     * The data used to create many ProfTurmaDisciplinas.
      */
-    data: ProfTurmaCreateManyInput | ProfTurmaCreateManyInput[]
+    data: ProfTurmaDisciplinaCreateManyInput | ProfTurmaDisciplinaCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * ProfTurma createManyAndReturn
+   * ProfTurmaDisciplina createManyAndReturn
    */
-  export type ProfTurmaCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelectCreateManyAndReturn<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
-     * The data used to create many ProfTurmas.
+     * The data used to create many ProfTurmaDisciplinas.
      */
-    data: ProfTurmaCreateManyInput | ProfTurmaCreateManyInput[]
+    data: ProfTurmaDisciplinaCreateManyInput | ProfTurmaDisciplinaCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: ProfTurmaDisciplinaIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * ProfTurma update
+   * ProfTurmaDisciplina update
    */
-  export type ProfTurmaUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * The data needed to update a ProfTurma.
+     * The data needed to update a ProfTurmaDisciplina.
      */
-    data: XOR<ProfTurmaUpdateInput, ProfTurmaUncheckedUpdateInput>
+    data: XOR<ProfTurmaDisciplinaUpdateInput, ProfTurmaDisciplinaUncheckedUpdateInput>
     /**
-     * Choose, which ProfTurma to update.
+     * Choose, which ProfTurmaDisciplina to update.
      */
-    where: ProfTurmaWhereUniqueInput
+    where: ProfTurmaDisciplinaWhereUniqueInput
   }
 
   /**
-   * ProfTurma updateMany
+   * ProfTurmaDisciplina updateMany
    */
-  export type ProfTurmaUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update ProfTurmas.
+     * The data used to update ProfTurmaDisciplinas.
      */
-    data: XOR<ProfTurmaUpdateManyMutationInput, ProfTurmaUncheckedUpdateManyInput>
+    data: XOR<ProfTurmaDisciplinaUpdateManyMutationInput, ProfTurmaDisciplinaUncheckedUpdateManyInput>
     /**
-     * Filter which ProfTurmas to update
+     * Filter which ProfTurmaDisciplinas to update
      */
-    where?: ProfTurmaWhereInput
+    where?: ProfTurmaDisciplinaWhereInput
     /**
-     * Limit how many ProfTurmas to update.
+     * Limit how many ProfTurmaDisciplinas to update.
      */
     limit?: number
   }
 
   /**
-   * ProfTurma updateManyAndReturn
+   * ProfTurmaDisciplina updateManyAndReturn
    */
-  export type ProfTurmaUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
-     * The data used to update ProfTurmas.
+     * The data used to update ProfTurmaDisciplinas.
      */
-    data: XOR<ProfTurmaUpdateManyMutationInput, ProfTurmaUncheckedUpdateManyInput>
+    data: XOR<ProfTurmaDisciplinaUpdateManyMutationInput, ProfTurmaDisciplinaUncheckedUpdateManyInput>
     /**
-     * Filter which ProfTurmas to update
+     * Filter which ProfTurmaDisciplinas to update
      */
-    where?: ProfTurmaWhereInput
+    where?: ProfTurmaDisciplinaWhereInput
     /**
-     * Limit how many ProfTurmas to update.
+     * Limit how many ProfTurmaDisciplinas to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: ProfTurmaDisciplinaIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * ProfTurma upsert
+   * ProfTurmaDisciplina upsert
    */
-  export type ProfTurmaUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * The filter to search for the ProfTurma to update in case it exists.
+     * The filter to search for the ProfTurmaDisciplina to update in case it exists.
      */
-    where: ProfTurmaWhereUniqueInput
+    where: ProfTurmaDisciplinaWhereUniqueInput
     /**
-     * In case the ProfTurma found by the `where` argument doesn't exist, create a new ProfTurma with this data.
+     * In case the ProfTurmaDisciplina found by the `where` argument doesn't exist, create a new ProfTurmaDisciplina with this data.
      */
-    create: XOR<ProfTurmaCreateInput, ProfTurmaUncheckedCreateInput>
+    create: XOR<ProfTurmaDisciplinaCreateInput, ProfTurmaDisciplinaUncheckedCreateInput>
     /**
-     * In case the ProfTurma was found with the provided `where` argument, update it with this data.
+     * In case the ProfTurmaDisciplina was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<ProfTurmaUpdateInput, ProfTurmaUncheckedUpdateInput>
+    update: XOR<ProfTurmaDisciplinaUpdateInput, ProfTurmaDisciplinaUncheckedUpdateInput>
   }
 
   /**
-   * ProfTurma delete
+   * ProfTurmaDisciplina delete
    */
-  export type ProfTurmaDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
     /**
-     * Filter which ProfTurma to delete.
+     * Filter which ProfTurmaDisciplina to delete.
      */
-    where: ProfTurmaWhereUniqueInput
+    where: ProfTurmaDisciplinaWhereUniqueInput
   }
 
   /**
-   * ProfTurma deleteMany
+   * ProfTurmaDisciplina deleteMany
    */
-  export type ProfTurmaDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which ProfTurmas to delete
+     * Filter which ProfTurmaDisciplinas to delete
      */
-    where?: ProfTurmaWhereInput
+    where?: ProfTurmaDisciplinaWhereInput
     /**
-     * Limit how many ProfTurmas to delete.
+     * Limit how many ProfTurmaDisciplinas to delete.
      */
     limit?: number
   }
 
   /**
-   * ProfTurma without action
+   * ProfTurmaDisciplina without action
    */
-  export type ProfTurmaDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type ProfTurmaDisciplinaDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TurmaDisciplina
+   */
+
+  export type AggregateTurmaDisciplina = {
+    _count: TurmaDisciplinaCountAggregateOutputType | null
+    _avg: TurmaDisciplinaAvgAggregateOutputType | null
+    _sum: TurmaDisciplinaSumAggregateOutputType | null
+    _min: TurmaDisciplinaMinAggregateOutputType | null
+    _max: TurmaDisciplinaMaxAggregateOutputType | null
+  }
+
+  export type TurmaDisciplinaAvgAggregateOutputType = {
+    id_Turma: number | null
+  }
+
+  export type TurmaDisciplinaSumAggregateOutputType = {
+    id_Turma: number | null
+  }
+
+  export type TurmaDisciplinaMinAggregateOutputType = {
+    id_Turma: number | null
+    Disciplina: string | null
+  }
+
+  export type TurmaDisciplinaMaxAggregateOutputType = {
+    id_Turma: number | null
+    Disciplina: string | null
+  }
+
+  export type TurmaDisciplinaCountAggregateOutputType = {
+    id_Turma: number
+    Disciplina: number
+    _all: number
+  }
+
+
+  export type TurmaDisciplinaAvgAggregateInputType = {
+    id_Turma?: true
+  }
+
+  export type TurmaDisciplinaSumAggregateInputType = {
+    id_Turma?: true
+  }
+
+  export type TurmaDisciplinaMinAggregateInputType = {
+    id_Turma?: true
+    Disciplina?: true
+  }
+
+  export type TurmaDisciplinaMaxAggregateInputType = {
+    id_Turma?: true
+    Disciplina?: true
+  }
+
+  export type TurmaDisciplinaCountAggregateInputType = {
+    id_Turma?: true
+    Disciplina?: true
+    _all?: true
+  }
+
+  export type TurmaDisciplinaAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TurmaDisciplina to aggregate.
+     */
+    where?: TurmaDisciplinaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TurmaDisciplinas to fetch.
+     */
+    orderBy?: TurmaDisciplinaOrderByWithRelationInput | TurmaDisciplinaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TurmaDisciplinaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TurmaDisciplinas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TurmaDisciplinas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TurmaDisciplinas
+    **/
+    _count?: true | TurmaDisciplinaCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TurmaDisciplinaAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TurmaDisciplinaSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TurmaDisciplinaMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TurmaDisciplinaMaxAggregateInputType
+  }
+
+  export type GetTurmaDisciplinaAggregateType<T extends TurmaDisciplinaAggregateArgs> = {
+        [P in keyof T & keyof AggregateTurmaDisciplina]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTurmaDisciplina[P]>
+      : GetScalarType<T[P], AggregateTurmaDisciplina[P]>
+  }
+
+
+
+
+  export type TurmaDisciplinaGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TurmaDisciplinaWhereInput
+    orderBy?: TurmaDisciplinaOrderByWithAggregationInput | TurmaDisciplinaOrderByWithAggregationInput[]
+    by: TurmaDisciplinaScalarFieldEnum[] | TurmaDisciplinaScalarFieldEnum
+    having?: TurmaDisciplinaScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TurmaDisciplinaCountAggregateInputType | true
+    _avg?: TurmaDisciplinaAvgAggregateInputType
+    _sum?: TurmaDisciplinaSumAggregateInputType
+    _min?: TurmaDisciplinaMinAggregateInputType
+    _max?: TurmaDisciplinaMaxAggregateInputType
+  }
+
+  export type TurmaDisciplinaGroupByOutputType = {
+    id_Turma: number
+    Disciplina: string
+    _count: TurmaDisciplinaCountAggregateOutputType | null
+    _avg: TurmaDisciplinaAvgAggregateOutputType | null
+    _sum: TurmaDisciplinaSumAggregateOutputType | null
+    _min: TurmaDisciplinaMinAggregateOutputType | null
+    _max: TurmaDisciplinaMaxAggregateOutputType | null
+  }
+
+  type GetTurmaDisciplinaGroupByPayload<T extends TurmaDisciplinaGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TurmaDisciplinaGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TurmaDisciplinaGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TurmaDisciplinaGroupByOutputType[P]>
+            : GetScalarType<T[P], TurmaDisciplinaGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TurmaDisciplinaSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id_Turma?: boolean
+    Disciplina?: boolean
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["turmaDisciplina"]>
+
+  export type TurmaDisciplinaSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id_Turma?: boolean
+    Disciplina?: boolean
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["turmaDisciplina"]>
+
+  export type TurmaDisciplinaSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id_Turma?: boolean
+    Disciplina?: boolean
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["turmaDisciplina"]>
+
+  export type TurmaDisciplinaSelectScalar = {
+    id_Turma?: boolean
+    Disciplina?: boolean
+  }
+
+  export type TurmaDisciplinaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id_Turma" | "Disciplina", ExtArgs["result"]["turmaDisciplina"]>
+  export type TurmaDisciplinaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }
+  export type TurmaDisciplinaIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }
+  export type TurmaDisciplinaIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    Turma?: boolean | TurmaDefaultArgs<ExtArgs>
+  }
+
+  export type $TurmaDisciplinaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TurmaDisciplina"
+    objects: {
+      Turma: Prisma.$TurmaPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id_Turma: number
+      Disciplina: string
+    }, ExtArgs["result"]["turmaDisciplina"]>
+    composites: {}
+  }
+
+  type TurmaDisciplinaGetPayload<S extends boolean | null | undefined | TurmaDisciplinaDefaultArgs> = $Result.GetResult<Prisma.$TurmaDisciplinaPayload, S>
+
+  type TurmaDisciplinaCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TurmaDisciplinaFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TurmaDisciplinaCountAggregateInputType | true
+    }
+
+  export interface TurmaDisciplinaDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TurmaDisciplina'], meta: { name: 'TurmaDisciplina' } }
+    /**
+     * Find zero or one TurmaDisciplina that matches the filter.
+     * @param {TurmaDisciplinaFindUniqueArgs} args - Arguments to find a TurmaDisciplina
+     * @example
+     * // Get one TurmaDisciplina
+     * const turmaDisciplina = await prisma.turmaDisciplina.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TurmaDisciplinaFindUniqueArgs>(args: SelectSubset<T, TurmaDisciplinaFindUniqueArgs<ExtArgs>>): Prisma__TurmaDisciplinaClient<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one TurmaDisciplina that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TurmaDisciplinaFindUniqueOrThrowArgs} args - Arguments to find a TurmaDisciplina
+     * @example
+     * // Get one TurmaDisciplina
+     * const turmaDisciplina = await prisma.turmaDisciplina.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TurmaDisciplinaFindUniqueOrThrowArgs>(args: SelectSubset<T, TurmaDisciplinaFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TurmaDisciplinaClient<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TurmaDisciplina that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TurmaDisciplinaFindFirstArgs} args - Arguments to find a TurmaDisciplina
+     * @example
+     * // Get one TurmaDisciplina
+     * const turmaDisciplina = await prisma.turmaDisciplina.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TurmaDisciplinaFindFirstArgs>(args?: SelectSubset<T, TurmaDisciplinaFindFirstArgs<ExtArgs>>): Prisma__TurmaDisciplinaClient<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first TurmaDisciplina that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TurmaDisciplinaFindFirstOrThrowArgs} args - Arguments to find a TurmaDisciplina
+     * @example
+     * // Get one TurmaDisciplina
+     * const turmaDisciplina = await prisma.turmaDisciplina.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TurmaDisciplinaFindFirstOrThrowArgs>(args?: SelectSubset<T, TurmaDisciplinaFindFirstOrThrowArgs<ExtArgs>>): Prisma__TurmaDisciplinaClient<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more TurmaDisciplinas that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TurmaDisciplinaFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TurmaDisciplinas
+     * const turmaDisciplinas = await prisma.turmaDisciplina.findMany()
+     * 
+     * // Get first 10 TurmaDisciplinas
+     * const turmaDisciplinas = await prisma.turmaDisciplina.findMany({ take: 10 })
+     * 
+     * // Only select the `id_Turma`
+     * const turmaDisciplinaWithId_TurmaOnly = await prisma.turmaDisciplina.findMany({ select: { id_Turma: true } })
+     * 
+     */
+    findMany<T extends TurmaDisciplinaFindManyArgs>(args?: SelectSubset<T, TurmaDisciplinaFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a TurmaDisciplina.
+     * @param {TurmaDisciplinaCreateArgs} args - Arguments to create a TurmaDisciplina.
+     * @example
+     * // Create one TurmaDisciplina
+     * const TurmaDisciplina = await prisma.turmaDisciplina.create({
+     *   data: {
+     *     // ... data to create a TurmaDisciplina
+     *   }
+     * })
+     * 
+     */
+    create<T extends TurmaDisciplinaCreateArgs>(args: SelectSubset<T, TurmaDisciplinaCreateArgs<ExtArgs>>): Prisma__TurmaDisciplinaClient<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many TurmaDisciplinas.
+     * @param {TurmaDisciplinaCreateManyArgs} args - Arguments to create many TurmaDisciplinas.
+     * @example
+     * // Create many TurmaDisciplinas
+     * const turmaDisciplina = await prisma.turmaDisciplina.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TurmaDisciplinaCreateManyArgs>(args?: SelectSubset<T, TurmaDisciplinaCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TurmaDisciplinas and returns the data saved in the database.
+     * @param {TurmaDisciplinaCreateManyAndReturnArgs} args - Arguments to create many TurmaDisciplinas.
+     * @example
+     * // Create many TurmaDisciplinas
+     * const turmaDisciplina = await prisma.turmaDisciplina.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TurmaDisciplinas and only return the `id_Turma`
+     * const turmaDisciplinaWithId_TurmaOnly = await prisma.turmaDisciplina.createManyAndReturn({
+     *   select: { id_Turma: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TurmaDisciplinaCreateManyAndReturnArgs>(args?: SelectSubset<T, TurmaDisciplinaCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a TurmaDisciplina.
+     * @param {TurmaDisciplinaDeleteArgs} args - Arguments to delete one TurmaDisciplina.
+     * @example
+     * // Delete one TurmaDisciplina
+     * const TurmaDisciplina = await prisma.turmaDisciplina.delete({
+     *   where: {
+     *     // ... filter to delete one TurmaDisciplina
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TurmaDisciplinaDeleteArgs>(args: SelectSubset<T, TurmaDisciplinaDeleteArgs<ExtArgs>>): Prisma__TurmaDisciplinaClient<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one TurmaDisciplina.
+     * @param {TurmaDisciplinaUpdateArgs} args - Arguments to update one TurmaDisciplina.
+     * @example
+     * // Update one TurmaDisciplina
+     * const turmaDisciplina = await prisma.turmaDisciplina.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TurmaDisciplinaUpdateArgs>(args: SelectSubset<T, TurmaDisciplinaUpdateArgs<ExtArgs>>): Prisma__TurmaDisciplinaClient<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more TurmaDisciplinas.
+     * @param {TurmaDisciplinaDeleteManyArgs} args - Arguments to filter TurmaDisciplinas to delete.
+     * @example
+     * // Delete a few TurmaDisciplinas
+     * const { count } = await prisma.turmaDisciplina.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TurmaDisciplinaDeleteManyArgs>(args?: SelectSubset<T, TurmaDisciplinaDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TurmaDisciplinas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TurmaDisciplinaUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TurmaDisciplinas
+     * const turmaDisciplina = await prisma.turmaDisciplina.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TurmaDisciplinaUpdateManyArgs>(args: SelectSubset<T, TurmaDisciplinaUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TurmaDisciplinas and returns the data updated in the database.
+     * @param {TurmaDisciplinaUpdateManyAndReturnArgs} args - Arguments to update many TurmaDisciplinas.
+     * @example
+     * // Update many TurmaDisciplinas
+     * const turmaDisciplina = await prisma.turmaDisciplina.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more TurmaDisciplinas and only return the `id_Turma`
+     * const turmaDisciplinaWithId_TurmaOnly = await prisma.turmaDisciplina.updateManyAndReturn({
+     *   select: { id_Turma: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TurmaDisciplinaUpdateManyAndReturnArgs>(args: SelectSubset<T, TurmaDisciplinaUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one TurmaDisciplina.
+     * @param {TurmaDisciplinaUpsertArgs} args - Arguments to update or create a TurmaDisciplina.
+     * @example
+     * // Update or create a TurmaDisciplina
+     * const turmaDisciplina = await prisma.turmaDisciplina.upsert({
+     *   create: {
+     *     // ... data to create a TurmaDisciplina
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TurmaDisciplina we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TurmaDisciplinaUpsertArgs>(args: SelectSubset<T, TurmaDisciplinaUpsertArgs<ExtArgs>>): Prisma__TurmaDisciplinaClient<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of TurmaDisciplinas.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TurmaDisciplinaCountArgs} args - Arguments to filter TurmaDisciplinas to count.
+     * @example
+     * // Count the number of TurmaDisciplinas
+     * const count = await prisma.turmaDisciplina.count({
+     *   where: {
+     *     // ... the filter for the TurmaDisciplinas we want to count
+     *   }
+     * })
+    **/
+    count<T extends TurmaDisciplinaCountArgs>(
+      args?: Subset<T, TurmaDisciplinaCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TurmaDisciplinaCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TurmaDisciplina.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TurmaDisciplinaAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TurmaDisciplinaAggregateArgs>(args: Subset<T, TurmaDisciplinaAggregateArgs>): Prisma.PrismaPromise<GetTurmaDisciplinaAggregateType<T>>
+
+    /**
+     * Group by TurmaDisciplina.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TurmaDisciplinaGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TurmaDisciplinaGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TurmaDisciplinaGroupByArgs['orderBy'] }
+        : { orderBy?: TurmaDisciplinaGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TurmaDisciplinaGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTurmaDisciplinaGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TurmaDisciplina model
+   */
+  readonly fields: TurmaDisciplinaFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TurmaDisciplina.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TurmaDisciplinaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    Turma<T extends TurmaDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TurmaDefaultArgs<ExtArgs>>): Prisma__TurmaClient<$Result.GetResult<Prisma.$TurmaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TurmaDisciplina model
+   */
+  interface TurmaDisciplinaFieldRefs {
+    readonly id_Turma: FieldRef<"TurmaDisciplina", 'Int'>
+    readonly Disciplina: FieldRef<"TurmaDisciplina", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TurmaDisciplina findUnique
+   */
+  export type TurmaDisciplinaFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * Filter, which TurmaDisciplina to fetch.
+     */
+    where: TurmaDisciplinaWhereUniqueInput
+  }
+
+  /**
+   * TurmaDisciplina findUniqueOrThrow
+   */
+  export type TurmaDisciplinaFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * Filter, which TurmaDisciplina to fetch.
+     */
+    where: TurmaDisciplinaWhereUniqueInput
+  }
+
+  /**
+   * TurmaDisciplina findFirst
+   */
+  export type TurmaDisciplinaFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * Filter, which TurmaDisciplina to fetch.
+     */
+    where?: TurmaDisciplinaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TurmaDisciplinas to fetch.
+     */
+    orderBy?: TurmaDisciplinaOrderByWithRelationInput | TurmaDisciplinaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TurmaDisciplinas.
+     */
+    cursor?: TurmaDisciplinaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TurmaDisciplinas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TurmaDisciplinas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TurmaDisciplinas.
+     */
+    distinct?: TurmaDisciplinaScalarFieldEnum | TurmaDisciplinaScalarFieldEnum[]
+  }
+
+  /**
+   * TurmaDisciplina findFirstOrThrow
+   */
+  export type TurmaDisciplinaFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * Filter, which TurmaDisciplina to fetch.
+     */
+    where?: TurmaDisciplinaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TurmaDisciplinas to fetch.
+     */
+    orderBy?: TurmaDisciplinaOrderByWithRelationInput | TurmaDisciplinaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TurmaDisciplinas.
+     */
+    cursor?: TurmaDisciplinaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TurmaDisciplinas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TurmaDisciplinas.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TurmaDisciplinas.
+     */
+    distinct?: TurmaDisciplinaScalarFieldEnum | TurmaDisciplinaScalarFieldEnum[]
+  }
+
+  /**
+   * TurmaDisciplina findMany
+   */
+  export type TurmaDisciplinaFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * Filter, which TurmaDisciplinas to fetch.
+     */
+    where?: TurmaDisciplinaWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TurmaDisciplinas to fetch.
+     */
+    orderBy?: TurmaDisciplinaOrderByWithRelationInput | TurmaDisciplinaOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TurmaDisciplinas.
+     */
+    cursor?: TurmaDisciplinaWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TurmaDisciplinas from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TurmaDisciplinas.
+     */
+    skip?: number
+    distinct?: TurmaDisciplinaScalarFieldEnum | TurmaDisciplinaScalarFieldEnum[]
+  }
+
+  /**
+   * TurmaDisciplina create
+   */
+  export type TurmaDisciplinaCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TurmaDisciplina.
+     */
+    data: XOR<TurmaDisciplinaCreateInput, TurmaDisciplinaUncheckedCreateInput>
+  }
+
+  /**
+   * TurmaDisciplina createMany
+   */
+  export type TurmaDisciplinaCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TurmaDisciplinas.
+     */
+    data: TurmaDisciplinaCreateManyInput | TurmaDisciplinaCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TurmaDisciplina createManyAndReturn
+   */
+  export type TurmaDisciplinaCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * The data used to create many TurmaDisciplinas.
+     */
+    data: TurmaDisciplinaCreateManyInput | TurmaDisciplinaCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TurmaDisciplina update
+   */
+  export type TurmaDisciplinaUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TurmaDisciplina.
+     */
+    data: XOR<TurmaDisciplinaUpdateInput, TurmaDisciplinaUncheckedUpdateInput>
+    /**
+     * Choose, which TurmaDisciplina to update.
+     */
+    where: TurmaDisciplinaWhereUniqueInput
+  }
+
+  /**
+   * TurmaDisciplina updateMany
+   */
+  export type TurmaDisciplinaUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TurmaDisciplinas.
+     */
+    data: XOR<TurmaDisciplinaUpdateManyMutationInput, TurmaDisciplinaUncheckedUpdateManyInput>
+    /**
+     * Filter which TurmaDisciplinas to update
+     */
+    where?: TurmaDisciplinaWhereInput
+    /**
+     * Limit how many TurmaDisciplinas to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * TurmaDisciplina updateManyAndReturn
+   */
+  export type TurmaDisciplinaUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * The data used to update TurmaDisciplinas.
+     */
+    data: XOR<TurmaDisciplinaUpdateManyMutationInput, TurmaDisciplinaUncheckedUpdateManyInput>
+    /**
+     * Filter which TurmaDisciplinas to update
+     */
+    where?: TurmaDisciplinaWhereInput
+    /**
+     * Limit how many TurmaDisciplinas to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TurmaDisciplina upsert
+   */
+  export type TurmaDisciplinaUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TurmaDisciplina to update in case it exists.
+     */
+    where: TurmaDisciplinaWhereUniqueInput
+    /**
+     * In case the TurmaDisciplina found by the `where` argument doesn't exist, create a new TurmaDisciplina with this data.
+     */
+    create: XOR<TurmaDisciplinaCreateInput, TurmaDisciplinaUncheckedCreateInput>
+    /**
+     * In case the TurmaDisciplina was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TurmaDisciplinaUpdateInput, TurmaDisciplinaUncheckedUpdateInput>
+  }
+
+  /**
+   * TurmaDisciplina delete
+   */
+  export type TurmaDisciplinaDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    /**
+     * Filter which TurmaDisciplina to delete.
+     */
+    where: TurmaDisciplinaWhereUniqueInput
+  }
+
+  /**
+   * TurmaDisciplina deleteMany
+   */
+  export type TurmaDisciplinaDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TurmaDisciplinas to delete
+     */
+    where?: TurmaDisciplinaWhereInput
+    /**
+     * Limit how many TurmaDisciplinas to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * TurmaDisciplina without action
+   */
+  export type TurmaDisciplinaDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
   }
 
 
@@ -12956,7 +12881,6 @@ export namespace Prisma {
     idTempoLectivo: number | null
     ordem: number | null
     professorId: number | null
-    disciplinaId: number | null
     salaId: number | null
     turmaId: number | null
   }
@@ -12965,7 +12889,6 @@ export namespace Prisma {
     idTempoLectivo: number | null
     ordem: number | null
     professorId: number | null
-    disciplinaId: number | null
     salaId: number | null
     turmaId: number | null
   }
@@ -12976,7 +12899,7 @@ export namespace Prisma {
     periodoId: string | null
     ordem: number | null
     professorId: number | null
-    disciplinaId: number | null
+    disciplina: string | null
     salaId: number | null
     turmaId: number | null
   }
@@ -12987,7 +12910,7 @@ export namespace Prisma {
     periodoId: string | null
     ordem: number | null
     professorId: number | null
-    disciplinaId: number | null
+    disciplina: string | null
     salaId: number | null
     turmaId: number | null
   }
@@ -12998,7 +12921,7 @@ export namespace Prisma {
     periodoId: number
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: number
     salaId: number
     turmaId: number
     _all: number
@@ -13009,7 +12932,6 @@ export namespace Prisma {
     idTempoLectivo?: true
     ordem?: true
     professorId?: true
-    disciplinaId?: true
     salaId?: true
     turmaId?: true
   }
@@ -13018,7 +12940,6 @@ export namespace Prisma {
     idTempoLectivo?: true
     ordem?: true
     professorId?: true
-    disciplinaId?: true
     salaId?: true
     turmaId?: true
   }
@@ -13029,7 +12950,7 @@ export namespace Prisma {
     periodoId?: true
     ordem?: true
     professorId?: true
-    disciplinaId?: true
+    disciplina?: true
     salaId?: true
     turmaId?: true
   }
@@ -13040,7 +12961,7 @@ export namespace Prisma {
     periodoId?: true
     ordem?: true
     professorId?: true
-    disciplinaId?: true
+    disciplina?: true
     salaId?: true
     turmaId?: true
   }
@@ -13051,7 +12972,7 @@ export namespace Prisma {
     periodoId?: true
     ordem?: true
     professorId?: true
-    disciplinaId?: true
+    disciplina?: true
     salaId?: true
     turmaId?: true
     _all?: true
@@ -13149,7 +13070,7 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
     _count: TempoLectivoCountAggregateOutputType | null
@@ -13179,7 +13100,7 @@ export namespace Prisma {
     periodoId?: boolean
     ordem?: boolean
     professorId?: boolean
-    disciplinaId?: boolean
+    disciplina?: boolean
     salaId?: boolean
     turmaId?: boolean
     DiaSemana?: boolean | DiaSemanaDefaultArgs<ExtArgs>
@@ -13196,7 +13117,7 @@ export namespace Prisma {
     periodoId?: boolean
     ordem?: boolean
     professorId?: boolean
-    disciplinaId?: boolean
+    disciplina?: boolean
     salaId?: boolean
     turmaId?: boolean
     DiaSemana?: boolean | DiaSemanaDefaultArgs<ExtArgs>
@@ -13213,7 +13134,7 @@ export namespace Prisma {
     periodoId?: boolean
     ordem?: boolean
     professorId?: boolean
-    disciplinaId?: boolean
+    disciplina?: boolean
     salaId?: boolean
     turmaId?: boolean
     DiaSemana?: boolean | DiaSemanaDefaultArgs<ExtArgs>
@@ -13230,12 +13151,12 @@ export namespace Prisma {
     periodoId?: boolean
     ordem?: boolean
     professorId?: boolean
-    disciplinaId?: boolean
+    disciplina?: boolean
     salaId?: boolean
     turmaId?: boolean
   }
 
-  export type TempoLectivoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idTempoLectivo" | "diaSemana" | "periodoId" | "ordem" | "professorId" | "disciplinaId" | "salaId" | "turmaId", ExtArgs["result"]["tempoLectivo"]>
+  export type TempoLectivoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idTempoLectivo" | "diaSemana" | "periodoId" | "ordem" | "professorId" | "disciplina" | "salaId" | "turmaId", ExtArgs["result"]["tempoLectivo"]>
   export type TempoLectivoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     DiaSemana?: boolean | DiaSemanaDefaultArgs<ExtArgs>
     Disciplina?: boolean | DisciplinaDefaultArgs<ExtArgs>
@@ -13277,7 +13198,7 @@ export namespace Prisma {
       periodoId: string
       ordem: number
       professorId: number
-      disciplinaId: number
+      disciplina: string
       salaId: number
       turmaId: number
     }, ExtArgs["result"]["tempoLectivo"]>
@@ -13714,7 +13635,7 @@ export namespace Prisma {
     readonly periodoId: FieldRef<"TempoLectivo", 'String'>
     readonly ordem: FieldRef<"TempoLectivo", 'Int'>
     readonly professorId: FieldRef<"TempoLectivo", 'Int'>
-    readonly disciplinaId: FieldRef<"TempoLectivo", 'Int'>
+    readonly disciplina: FieldRef<"TempoLectivo", 'String'>
     readonly salaId: FieldRef<"TempoLectivo", 'Int'>
     readonly turmaId: FieldRef<"TempoLectivo", 'Int'>
   }
@@ -14321,8 +14242,9 @@ export namespace Prisma {
     nome?: boolean
     classe?: boolean
     curso?: boolean
-    ProfTurma?: boolean | Turma$ProfTurmaArgs<ExtArgs>
+    ProfTurmaDisciplina?: boolean | Turma$ProfTurmaDisciplinaArgs<ExtArgs>
     TempoLectivo?: boolean | Turma$TempoLectivoArgs<ExtArgs>
+    TurmaDisciplina?: boolean | Turma$TurmaDisciplinaArgs<ExtArgs>
     Classe?: boolean | ClasseDefaultArgs<ExtArgs>
     Curso?: boolean | CursoDefaultArgs<ExtArgs>
     _count?: boolean | TurmaCountOutputTypeDefaultArgs<ExtArgs>
@@ -14355,8 +14277,9 @@ export namespace Prisma {
 
   export type TurmaOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"idTurma" | "nome" | "classe" | "curso", ExtArgs["result"]["turma"]>
   export type TurmaInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    ProfTurma?: boolean | Turma$ProfTurmaArgs<ExtArgs>
+    ProfTurmaDisciplina?: boolean | Turma$ProfTurmaDisciplinaArgs<ExtArgs>
     TempoLectivo?: boolean | Turma$TempoLectivoArgs<ExtArgs>
+    TurmaDisciplina?: boolean | Turma$TurmaDisciplinaArgs<ExtArgs>
     Classe?: boolean | ClasseDefaultArgs<ExtArgs>
     Curso?: boolean | CursoDefaultArgs<ExtArgs>
     _count?: boolean | TurmaCountOutputTypeDefaultArgs<ExtArgs>
@@ -14373,8 +14296,9 @@ export namespace Prisma {
   export type $TurmaPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Turma"
     objects: {
-      ProfTurma: Prisma.$ProfTurmaPayload<ExtArgs>[]
+      ProfTurmaDisciplina: Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>[]
       TempoLectivo: Prisma.$TempoLectivoPayload<ExtArgs>[]
+      TurmaDisciplina: Prisma.$TurmaDisciplinaPayload<ExtArgs>[]
       Classe: Prisma.$ClassePayload<ExtArgs>
       Curso: Prisma.$CursoPayload<ExtArgs>
     }
@@ -14777,8 +14701,9 @@ export namespace Prisma {
    */
   export interface Prisma__TurmaClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    ProfTurma<T extends Turma$ProfTurmaArgs<ExtArgs> = {}>(args?: Subset<T, Turma$ProfTurmaArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    ProfTurmaDisciplina<T extends Turma$ProfTurmaDisciplinaArgs<ExtArgs> = {}>(args?: Subset<T, Turma$ProfTurmaDisciplinaArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProfTurmaDisciplinaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     TempoLectivo<T extends Turma$TempoLectivoArgs<ExtArgs> = {}>(args?: Subset<T, Turma$TempoLectivoArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TempoLectivoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    TurmaDisciplina<T extends Turma$TurmaDisciplinaArgs<ExtArgs> = {}>(args?: Subset<T, Turma$TurmaDisciplinaArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TurmaDisciplinaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Classe<T extends ClasseDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClasseDefaultArgs<ExtArgs>>): Prisma__ClasseClient<$Result.GetResult<Prisma.$ClassePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     Curso<T extends CursoDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CursoDefaultArgs<ExtArgs>>): Prisma__CursoClient<$Result.GetResult<Prisma.$CursoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
@@ -15210,27 +15135,27 @@ export namespace Prisma {
   }
 
   /**
-   * Turma.ProfTurma
+   * Turma.ProfTurmaDisciplina
    */
-  export type Turma$ProfTurmaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Turma$ProfTurmaDisciplinaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the ProfTurma
+     * Select specific fields to fetch from the ProfTurmaDisciplina
      */
-    select?: ProfTurmaSelect<ExtArgs> | null
+    select?: ProfTurmaDisciplinaSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the ProfTurma
+     * Omit specific fields from the ProfTurmaDisciplina
      */
-    omit?: ProfTurmaOmit<ExtArgs> | null
+    omit?: ProfTurmaDisciplinaOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: ProfTurmaInclude<ExtArgs> | null
-    where?: ProfTurmaWhereInput
-    orderBy?: ProfTurmaOrderByWithRelationInput | ProfTurmaOrderByWithRelationInput[]
-    cursor?: ProfTurmaWhereUniqueInput
+    include?: ProfTurmaDisciplinaInclude<ExtArgs> | null
+    where?: ProfTurmaDisciplinaWhereInput
+    orderBy?: ProfTurmaDisciplinaOrderByWithRelationInput | ProfTurmaDisciplinaOrderByWithRelationInput[]
+    cursor?: ProfTurmaDisciplinaWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: ProfTurmaScalarFieldEnum | ProfTurmaScalarFieldEnum[]
+    distinct?: ProfTurmaDisciplinaScalarFieldEnum | ProfTurmaDisciplinaScalarFieldEnum[]
   }
 
   /**
@@ -15255,6 +15180,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TempoLectivoScalarFieldEnum | TempoLectivoScalarFieldEnum[]
+  }
+
+  /**
+   * Turma.TurmaDisciplina
+   */
+  export type Turma$TurmaDisciplinaArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TurmaDisciplina
+     */
+    select?: TurmaDisciplinaSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the TurmaDisciplina
+     */
+    omit?: TurmaDisciplinaOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TurmaDisciplinaInclude<ExtArgs> | null
+    where?: TurmaDisciplinaWhereInput
+    orderBy?: TurmaDisciplinaOrderByWithRelationInput | TurmaDisciplinaOrderByWithRelationInput[]
+    cursor?: TurmaDisciplinaWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TurmaDisciplinaScalarFieldEnum | TurmaDisciplinaScalarFieldEnum[]
   }
 
   /**
@@ -15312,7 +15261,6 @@ export namespace Prisma {
 
 
   export const DisciplinaScalarFieldEnum: {
-    idDisciplina: 'idDisciplina',
     nome: 'nome'
   };
 
@@ -15322,7 +15270,7 @@ export namespace Prisma {
   export const DisponibilidadeScalarFieldEnum: {
     idDisponibilidade: 'idDisponibilidade',
     diaSemana: 'diaSemana',
-    periodoId: 'periodoId',
+    periodo: 'periodo',
     ordem: 'ordem',
     professorId: 'professorId'
   };
@@ -15349,22 +15297,22 @@ export namespace Prisma {
   export type PeriodoScalarFieldEnum = (typeof PeriodoScalarFieldEnum)[keyof typeof PeriodoScalarFieldEnum]
 
 
-  export const ProfDisciplinasScalarFieldEnum: {
-    idProfDisciplina: 'idProfDisciplina',
-    professorId: 'professorId',
-    disciplinaId: 'disciplinaId'
-  };
-
-  export type ProfDisciplinasScalarFieldEnum = (typeof ProfDisciplinasScalarFieldEnum)[keyof typeof ProfDisciplinasScalarFieldEnum]
-
-
-  export const ProfTurmaScalarFieldEnum: {
+  export const ProfTurmaDisciplinaScalarFieldEnum: {
     idProfTurma: 'idProfTurma',
     professorId: 'professorId',
-    turmaId: 'turmaId'
+    turmaId: 'turmaId',
+    disciplinaNome: 'disciplinaNome'
   };
 
-  export type ProfTurmaScalarFieldEnum = (typeof ProfTurmaScalarFieldEnum)[keyof typeof ProfTurmaScalarFieldEnum]
+  export type ProfTurmaDisciplinaScalarFieldEnum = (typeof ProfTurmaDisciplinaScalarFieldEnum)[keyof typeof ProfTurmaDisciplinaScalarFieldEnum]
+
+
+  export const TurmaDisciplinaScalarFieldEnum: {
+    id_Turma: 'id_Turma',
+    Disciplina: 'Disciplina'
+  };
+
+  export type TurmaDisciplinaScalarFieldEnum = (typeof TurmaDisciplinaScalarFieldEnum)[keyof typeof TurmaDisciplinaScalarFieldEnum]
 
 
   export const SalaScalarFieldEnum: {
@@ -15381,7 +15329,7 @@ export namespace Prisma {
     periodoId: 'periodoId',
     ordem: 'ordem',
     professorId: 'professorId',
-    disciplinaId: 'disciplinaId',
+    disciplina: 'disciplina',
     salaId: 'salaId',
     turmaId: 'turmaId'
   };
@@ -15599,44 +15547,37 @@ export namespace Prisma {
     AND?: DisciplinaWhereInput | DisciplinaWhereInput[]
     OR?: DisciplinaWhereInput[]
     NOT?: DisciplinaWhereInput | DisciplinaWhereInput[]
-    idDisciplina?: IntFilter<"Disciplina"> | number
     nome?: StringFilter<"Disciplina"> | string
-    ProfDisciplinas?: ProfDisciplinasListRelationFilter
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaListRelationFilter
     TempoLectivo?: TempoLectivoListRelationFilter
   }
 
   export type DisciplinaOrderByWithRelationInput = {
-    idDisciplina?: SortOrder
     nome?: SortOrder
-    ProfDisciplinas?: ProfDisciplinasOrderByRelationAggregateInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaOrderByRelationAggregateInput
     TempoLectivo?: TempoLectivoOrderByRelationAggregateInput
   }
 
   export type DisciplinaWhereUniqueInput = Prisma.AtLeast<{
-    idDisciplina?: number
+    nome?: string
     AND?: DisciplinaWhereInput | DisciplinaWhereInput[]
     OR?: DisciplinaWhereInput[]
     NOT?: DisciplinaWhereInput | DisciplinaWhereInput[]
-    nome?: StringFilter<"Disciplina"> | string
-    ProfDisciplinas?: ProfDisciplinasListRelationFilter
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaListRelationFilter
     TempoLectivo?: TempoLectivoListRelationFilter
-  }, "idDisciplina">
+  }, "nome">
 
   export type DisciplinaOrderByWithAggregationInput = {
-    idDisciplina?: SortOrder
     nome?: SortOrder
     _count?: DisciplinaCountOrderByAggregateInput
-    _avg?: DisciplinaAvgOrderByAggregateInput
     _max?: DisciplinaMaxOrderByAggregateInput
     _min?: DisciplinaMinOrderByAggregateInput
-    _sum?: DisciplinaSumOrderByAggregateInput
   }
 
   export type DisciplinaScalarWhereWithAggregatesInput = {
     AND?: DisciplinaScalarWhereWithAggregatesInput | DisciplinaScalarWhereWithAggregatesInput[]
     OR?: DisciplinaScalarWhereWithAggregatesInput[]
     NOT?: DisciplinaScalarWhereWithAggregatesInput | DisciplinaScalarWhereWithAggregatesInput[]
-    idDisciplina?: IntWithAggregatesFilter<"Disciplina"> | number
     nome?: StringWithAggregatesFilter<"Disciplina"> | string
   }
 
@@ -15646,7 +15587,7 @@ export namespace Prisma {
     NOT?: DisponibilidadeWhereInput | DisponibilidadeWhereInput[]
     idDisponibilidade?: IntFilter<"Disponibilidade"> | number
     diaSemana?: StringFilter<"Disponibilidade"> | string
-    periodoId?: StringFilter<"Disponibilidade"> | string
+    periodo?: StringFilter<"Disponibilidade"> | string
     ordem?: IntFilter<"Disponibilidade"> | number
     professorId?: IntFilter<"Disponibilidade"> | number
     DiaSemana?: XOR<DiaSemanaScalarRelationFilter, DiaSemanaWhereInput>
@@ -15657,7 +15598,7 @@ export namespace Prisma {
   export type DisponibilidadeOrderByWithRelationInput = {
     idDisponibilidade?: SortOrder
     diaSemana?: SortOrder
-    periodoId?: SortOrder
+    periodo?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
     DiaSemana?: DiaSemanaOrderByWithRelationInput
@@ -15671,7 +15612,7 @@ export namespace Prisma {
     OR?: DisponibilidadeWhereInput[]
     NOT?: DisponibilidadeWhereInput | DisponibilidadeWhereInput[]
     diaSemana?: StringFilter<"Disponibilidade"> | string
-    periodoId?: StringFilter<"Disponibilidade"> | string
+    periodo?: StringFilter<"Disponibilidade"> | string
     ordem?: IntFilter<"Disponibilidade"> | number
     professorId?: IntFilter<"Disponibilidade"> | number
     DiaSemana?: XOR<DiaSemanaScalarRelationFilter, DiaSemanaWhereInput>
@@ -15682,7 +15623,7 @@ export namespace Prisma {
   export type DisponibilidadeOrderByWithAggregationInput = {
     idDisponibilidade?: SortOrder
     diaSemana?: SortOrder
-    periodoId?: SortOrder
+    periodo?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
     _count?: DisponibilidadeCountOrderByAggregateInput
@@ -15698,7 +15639,7 @@ export namespace Prisma {
     NOT?: DisponibilidadeScalarWhereWithAggregatesInput | DisponibilidadeScalarWhereWithAggregatesInput[]
     idDisponibilidade?: IntWithAggregatesFilter<"Disponibilidade"> | number
     diaSemana?: StringWithAggregatesFilter<"Disponibilidade"> | string
-    periodoId?: StringWithAggregatesFilter<"Disponibilidade"> | string
+    periodo?: StringWithAggregatesFilter<"Disponibilidade"> | string
     ordem?: IntWithAggregatesFilter<"Disponibilidade"> | number
     professorId?: IntWithAggregatesFilter<"Disponibilidade"> | number
   }
@@ -15714,8 +15655,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Professor"> | Date | string
     updated_at?: DateTimeFilter<"Professor"> | Date | string
     Disponibilidade?: DisponibilidadeListRelationFilter
-    ProfDisciplinas?: ProfDisciplinasListRelationFilter
-    ProfTurma?: ProfTurmaListRelationFilter
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaListRelationFilter
     TempoLectivo?: TempoLectivoListRelationFilter
   }
 
@@ -15727,8 +15667,7 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     Disponibilidade?: DisponibilidadeOrderByRelationAggregateInput
-    ProfDisciplinas?: ProfDisciplinasOrderByRelationAggregateInput
-    ProfTurma?: ProfTurmaOrderByRelationAggregateInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaOrderByRelationAggregateInput
     TempoLectivo?: TempoLectivoOrderByRelationAggregateInput
   }
 
@@ -15743,8 +15682,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Professor"> | Date | string
     updated_at?: DateTimeFilter<"Professor"> | Date | string
     Disponibilidade?: DisponibilidadeListRelationFilter
-    ProfDisciplinas?: ProfDisciplinasListRelationFilter
-    ProfTurma?: ProfTurmaListRelationFilter
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaListRelationFilter
     TempoLectivo?: TempoLectivoListRelationFilter
   }, "id_professor">
 
@@ -15812,106 +15750,106 @@ export namespace Prisma {
     periodo?: StringWithAggregatesFilter<"Periodo"> | string
   }
 
-  export type ProfDisciplinasWhereInput = {
-    AND?: ProfDisciplinasWhereInput | ProfDisciplinasWhereInput[]
-    OR?: ProfDisciplinasWhereInput[]
-    NOT?: ProfDisciplinasWhereInput | ProfDisciplinasWhereInput[]
-    idProfDisciplina?: IntFilter<"ProfDisciplinas"> | number
-    professorId?: IntFilter<"ProfDisciplinas"> | number
-    disciplinaId?: IntFilter<"ProfDisciplinas"> | number
-    Disciplina?: XOR<DisciplinaScalarRelationFilter, DisciplinaWhereInput>
-    Professor?: XOR<ProfessorScalarRelationFilter, ProfessorWhereInput>
-  }
-
-  export type ProfDisciplinasOrderByWithRelationInput = {
-    idProfDisciplina?: SortOrder
-    professorId?: SortOrder
-    disciplinaId?: SortOrder
-    Disciplina?: DisciplinaOrderByWithRelationInput
-    Professor?: ProfessorOrderByWithRelationInput
-  }
-
-  export type ProfDisciplinasWhereUniqueInput = Prisma.AtLeast<{
-    idProfDisciplina?: number
-    professorId_disciplinaId?: ProfDisciplinasProfessorIdDisciplinaIdCompoundUniqueInput
-    AND?: ProfDisciplinasWhereInput | ProfDisciplinasWhereInput[]
-    OR?: ProfDisciplinasWhereInput[]
-    NOT?: ProfDisciplinasWhereInput | ProfDisciplinasWhereInput[]
-    professorId?: IntFilter<"ProfDisciplinas"> | number
-    disciplinaId?: IntFilter<"ProfDisciplinas"> | number
-    Disciplina?: XOR<DisciplinaScalarRelationFilter, DisciplinaWhereInput>
-    Professor?: XOR<ProfessorScalarRelationFilter, ProfessorWhereInput>
-  }, "idProfDisciplina" | "professorId_disciplinaId">
-
-  export type ProfDisciplinasOrderByWithAggregationInput = {
-    idProfDisciplina?: SortOrder
-    professorId?: SortOrder
-    disciplinaId?: SortOrder
-    _count?: ProfDisciplinasCountOrderByAggregateInput
-    _avg?: ProfDisciplinasAvgOrderByAggregateInput
-    _max?: ProfDisciplinasMaxOrderByAggregateInput
-    _min?: ProfDisciplinasMinOrderByAggregateInput
-    _sum?: ProfDisciplinasSumOrderByAggregateInput
-  }
-
-  export type ProfDisciplinasScalarWhereWithAggregatesInput = {
-    AND?: ProfDisciplinasScalarWhereWithAggregatesInput | ProfDisciplinasScalarWhereWithAggregatesInput[]
-    OR?: ProfDisciplinasScalarWhereWithAggregatesInput[]
-    NOT?: ProfDisciplinasScalarWhereWithAggregatesInput | ProfDisciplinasScalarWhereWithAggregatesInput[]
-    idProfDisciplina?: IntWithAggregatesFilter<"ProfDisciplinas"> | number
-    professorId?: IntWithAggregatesFilter<"ProfDisciplinas"> | number
-    disciplinaId?: IntWithAggregatesFilter<"ProfDisciplinas"> | number
-  }
-
-  export type ProfTurmaWhereInput = {
-    AND?: ProfTurmaWhereInput | ProfTurmaWhereInput[]
-    OR?: ProfTurmaWhereInput[]
-    NOT?: ProfTurmaWhereInput | ProfTurmaWhereInput[]
-    idProfTurma?: IntFilter<"ProfTurma"> | number
-    professorId?: IntFilter<"ProfTurma"> | number
-    turmaId?: IntFilter<"ProfTurma"> | number
+  export type ProfTurmaDisciplinaWhereInput = {
+    AND?: ProfTurmaDisciplinaWhereInput | ProfTurmaDisciplinaWhereInput[]
+    OR?: ProfTurmaDisciplinaWhereInput[]
+    NOT?: ProfTurmaDisciplinaWhereInput | ProfTurmaDisciplinaWhereInput[]
+    idProfTurma?: IntFilter<"ProfTurmaDisciplina"> | number
+    professorId?: IntFilter<"ProfTurmaDisciplina"> | number
+    turmaId?: IntFilter<"ProfTurmaDisciplina"> | number
+    disciplinaNome?: StringFilter<"ProfTurmaDisciplina"> | string
+    disciplina?: XOR<DisciplinaScalarRelationFilter, DisciplinaWhereInput>
     Professor?: XOR<ProfessorScalarRelationFilter, ProfessorWhereInput>
     Turma?: XOR<TurmaScalarRelationFilter, TurmaWhereInput>
   }
 
-  export type ProfTurmaOrderByWithRelationInput = {
+  export type ProfTurmaDisciplinaOrderByWithRelationInput = {
     idProfTurma?: SortOrder
     professorId?: SortOrder
     turmaId?: SortOrder
+    disciplinaNome?: SortOrder
+    disciplina?: DisciplinaOrderByWithRelationInput
     Professor?: ProfessorOrderByWithRelationInput
     Turma?: TurmaOrderByWithRelationInput
   }
 
-  export type ProfTurmaWhereUniqueInput = Prisma.AtLeast<{
+  export type ProfTurmaDisciplinaWhereUniqueInput = Prisma.AtLeast<{
     idProfTurma?: number
-    professorId_turmaId?: ProfTurmaProfessorIdTurmaIdCompoundUniqueInput
-    AND?: ProfTurmaWhereInput | ProfTurmaWhereInput[]
-    OR?: ProfTurmaWhereInput[]
-    NOT?: ProfTurmaWhereInput | ProfTurmaWhereInput[]
-    professorId?: IntFilter<"ProfTurma"> | number
-    turmaId?: IntFilter<"ProfTurma"> | number
+    professorId_turmaId_disciplinaNome?: ProfTurmaDisciplinaProfessorIdTurmaIdDisciplinaNomeCompoundUniqueInput
+    AND?: ProfTurmaDisciplinaWhereInput | ProfTurmaDisciplinaWhereInput[]
+    OR?: ProfTurmaDisciplinaWhereInput[]
+    NOT?: ProfTurmaDisciplinaWhereInput | ProfTurmaDisciplinaWhereInput[]
+    professorId?: IntFilter<"ProfTurmaDisciplina"> | number
+    turmaId?: IntFilter<"ProfTurmaDisciplina"> | number
+    disciplinaNome?: StringFilter<"ProfTurmaDisciplina"> | string
+    disciplina?: XOR<DisciplinaScalarRelationFilter, DisciplinaWhereInput>
     Professor?: XOR<ProfessorScalarRelationFilter, ProfessorWhereInput>
     Turma?: XOR<TurmaScalarRelationFilter, TurmaWhereInput>
-  }, "idProfTurma" | "professorId_turmaId">
+  }, "idProfTurma" | "professorId_turmaId_disciplinaNome">
 
-  export type ProfTurmaOrderByWithAggregationInput = {
+  export type ProfTurmaDisciplinaOrderByWithAggregationInput = {
     idProfTurma?: SortOrder
     professorId?: SortOrder
     turmaId?: SortOrder
-    _count?: ProfTurmaCountOrderByAggregateInput
-    _avg?: ProfTurmaAvgOrderByAggregateInput
-    _max?: ProfTurmaMaxOrderByAggregateInput
-    _min?: ProfTurmaMinOrderByAggregateInput
-    _sum?: ProfTurmaSumOrderByAggregateInput
+    disciplinaNome?: SortOrder
+    _count?: ProfTurmaDisciplinaCountOrderByAggregateInput
+    _avg?: ProfTurmaDisciplinaAvgOrderByAggregateInput
+    _max?: ProfTurmaDisciplinaMaxOrderByAggregateInput
+    _min?: ProfTurmaDisciplinaMinOrderByAggregateInput
+    _sum?: ProfTurmaDisciplinaSumOrderByAggregateInput
   }
 
-  export type ProfTurmaScalarWhereWithAggregatesInput = {
-    AND?: ProfTurmaScalarWhereWithAggregatesInput | ProfTurmaScalarWhereWithAggregatesInput[]
-    OR?: ProfTurmaScalarWhereWithAggregatesInput[]
-    NOT?: ProfTurmaScalarWhereWithAggregatesInput | ProfTurmaScalarWhereWithAggregatesInput[]
-    idProfTurma?: IntWithAggregatesFilter<"ProfTurma"> | number
-    professorId?: IntWithAggregatesFilter<"ProfTurma"> | number
-    turmaId?: IntWithAggregatesFilter<"ProfTurma"> | number
+  export type ProfTurmaDisciplinaScalarWhereWithAggregatesInput = {
+    AND?: ProfTurmaDisciplinaScalarWhereWithAggregatesInput | ProfTurmaDisciplinaScalarWhereWithAggregatesInput[]
+    OR?: ProfTurmaDisciplinaScalarWhereWithAggregatesInput[]
+    NOT?: ProfTurmaDisciplinaScalarWhereWithAggregatesInput | ProfTurmaDisciplinaScalarWhereWithAggregatesInput[]
+    idProfTurma?: IntWithAggregatesFilter<"ProfTurmaDisciplina"> | number
+    professorId?: IntWithAggregatesFilter<"ProfTurmaDisciplina"> | number
+    turmaId?: IntWithAggregatesFilter<"ProfTurmaDisciplina"> | number
+    disciplinaNome?: StringWithAggregatesFilter<"ProfTurmaDisciplina"> | string
+  }
+
+  export type TurmaDisciplinaWhereInput = {
+    AND?: TurmaDisciplinaWhereInput | TurmaDisciplinaWhereInput[]
+    OR?: TurmaDisciplinaWhereInput[]
+    NOT?: TurmaDisciplinaWhereInput | TurmaDisciplinaWhereInput[]
+    id_Turma?: IntFilter<"TurmaDisciplina"> | number
+    Disciplina?: StringFilter<"TurmaDisciplina"> | string
+    Turma?: XOR<TurmaScalarRelationFilter, TurmaWhereInput>
+  }
+
+  export type TurmaDisciplinaOrderByWithRelationInput = {
+    id_Turma?: SortOrder
+    Disciplina?: SortOrder
+    Turma?: TurmaOrderByWithRelationInput
+  }
+
+  export type TurmaDisciplinaWhereUniqueInput = Prisma.AtLeast<{
+    id_Turma_Disciplina?: TurmaDisciplinaId_TurmaDisciplinaCompoundUniqueInput
+    AND?: TurmaDisciplinaWhereInput | TurmaDisciplinaWhereInput[]
+    OR?: TurmaDisciplinaWhereInput[]
+    NOT?: TurmaDisciplinaWhereInput | TurmaDisciplinaWhereInput[]
+    id_Turma?: IntFilter<"TurmaDisciplina"> | number
+    Disciplina?: StringFilter<"TurmaDisciplina"> | string
+    Turma?: XOR<TurmaScalarRelationFilter, TurmaWhereInput>
+  }, "id_Turma_Disciplina">
+
+  export type TurmaDisciplinaOrderByWithAggregationInput = {
+    id_Turma?: SortOrder
+    Disciplina?: SortOrder
+    _count?: TurmaDisciplinaCountOrderByAggregateInput
+    _avg?: TurmaDisciplinaAvgOrderByAggregateInput
+    _max?: TurmaDisciplinaMaxOrderByAggregateInput
+    _min?: TurmaDisciplinaMinOrderByAggregateInput
+    _sum?: TurmaDisciplinaSumOrderByAggregateInput
+  }
+
+  export type TurmaDisciplinaScalarWhereWithAggregatesInput = {
+    AND?: TurmaDisciplinaScalarWhereWithAggregatesInput | TurmaDisciplinaScalarWhereWithAggregatesInput[]
+    OR?: TurmaDisciplinaScalarWhereWithAggregatesInput[]
+    NOT?: TurmaDisciplinaScalarWhereWithAggregatesInput | TurmaDisciplinaScalarWhereWithAggregatesInput[]
+    id_Turma?: IntWithAggregatesFilter<"TurmaDisciplina"> | number
+    Disciplina?: StringWithAggregatesFilter<"TurmaDisciplina"> | string
   }
 
   export type SalaWhereInput = {
@@ -15965,7 +15903,7 @@ export namespace Prisma {
     periodoId?: StringFilter<"TempoLectivo"> | string
     ordem?: IntFilter<"TempoLectivo"> | number
     professorId?: IntFilter<"TempoLectivo"> | number
-    disciplinaId?: IntFilter<"TempoLectivo"> | number
+    disciplina?: StringFilter<"TempoLectivo"> | string
     salaId?: IntFilter<"TempoLectivo"> | number
     turmaId?: IntFilter<"TempoLectivo"> | number
     DiaSemana?: XOR<DiaSemanaScalarRelationFilter, DiaSemanaWhereInput>
@@ -15982,7 +15920,7 @@ export namespace Prisma {
     periodoId?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
-    disciplinaId?: SortOrder
+    disciplina?: SortOrder
     salaId?: SortOrder
     turmaId?: SortOrder
     DiaSemana?: DiaSemanaOrderByWithRelationInput
@@ -16002,7 +15940,7 @@ export namespace Prisma {
     periodoId?: StringFilter<"TempoLectivo"> | string
     ordem?: IntFilter<"TempoLectivo"> | number
     professorId?: IntFilter<"TempoLectivo"> | number
-    disciplinaId?: IntFilter<"TempoLectivo"> | number
+    disciplina?: StringFilter<"TempoLectivo"> | string
     salaId?: IntFilter<"TempoLectivo"> | number
     turmaId?: IntFilter<"TempoLectivo"> | number
     DiaSemana?: XOR<DiaSemanaScalarRelationFilter, DiaSemanaWhereInput>
@@ -16019,7 +15957,7 @@ export namespace Prisma {
     periodoId?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
-    disciplinaId?: SortOrder
+    disciplina?: SortOrder
     salaId?: SortOrder
     turmaId?: SortOrder
     _count?: TempoLectivoCountOrderByAggregateInput
@@ -16038,7 +15976,7 @@ export namespace Prisma {
     periodoId?: StringWithAggregatesFilter<"TempoLectivo"> | string
     ordem?: IntWithAggregatesFilter<"TempoLectivo"> | number
     professorId?: IntWithAggregatesFilter<"TempoLectivo"> | number
-    disciplinaId?: IntWithAggregatesFilter<"TempoLectivo"> | number
+    disciplina?: StringWithAggregatesFilter<"TempoLectivo"> | string
     salaId?: IntWithAggregatesFilter<"TempoLectivo"> | number
     turmaId?: IntWithAggregatesFilter<"TempoLectivo"> | number
   }
@@ -16051,8 +15989,9 @@ export namespace Prisma {
     nome?: StringFilter<"Turma"> | string
     classe?: StringFilter<"Turma"> | string
     curso?: StringFilter<"Turma"> | string
-    ProfTurma?: ProfTurmaListRelationFilter
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaListRelationFilter
     TempoLectivo?: TempoLectivoListRelationFilter
+    TurmaDisciplina?: TurmaDisciplinaListRelationFilter
     Classe?: XOR<ClasseScalarRelationFilter, ClasseWhereInput>
     Curso?: XOR<CursoScalarRelationFilter, CursoWhereInput>
   }
@@ -16062,8 +16001,9 @@ export namespace Prisma {
     nome?: SortOrder
     classe?: SortOrder
     curso?: SortOrder
-    ProfTurma?: ProfTurmaOrderByRelationAggregateInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaOrderByRelationAggregateInput
     TempoLectivo?: TempoLectivoOrderByRelationAggregateInput
+    TurmaDisciplina?: TurmaDisciplinaOrderByRelationAggregateInput
     Classe?: ClasseOrderByWithRelationInput
     Curso?: CursoOrderByWithRelationInput
   }
@@ -16076,8 +16016,9 @@ export namespace Prisma {
     nome?: StringFilter<"Turma"> | string
     classe?: StringFilter<"Turma"> | string
     curso?: StringFilter<"Turma"> | string
-    ProfTurma?: ProfTurmaListRelationFilter
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaListRelationFilter
     TempoLectivo?: TempoLectivoListRelationFilter
+    TurmaDisciplina?: TurmaDisciplinaListRelationFilter
     Classe?: XOR<ClasseScalarRelationFilter, ClasseWhereInput>
     Curso?: XOR<CursoScalarRelationFilter, CursoWhereInput>
   }, "idTurma">
@@ -16206,32 +16147,29 @@ export namespace Prisma {
 
   export type DisciplinaCreateInput = {
     nome: string
-    ProfDisciplinas?: ProfDisciplinasCreateNestedManyWithoutDisciplinaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutDisciplinaInput
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutDisciplinaInput
   }
 
   export type DisciplinaUncheckedCreateInput = {
-    idDisciplina?: number
     nome: string
-    ProfDisciplinas?: ProfDisciplinasUncheckedCreateNestedManyWithoutDisciplinaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutDisciplinaInput
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutDisciplinaInput
   }
 
   export type DisciplinaUpdateInput = {
     nome?: StringFieldUpdateOperationsInput | string
-    ProfDisciplinas?: ProfDisciplinasUpdateManyWithoutDisciplinaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutDisciplinaNestedInput
     TempoLectivo?: TempoLectivoUpdateManyWithoutDisciplinaNestedInput
   }
 
   export type DisciplinaUncheckedUpdateInput = {
-    idDisciplina?: IntFieldUpdateOperationsInput | number
     nome?: StringFieldUpdateOperationsInput | string
-    ProfDisciplinas?: ProfDisciplinasUncheckedUpdateManyWithoutDisciplinaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutDisciplinaNestedInput
     TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutDisciplinaNestedInput
   }
 
   export type DisciplinaCreateManyInput = {
-    idDisciplina?: number
     nome: string
   }
 
@@ -16240,7 +16178,6 @@ export namespace Prisma {
   }
 
   export type DisciplinaUncheckedUpdateManyInput = {
-    idDisciplina?: IntFieldUpdateOperationsInput | number
     nome?: StringFieldUpdateOperationsInput | string
   }
 
@@ -16254,7 +16191,7 @@ export namespace Prisma {
   export type DisponibilidadeUncheckedCreateInput = {
     idDisponibilidade?: number
     diaSemana: string
-    periodoId: string
+    periodo: string
     ordem: number
     professorId: number
   }
@@ -16269,7 +16206,7 @@ export namespace Prisma {
   export type DisponibilidadeUncheckedUpdateInput = {
     idDisponibilidade?: IntFieldUpdateOperationsInput | number
     diaSemana?: StringFieldUpdateOperationsInput | string
-    periodoId?: StringFieldUpdateOperationsInput | string
+    periodo?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
   }
@@ -16277,7 +16214,7 @@ export namespace Prisma {
   export type DisponibilidadeCreateManyInput = {
     idDisponibilidade?: number
     diaSemana: string
-    periodoId: string
+    periodo: string
     ordem: number
     professorId: number
   }
@@ -16289,7 +16226,7 @@ export namespace Prisma {
   export type DisponibilidadeUncheckedUpdateManyInput = {
     idDisponibilidade?: IntFieldUpdateOperationsInput | number
     diaSemana?: StringFieldUpdateOperationsInput | string
-    periodoId?: StringFieldUpdateOperationsInput | string
+    periodo?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
   }
@@ -16301,8 +16238,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at: Date | string
     Disponibilidade?: DisponibilidadeCreateNestedManyWithoutProfessorInput
-    ProfDisciplinas?: ProfDisciplinasCreateNestedManyWithoutProfessorInput
-    ProfTurma?: ProfTurmaCreateNestedManyWithoutProfessorInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutProfessorInput
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutProfessorInput
   }
 
@@ -16314,8 +16250,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at: Date | string
     Disponibilidade?: DisponibilidadeUncheckedCreateNestedManyWithoutProfessorInput
-    ProfDisciplinas?: ProfDisciplinasUncheckedCreateNestedManyWithoutProfessorInput
-    ProfTurma?: ProfTurmaUncheckedCreateNestedManyWithoutProfessorInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutProfessorInput
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutProfessorInput
   }
 
@@ -16326,8 +16261,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     Disponibilidade?: DisponibilidadeUpdateManyWithoutProfessorNestedInput
-    ProfDisciplinas?: ProfDisciplinasUpdateManyWithoutProfessorNestedInput
-    ProfTurma?: ProfTurmaUpdateManyWithoutProfessorNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutProfessorNestedInput
     TempoLectivo?: TempoLectivoUpdateManyWithoutProfessorNestedInput
   }
 
@@ -16339,8 +16273,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     Disponibilidade?: DisponibilidadeUncheckedUpdateManyWithoutProfessorNestedInput
-    ProfDisciplinas?: ProfDisciplinasUncheckedUpdateManyWithoutProfessorNestedInput
-    ProfTurma?: ProfTurmaUncheckedUpdateManyWithoutProfessorNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutProfessorNestedInput
     TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutProfessorNestedInput
   }
 
@@ -16406,80 +16339,82 @@ export namespace Prisma {
     periodo?: StringFieldUpdateOperationsInput | string
   }
 
-  export type ProfDisciplinasCreateInput = {
-    Disciplina: DisciplinaCreateNestedOneWithoutProfDisciplinasInput
-    Professor: ProfessorCreateNestedOneWithoutProfDisciplinasInput
+  export type ProfTurmaDisciplinaCreateInput = {
+    disciplina: DisciplinaCreateNestedOneWithoutProfTurmaDisciplinaInput
+    Professor: ProfessorCreateNestedOneWithoutProfTurmaDisciplinaInput
+    Turma: TurmaCreateNestedOneWithoutProfTurmaDisciplinaInput
   }
 
-  export type ProfDisciplinasUncheckedCreateInput = {
-    idProfDisciplina?: number
-    professorId: number
-    disciplinaId: number
-  }
-
-  export type ProfDisciplinasUpdateInput = {
-    Disciplina?: DisciplinaUpdateOneRequiredWithoutProfDisciplinasNestedInput
-    Professor?: ProfessorUpdateOneRequiredWithoutProfDisciplinasNestedInput
-  }
-
-  export type ProfDisciplinasUncheckedUpdateInput = {
-    idProfDisciplina?: IntFieldUpdateOperationsInput | number
-    professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ProfDisciplinasCreateManyInput = {
-    idProfDisciplina?: number
-    professorId: number
-    disciplinaId: number
-  }
-
-  export type ProfDisciplinasUpdateManyMutationInput = {
-
-  }
-
-  export type ProfDisciplinasUncheckedUpdateManyInput = {
-    idProfDisciplina?: IntFieldUpdateOperationsInput | number
-    professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ProfTurmaCreateInput = {
-    Professor: ProfessorCreateNestedOneWithoutProfTurmaInput
-    Turma: TurmaCreateNestedOneWithoutProfTurmaInput
-  }
-
-  export type ProfTurmaUncheckedCreateInput = {
+  export type ProfTurmaDisciplinaUncheckedCreateInput = {
     idProfTurma?: number
     professorId: number
     turmaId: number
+    disciplinaNome: string
   }
 
-  export type ProfTurmaUpdateInput = {
-    Professor?: ProfessorUpdateOneRequiredWithoutProfTurmaNestedInput
-    Turma?: TurmaUpdateOneRequiredWithoutProfTurmaNestedInput
+  export type ProfTurmaDisciplinaUpdateInput = {
+    disciplina?: DisciplinaUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
+    Professor?: ProfessorUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
+    Turma?: TurmaUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
   }
 
-  export type ProfTurmaUncheckedUpdateInput = {
+  export type ProfTurmaDisciplinaUncheckedUpdateInput = {
     idProfTurma?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
+    disciplinaNome?: StringFieldUpdateOperationsInput | string
   }
 
-  export type ProfTurmaCreateManyInput = {
+  export type ProfTurmaDisciplinaCreateManyInput = {
     idProfTurma?: number
     professorId: number
     turmaId: number
+    disciplinaNome: string
   }
 
-  export type ProfTurmaUpdateManyMutationInput = {
+  export type ProfTurmaDisciplinaUpdateManyMutationInput = {
 
   }
 
-  export type ProfTurmaUncheckedUpdateManyInput = {
+  export type ProfTurmaDisciplinaUncheckedUpdateManyInput = {
     idProfTurma?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
+    disciplinaNome?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TurmaDisciplinaCreateInput = {
+    Disciplina: string
+    Turma: TurmaCreateNestedOneWithoutTurmaDisciplinaInput
+  }
+
+  export type TurmaDisciplinaUncheckedCreateInput = {
+    id_Turma: number
+    Disciplina: string
+  }
+
+  export type TurmaDisciplinaUpdateInput = {
+    Disciplina?: StringFieldUpdateOperationsInput | string
+    Turma?: TurmaUpdateOneRequiredWithoutTurmaDisciplinaNestedInput
+  }
+
+  export type TurmaDisciplinaUncheckedUpdateInput = {
+    id_Turma?: IntFieldUpdateOperationsInput | number
+    Disciplina?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TurmaDisciplinaCreateManyInput = {
+    id_Turma: number
+    Disciplina: string
+  }
+
+  export type TurmaDisciplinaUpdateManyMutationInput = {
+    Disciplina?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TurmaDisciplinaUncheckedUpdateManyInput = {
+    id_Turma?: IntFieldUpdateOperationsInput | number
+    Disciplina?: StringFieldUpdateOperationsInput | string
   }
 
   export type SalaCreateInput = {
@@ -16534,7 +16469,7 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
   }
@@ -16555,7 +16490,7 @@ export namespace Prisma {
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
   }
@@ -16566,7 +16501,7 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
   }
@@ -16581,15 +16516,16 @@ export namespace Prisma {
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TurmaCreateInput = {
     nome: string
-    ProfTurma?: ProfTurmaCreateNestedManyWithoutTurmaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutTurmaInput
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaCreateNestedManyWithoutTurmaInput
     Classe: ClasseCreateNestedOneWithoutTurmaInput
     Curso: CursoCreateNestedOneWithoutTurmaInput
   }
@@ -16599,14 +16535,16 @@ export namespace Prisma {
     nome: string
     classe: string
     curso: string
-    ProfTurma?: ProfTurmaUncheckedCreateNestedManyWithoutTurmaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
   }
 
   export type TurmaUpdateInput = {
     nome?: StringFieldUpdateOperationsInput | string
-    ProfTurma?: ProfTurmaUpdateManyWithoutTurmaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutTurmaNestedInput
     TempoLectivo?: TempoLectivoUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUpdateManyWithoutTurmaNestedInput
     Classe?: ClasseUpdateOneRequiredWithoutTurmaNestedInput
     Curso?: CursoUpdateOneRequiredWithoutTurmaNestedInput
   }
@@ -16616,8 +16554,9 @@ export namespace Prisma {
     nome?: StringFieldUpdateOperationsInput | string
     classe?: StringFieldUpdateOperationsInput | string
     curso?: StringFieldUpdateOperationsInput | string
-    ProfTurma?: ProfTurmaUncheckedUpdateManyWithoutTurmaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
     TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
   }
 
   export type TurmaCreateManyInput = {
@@ -16737,6 +16676,28 @@ export namespace Prisma {
     nome?: SortOrder
   }
 
+  export type ProfTurmaDisciplinaListRelationFilter = {
+    every?: ProfTurmaDisciplinaWhereInput
+    some?: ProfTurmaDisciplinaWhereInput
+    none?: ProfTurmaDisciplinaWhereInput
+  }
+
+  export type ProfTurmaDisciplinaOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DisciplinaCountOrderByAggregateInput = {
+    nome?: SortOrder
+  }
+
+  export type DisciplinaMaxOrderByAggregateInput = {
+    nome?: SortOrder
+  }
+
+  export type DisciplinaMinOrderByAggregateInput = {
+    nome?: SortOrder
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -16746,55 +16707,6 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type ProfDisciplinasListRelationFilter = {
-    every?: ProfDisciplinasWhereInput
-    some?: ProfDisciplinasWhereInput
-    none?: ProfDisciplinasWhereInput
-  }
-
-  export type ProfDisciplinasOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type DisciplinaCountOrderByAggregateInput = {
-    idDisciplina?: SortOrder
-    nome?: SortOrder
-  }
-
-  export type DisciplinaAvgOrderByAggregateInput = {
-    idDisciplina?: SortOrder
-  }
-
-  export type DisciplinaMaxOrderByAggregateInput = {
-    idDisciplina?: SortOrder
-    nome?: SortOrder
-  }
-
-  export type DisciplinaMinOrderByAggregateInput = {
-    idDisciplina?: SortOrder
-    nome?: SortOrder
-  }
-
-  export type DisciplinaSumOrderByAggregateInput = {
-    idDisciplina?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type DiaSemanaScalarRelationFilter = {
@@ -16815,7 +16727,7 @@ export namespace Prisma {
   export type DisponibilidadeCountOrderByAggregateInput = {
     idDisponibilidade?: SortOrder
     diaSemana?: SortOrder
-    periodoId?: SortOrder
+    periodo?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
   }
@@ -16829,7 +16741,7 @@ export namespace Prisma {
   export type DisponibilidadeMaxOrderByAggregateInput = {
     idDisponibilidade?: SortOrder
     diaSemana?: SortOrder
-    periodoId?: SortOrder
+    periodo?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
   }
@@ -16837,7 +16749,7 @@ export namespace Prisma {
   export type DisponibilidadeMinOrderByAggregateInput = {
     idDisponibilidade?: SortOrder
     diaSemana?: SortOrder
-    periodoId?: SortOrder
+    periodo?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
   }
@@ -16846,6 +16758,22 @@ export namespace Prisma {
     idDisponibilidade?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
@@ -16874,19 +16802,9 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
-  export type ProfTurmaListRelationFilter = {
-    every?: ProfTurmaWhereInput
-    some?: ProfTurmaWhereInput
-    none?: ProfTurmaWhereInput
-  }
-
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
-  }
-
-  export type ProfTurmaOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type ProfessorCountOrderByAggregateInput = {
@@ -16973,79 +16891,76 @@ export namespace Prisma {
     isNot?: DisciplinaWhereInput
   }
 
-  export type ProfDisciplinasProfessorIdDisciplinaIdCompoundUniqueInput = {
-    professorId: number
-    disciplinaId: number
-  }
-
-  export type ProfDisciplinasCountOrderByAggregateInput = {
-    idProfDisciplina?: SortOrder
-    professorId?: SortOrder
-    disciplinaId?: SortOrder
-  }
-
-  export type ProfDisciplinasAvgOrderByAggregateInput = {
-    idProfDisciplina?: SortOrder
-    professorId?: SortOrder
-    disciplinaId?: SortOrder
-  }
-
-  export type ProfDisciplinasMaxOrderByAggregateInput = {
-    idProfDisciplina?: SortOrder
-    professorId?: SortOrder
-    disciplinaId?: SortOrder
-  }
-
-  export type ProfDisciplinasMinOrderByAggregateInput = {
-    idProfDisciplina?: SortOrder
-    professorId?: SortOrder
-    disciplinaId?: SortOrder
-  }
-
-  export type ProfDisciplinasSumOrderByAggregateInput = {
-    idProfDisciplina?: SortOrder
-    professorId?: SortOrder
-    disciplinaId?: SortOrder
-  }
-
   export type TurmaScalarRelationFilter = {
     is?: TurmaWhereInput
     isNot?: TurmaWhereInput
   }
 
-  export type ProfTurmaProfessorIdTurmaIdCompoundUniqueInput = {
+  export type ProfTurmaDisciplinaProfessorIdTurmaIdDisciplinaNomeCompoundUniqueInput = {
     professorId: number
     turmaId: number
+    disciplinaNome: string
   }
 
-  export type ProfTurmaCountOrderByAggregateInput = {
+  export type ProfTurmaDisciplinaCountOrderByAggregateInput = {
+    idProfTurma?: SortOrder
+    professorId?: SortOrder
+    turmaId?: SortOrder
+    disciplinaNome?: SortOrder
+  }
+
+  export type ProfTurmaDisciplinaAvgOrderByAggregateInput = {
     idProfTurma?: SortOrder
     professorId?: SortOrder
     turmaId?: SortOrder
   }
 
-  export type ProfTurmaAvgOrderByAggregateInput = {
+  export type ProfTurmaDisciplinaMaxOrderByAggregateInput = {
+    idProfTurma?: SortOrder
+    professorId?: SortOrder
+    turmaId?: SortOrder
+    disciplinaNome?: SortOrder
+  }
+
+  export type ProfTurmaDisciplinaMinOrderByAggregateInput = {
+    idProfTurma?: SortOrder
+    professorId?: SortOrder
+    turmaId?: SortOrder
+    disciplinaNome?: SortOrder
+  }
+
+  export type ProfTurmaDisciplinaSumOrderByAggregateInput = {
     idProfTurma?: SortOrder
     professorId?: SortOrder
     turmaId?: SortOrder
   }
 
-  export type ProfTurmaMaxOrderByAggregateInput = {
-    idProfTurma?: SortOrder
-    professorId?: SortOrder
-    turmaId?: SortOrder
+  export type TurmaDisciplinaId_TurmaDisciplinaCompoundUniqueInput = {
+    id_Turma: number
+    Disciplina: string
   }
 
-  export type ProfTurmaMinOrderByAggregateInput = {
-    idProfTurma?: SortOrder
-    professorId?: SortOrder
-    turmaId?: SortOrder
+  export type TurmaDisciplinaCountOrderByAggregateInput = {
+    id_Turma?: SortOrder
+    Disciplina?: SortOrder
   }
 
-  export type ProfTurmaSumOrderByAggregateInput = {
-    idProfTurma?: SortOrder
-    professorId?: SortOrder
-    turmaId?: SortOrder
+  export type TurmaDisciplinaAvgOrderByAggregateInput = {
+    id_Turma?: SortOrder
+  }
+
+  export type TurmaDisciplinaMaxOrderByAggregateInput = {
+    id_Turma?: SortOrder
+    Disciplina?: SortOrder
+  }
+
+  export type TurmaDisciplinaMinOrderByAggregateInput = {
+    id_Turma?: SortOrder
+    Disciplina?: SortOrder
+  }
+
+  export type TurmaDisciplinaSumOrderByAggregateInput = {
+    id_Turma?: SortOrder
   }
 
   export type SalaCountOrderByAggregateInput = {
@@ -17082,7 +16997,7 @@ export namespace Prisma {
     periodoId?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
-    disciplinaId?: SortOrder
+    disciplina?: SortOrder
     salaId?: SortOrder
     turmaId?: SortOrder
   }
@@ -17091,7 +17006,6 @@ export namespace Prisma {
     idTempoLectivo?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
-    disciplinaId?: SortOrder
     salaId?: SortOrder
     turmaId?: SortOrder
   }
@@ -17102,7 +17016,7 @@ export namespace Prisma {
     periodoId?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
-    disciplinaId?: SortOrder
+    disciplina?: SortOrder
     salaId?: SortOrder
     turmaId?: SortOrder
   }
@@ -17113,7 +17027,7 @@ export namespace Prisma {
     periodoId?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
-    disciplinaId?: SortOrder
+    disciplina?: SortOrder
     salaId?: SortOrder
     turmaId?: SortOrder
   }
@@ -17122,9 +17036,14 @@ export namespace Prisma {
     idTempoLectivo?: SortOrder
     ordem?: SortOrder
     professorId?: SortOrder
-    disciplinaId?: SortOrder
     salaId?: SortOrder
     turmaId?: SortOrder
+  }
+
+  export type TurmaDisciplinaListRelationFilter = {
+    every?: TurmaDisciplinaWhereInput
+    some?: TurmaDisciplinaWhereInput
+    none?: TurmaDisciplinaWhereInput
   }
 
   export type ClasseScalarRelationFilter = {
@@ -17135,6 +17054,10 @@ export namespace Prisma {
   export type CursoScalarRelationFilter = {
     is?: CursoWhereInput
     isNot?: CursoWhereInput
+  }
+
+  export type TurmaDisciplinaOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type TurmaCountOrderByAggregateInput = {
@@ -17338,11 +17261,11 @@ export namespace Prisma {
     deleteMany?: TempoLectivoScalarWhereInput | TempoLectivoScalarWhereInput[]
   }
 
-  export type ProfDisciplinasCreateNestedManyWithoutDisciplinaInput = {
-    create?: XOR<ProfDisciplinasCreateWithoutDisciplinaInput, ProfDisciplinasUncheckedCreateWithoutDisciplinaInput> | ProfDisciplinasCreateWithoutDisciplinaInput[] | ProfDisciplinasUncheckedCreateWithoutDisciplinaInput[]
-    connectOrCreate?: ProfDisciplinasCreateOrConnectWithoutDisciplinaInput | ProfDisciplinasCreateOrConnectWithoutDisciplinaInput[]
-    createMany?: ProfDisciplinasCreateManyDisciplinaInputEnvelope
-    connect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
+  export type ProfTurmaDisciplinaCreateNestedManyWithoutDisciplinaInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutDisciplinaInput, ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput> | ProfTurmaDisciplinaCreateWithoutDisciplinaInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput | ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyDisciplinaInputEnvelope
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
   }
 
   export type TempoLectivoCreateNestedManyWithoutDisciplinaInput = {
@@ -17352,11 +17275,11 @@ export namespace Prisma {
     connect?: TempoLectivoWhereUniqueInput | TempoLectivoWhereUniqueInput[]
   }
 
-  export type ProfDisciplinasUncheckedCreateNestedManyWithoutDisciplinaInput = {
-    create?: XOR<ProfDisciplinasCreateWithoutDisciplinaInput, ProfDisciplinasUncheckedCreateWithoutDisciplinaInput> | ProfDisciplinasCreateWithoutDisciplinaInput[] | ProfDisciplinasUncheckedCreateWithoutDisciplinaInput[]
-    connectOrCreate?: ProfDisciplinasCreateOrConnectWithoutDisciplinaInput | ProfDisciplinasCreateOrConnectWithoutDisciplinaInput[]
-    createMany?: ProfDisciplinasCreateManyDisciplinaInputEnvelope
-    connect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
+  export type ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutDisciplinaInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutDisciplinaInput, ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput> | ProfTurmaDisciplinaCreateWithoutDisciplinaInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput | ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyDisciplinaInputEnvelope
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
   }
 
   export type TempoLectivoUncheckedCreateNestedManyWithoutDisciplinaInput = {
@@ -17366,18 +17289,18 @@ export namespace Prisma {
     connect?: TempoLectivoWhereUniqueInput | TempoLectivoWhereUniqueInput[]
   }
 
-  export type ProfDisciplinasUpdateManyWithoutDisciplinaNestedInput = {
-    create?: XOR<ProfDisciplinasCreateWithoutDisciplinaInput, ProfDisciplinasUncheckedCreateWithoutDisciplinaInput> | ProfDisciplinasCreateWithoutDisciplinaInput[] | ProfDisciplinasUncheckedCreateWithoutDisciplinaInput[]
-    connectOrCreate?: ProfDisciplinasCreateOrConnectWithoutDisciplinaInput | ProfDisciplinasCreateOrConnectWithoutDisciplinaInput[]
-    upsert?: ProfDisciplinasUpsertWithWhereUniqueWithoutDisciplinaInput | ProfDisciplinasUpsertWithWhereUniqueWithoutDisciplinaInput[]
-    createMany?: ProfDisciplinasCreateManyDisciplinaInputEnvelope
-    set?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    disconnect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    delete?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    connect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    update?: ProfDisciplinasUpdateWithWhereUniqueWithoutDisciplinaInput | ProfDisciplinasUpdateWithWhereUniqueWithoutDisciplinaInput[]
-    updateMany?: ProfDisciplinasUpdateManyWithWhereWithoutDisciplinaInput | ProfDisciplinasUpdateManyWithWhereWithoutDisciplinaInput[]
-    deleteMany?: ProfDisciplinasScalarWhereInput | ProfDisciplinasScalarWhereInput[]
+  export type ProfTurmaDisciplinaUpdateManyWithoutDisciplinaNestedInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutDisciplinaInput, ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput> | ProfTurmaDisciplinaCreateWithoutDisciplinaInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput | ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput[]
+    upsert?: ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutDisciplinaInput | ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutDisciplinaInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyDisciplinaInputEnvelope
+    set?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    disconnect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    delete?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    update?: ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutDisciplinaInput | ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutDisciplinaInput[]
+    updateMany?: ProfTurmaDisciplinaUpdateManyWithWhereWithoutDisciplinaInput | ProfTurmaDisciplinaUpdateManyWithWhereWithoutDisciplinaInput[]
+    deleteMany?: ProfTurmaDisciplinaScalarWhereInput | ProfTurmaDisciplinaScalarWhereInput[]
   }
 
   export type TempoLectivoUpdateManyWithoutDisciplinaNestedInput = {
@@ -17394,26 +17317,18 @@ export namespace Prisma {
     deleteMany?: TempoLectivoScalarWhereInput | TempoLectivoScalarWhereInput[]
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type ProfDisciplinasUncheckedUpdateManyWithoutDisciplinaNestedInput = {
-    create?: XOR<ProfDisciplinasCreateWithoutDisciplinaInput, ProfDisciplinasUncheckedCreateWithoutDisciplinaInput> | ProfDisciplinasCreateWithoutDisciplinaInput[] | ProfDisciplinasUncheckedCreateWithoutDisciplinaInput[]
-    connectOrCreate?: ProfDisciplinasCreateOrConnectWithoutDisciplinaInput | ProfDisciplinasCreateOrConnectWithoutDisciplinaInput[]
-    upsert?: ProfDisciplinasUpsertWithWhereUniqueWithoutDisciplinaInput | ProfDisciplinasUpsertWithWhereUniqueWithoutDisciplinaInput[]
-    createMany?: ProfDisciplinasCreateManyDisciplinaInputEnvelope
-    set?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    disconnect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    delete?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    connect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    update?: ProfDisciplinasUpdateWithWhereUniqueWithoutDisciplinaInput | ProfDisciplinasUpdateWithWhereUniqueWithoutDisciplinaInput[]
-    updateMany?: ProfDisciplinasUpdateManyWithWhereWithoutDisciplinaInput | ProfDisciplinasUpdateManyWithWhereWithoutDisciplinaInput[]
-    deleteMany?: ProfDisciplinasScalarWhereInput | ProfDisciplinasScalarWhereInput[]
+  export type ProfTurmaDisciplinaUncheckedUpdateManyWithoutDisciplinaNestedInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutDisciplinaInput, ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput> | ProfTurmaDisciplinaCreateWithoutDisciplinaInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput | ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput[]
+    upsert?: ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutDisciplinaInput | ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutDisciplinaInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyDisciplinaInputEnvelope
+    set?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    disconnect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    delete?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    update?: ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutDisciplinaInput | ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutDisciplinaInput[]
+    updateMany?: ProfTurmaDisciplinaUpdateManyWithWhereWithoutDisciplinaInput | ProfTurmaDisciplinaUpdateManyWithWhereWithoutDisciplinaInput[]
+    deleteMany?: ProfTurmaDisciplinaScalarWhereInput | ProfTurmaDisciplinaScalarWhereInput[]
   }
 
   export type TempoLectivoUncheckedUpdateManyWithoutDisciplinaNestedInput = {
@@ -17448,6 +17363,14 @@ export namespace Prisma {
     connect?: ProfessorWhereUniqueInput
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type DiaSemanaUpdateOneRequiredWithoutDisponibilidadeNestedInput = {
     create?: XOR<DiaSemanaCreateWithoutDisponibilidadeInput, DiaSemanaUncheckedCreateWithoutDisponibilidadeInput>
     connectOrCreate?: DiaSemanaCreateOrConnectWithoutDisponibilidadeInput
@@ -17479,18 +17402,11 @@ export namespace Prisma {
     connect?: DisponibilidadeWhereUniqueInput | DisponibilidadeWhereUniqueInput[]
   }
 
-  export type ProfDisciplinasCreateNestedManyWithoutProfessorInput = {
-    create?: XOR<ProfDisciplinasCreateWithoutProfessorInput, ProfDisciplinasUncheckedCreateWithoutProfessorInput> | ProfDisciplinasCreateWithoutProfessorInput[] | ProfDisciplinasUncheckedCreateWithoutProfessorInput[]
-    connectOrCreate?: ProfDisciplinasCreateOrConnectWithoutProfessorInput | ProfDisciplinasCreateOrConnectWithoutProfessorInput[]
-    createMany?: ProfDisciplinasCreateManyProfessorInputEnvelope
-    connect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-  }
-
-  export type ProfTurmaCreateNestedManyWithoutProfessorInput = {
-    create?: XOR<ProfTurmaCreateWithoutProfessorInput, ProfTurmaUncheckedCreateWithoutProfessorInput> | ProfTurmaCreateWithoutProfessorInput[] | ProfTurmaUncheckedCreateWithoutProfessorInput[]
-    connectOrCreate?: ProfTurmaCreateOrConnectWithoutProfessorInput | ProfTurmaCreateOrConnectWithoutProfessorInput[]
-    createMany?: ProfTurmaCreateManyProfessorInputEnvelope
-    connect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
+  export type ProfTurmaDisciplinaCreateNestedManyWithoutProfessorInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutProfessorInput, ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput> | ProfTurmaDisciplinaCreateWithoutProfessorInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput | ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyProfessorInputEnvelope
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
   }
 
   export type TempoLectivoCreateNestedManyWithoutProfessorInput = {
@@ -17507,18 +17423,11 @@ export namespace Prisma {
     connect?: DisponibilidadeWhereUniqueInput | DisponibilidadeWhereUniqueInput[]
   }
 
-  export type ProfDisciplinasUncheckedCreateNestedManyWithoutProfessorInput = {
-    create?: XOR<ProfDisciplinasCreateWithoutProfessorInput, ProfDisciplinasUncheckedCreateWithoutProfessorInput> | ProfDisciplinasCreateWithoutProfessorInput[] | ProfDisciplinasUncheckedCreateWithoutProfessorInput[]
-    connectOrCreate?: ProfDisciplinasCreateOrConnectWithoutProfessorInput | ProfDisciplinasCreateOrConnectWithoutProfessorInput[]
-    createMany?: ProfDisciplinasCreateManyProfessorInputEnvelope
-    connect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-  }
-
-  export type ProfTurmaUncheckedCreateNestedManyWithoutProfessorInput = {
-    create?: XOR<ProfTurmaCreateWithoutProfessorInput, ProfTurmaUncheckedCreateWithoutProfessorInput> | ProfTurmaCreateWithoutProfessorInput[] | ProfTurmaUncheckedCreateWithoutProfessorInput[]
-    connectOrCreate?: ProfTurmaCreateOrConnectWithoutProfessorInput | ProfTurmaCreateOrConnectWithoutProfessorInput[]
-    createMany?: ProfTurmaCreateManyProfessorInputEnvelope
-    connect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
+  export type ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutProfessorInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutProfessorInput, ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput> | ProfTurmaDisciplinaCreateWithoutProfessorInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput | ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyProfessorInputEnvelope
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
   }
 
   export type TempoLectivoUncheckedCreateNestedManyWithoutProfessorInput = {
@@ -17550,32 +17459,18 @@ export namespace Prisma {
     deleteMany?: DisponibilidadeScalarWhereInput | DisponibilidadeScalarWhereInput[]
   }
 
-  export type ProfDisciplinasUpdateManyWithoutProfessorNestedInput = {
-    create?: XOR<ProfDisciplinasCreateWithoutProfessorInput, ProfDisciplinasUncheckedCreateWithoutProfessorInput> | ProfDisciplinasCreateWithoutProfessorInput[] | ProfDisciplinasUncheckedCreateWithoutProfessorInput[]
-    connectOrCreate?: ProfDisciplinasCreateOrConnectWithoutProfessorInput | ProfDisciplinasCreateOrConnectWithoutProfessorInput[]
-    upsert?: ProfDisciplinasUpsertWithWhereUniqueWithoutProfessorInput | ProfDisciplinasUpsertWithWhereUniqueWithoutProfessorInput[]
-    createMany?: ProfDisciplinasCreateManyProfessorInputEnvelope
-    set?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    disconnect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    delete?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    connect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    update?: ProfDisciplinasUpdateWithWhereUniqueWithoutProfessorInput | ProfDisciplinasUpdateWithWhereUniqueWithoutProfessorInput[]
-    updateMany?: ProfDisciplinasUpdateManyWithWhereWithoutProfessorInput | ProfDisciplinasUpdateManyWithWhereWithoutProfessorInput[]
-    deleteMany?: ProfDisciplinasScalarWhereInput | ProfDisciplinasScalarWhereInput[]
-  }
-
-  export type ProfTurmaUpdateManyWithoutProfessorNestedInput = {
-    create?: XOR<ProfTurmaCreateWithoutProfessorInput, ProfTurmaUncheckedCreateWithoutProfessorInput> | ProfTurmaCreateWithoutProfessorInput[] | ProfTurmaUncheckedCreateWithoutProfessorInput[]
-    connectOrCreate?: ProfTurmaCreateOrConnectWithoutProfessorInput | ProfTurmaCreateOrConnectWithoutProfessorInput[]
-    upsert?: ProfTurmaUpsertWithWhereUniqueWithoutProfessorInput | ProfTurmaUpsertWithWhereUniqueWithoutProfessorInput[]
-    createMany?: ProfTurmaCreateManyProfessorInputEnvelope
-    set?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    disconnect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    delete?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    connect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    update?: ProfTurmaUpdateWithWhereUniqueWithoutProfessorInput | ProfTurmaUpdateWithWhereUniqueWithoutProfessorInput[]
-    updateMany?: ProfTurmaUpdateManyWithWhereWithoutProfessorInput | ProfTurmaUpdateManyWithWhereWithoutProfessorInput[]
-    deleteMany?: ProfTurmaScalarWhereInput | ProfTurmaScalarWhereInput[]
+  export type ProfTurmaDisciplinaUpdateManyWithoutProfessorNestedInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutProfessorInput, ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput> | ProfTurmaDisciplinaCreateWithoutProfessorInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput | ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput[]
+    upsert?: ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutProfessorInput | ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutProfessorInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyProfessorInputEnvelope
+    set?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    disconnect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    delete?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    update?: ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutProfessorInput | ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutProfessorInput[]
+    updateMany?: ProfTurmaDisciplinaUpdateManyWithWhereWithoutProfessorInput | ProfTurmaDisciplinaUpdateManyWithWhereWithoutProfessorInput[]
+    deleteMany?: ProfTurmaDisciplinaScalarWhereInput | ProfTurmaDisciplinaScalarWhereInput[]
   }
 
   export type TempoLectivoUpdateManyWithoutProfessorNestedInput = {
@@ -17606,32 +17501,18 @@ export namespace Prisma {
     deleteMany?: DisponibilidadeScalarWhereInput | DisponibilidadeScalarWhereInput[]
   }
 
-  export type ProfDisciplinasUncheckedUpdateManyWithoutProfessorNestedInput = {
-    create?: XOR<ProfDisciplinasCreateWithoutProfessorInput, ProfDisciplinasUncheckedCreateWithoutProfessorInput> | ProfDisciplinasCreateWithoutProfessorInput[] | ProfDisciplinasUncheckedCreateWithoutProfessorInput[]
-    connectOrCreate?: ProfDisciplinasCreateOrConnectWithoutProfessorInput | ProfDisciplinasCreateOrConnectWithoutProfessorInput[]
-    upsert?: ProfDisciplinasUpsertWithWhereUniqueWithoutProfessorInput | ProfDisciplinasUpsertWithWhereUniqueWithoutProfessorInput[]
-    createMany?: ProfDisciplinasCreateManyProfessorInputEnvelope
-    set?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    disconnect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    delete?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    connect?: ProfDisciplinasWhereUniqueInput | ProfDisciplinasWhereUniqueInput[]
-    update?: ProfDisciplinasUpdateWithWhereUniqueWithoutProfessorInput | ProfDisciplinasUpdateWithWhereUniqueWithoutProfessorInput[]
-    updateMany?: ProfDisciplinasUpdateManyWithWhereWithoutProfessorInput | ProfDisciplinasUpdateManyWithWhereWithoutProfessorInput[]
-    deleteMany?: ProfDisciplinasScalarWhereInput | ProfDisciplinasScalarWhereInput[]
-  }
-
-  export type ProfTurmaUncheckedUpdateManyWithoutProfessorNestedInput = {
-    create?: XOR<ProfTurmaCreateWithoutProfessorInput, ProfTurmaUncheckedCreateWithoutProfessorInput> | ProfTurmaCreateWithoutProfessorInput[] | ProfTurmaUncheckedCreateWithoutProfessorInput[]
-    connectOrCreate?: ProfTurmaCreateOrConnectWithoutProfessorInput | ProfTurmaCreateOrConnectWithoutProfessorInput[]
-    upsert?: ProfTurmaUpsertWithWhereUniqueWithoutProfessorInput | ProfTurmaUpsertWithWhereUniqueWithoutProfessorInput[]
-    createMany?: ProfTurmaCreateManyProfessorInputEnvelope
-    set?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    disconnect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    delete?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    connect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    update?: ProfTurmaUpdateWithWhereUniqueWithoutProfessorInput | ProfTurmaUpdateWithWhereUniqueWithoutProfessorInput[]
-    updateMany?: ProfTurmaUpdateManyWithWhereWithoutProfessorInput | ProfTurmaUpdateManyWithWhereWithoutProfessorInput[]
-    deleteMany?: ProfTurmaScalarWhereInput | ProfTurmaScalarWhereInput[]
+  export type ProfTurmaDisciplinaUncheckedUpdateManyWithoutProfessorNestedInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutProfessorInput, ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput> | ProfTurmaDisciplinaCreateWithoutProfessorInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput | ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput[]
+    upsert?: ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutProfessorInput | ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutProfessorInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyProfessorInputEnvelope
+    set?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    disconnect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    delete?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    update?: ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutProfessorInput | ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutProfessorInput[]
+    updateMany?: ProfTurmaDisciplinaUpdateManyWithWhereWithoutProfessorInput | ProfTurmaDisciplinaUpdateManyWithWhereWithoutProfessorInput[]
+    deleteMany?: ProfTurmaDisciplinaScalarWhereInput | ProfTurmaDisciplinaScalarWhereInput[]
   }
 
   export type TempoLectivoUncheckedUpdateManyWithoutProfessorNestedInput = {
@@ -17732,60 +17613,60 @@ export namespace Prisma {
     deleteMany?: TempoLectivoScalarWhereInput | TempoLectivoScalarWhereInput[]
   }
 
-  export type DisciplinaCreateNestedOneWithoutProfDisciplinasInput = {
-    create?: XOR<DisciplinaCreateWithoutProfDisciplinasInput, DisciplinaUncheckedCreateWithoutProfDisciplinasInput>
-    connectOrCreate?: DisciplinaCreateOrConnectWithoutProfDisciplinasInput
+  export type DisciplinaCreateNestedOneWithoutProfTurmaDisciplinaInput = {
+    create?: XOR<DisciplinaCreateWithoutProfTurmaDisciplinaInput, DisciplinaUncheckedCreateWithoutProfTurmaDisciplinaInput>
+    connectOrCreate?: DisciplinaCreateOrConnectWithoutProfTurmaDisciplinaInput
     connect?: DisciplinaWhereUniqueInput
   }
 
-  export type ProfessorCreateNestedOneWithoutProfDisciplinasInput = {
-    create?: XOR<ProfessorCreateWithoutProfDisciplinasInput, ProfessorUncheckedCreateWithoutProfDisciplinasInput>
-    connectOrCreate?: ProfessorCreateOrConnectWithoutProfDisciplinasInput
+  export type ProfessorCreateNestedOneWithoutProfTurmaDisciplinaInput = {
+    create?: XOR<ProfessorCreateWithoutProfTurmaDisciplinaInput, ProfessorUncheckedCreateWithoutProfTurmaDisciplinaInput>
+    connectOrCreate?: ProfessorCreateOrConnectWithoutProfTurmaDisciplinaInput
     connect?: ProfessorWhereUniqueInput
   }
 
-  export type DisciplinaUpdateOneRequiredWithoutProfDisciplinasNestedInput = {
-    create?: XOR<DisciplinaCreateWithoutProfDisciplinasInput, DisciplinaUncheckedCreateWithoutProfDisciplinasInput>
-    connectOrCreate?: DisciplinaCreateOrConnectWithoutProfDisciplinasInput
-    upsert?: DisciplinaUpsertWithoutProfDisciplinasInput
+  export type TurmaCreateNestedOneWithoutProfTurmaDisciplinaInput = {
+    create?: XOR<TurmaCreateWithoutProfTurmaDisciplinaInput, TurmaUncheckedCreateWithoutProfTurmaDisciplinaInput>
+    connectOrCreate?: TurmaCreateOrConnectWithoutProfTurmaDisciplinaInput
+    connect?: TurmaWhereUniqueInput
+  }
+
+  export type DisciplinaUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput = {
+    create?: XOR<DisciplinaCreateWithoutProfTurmaDisciplinaInput, DisciplinaUncheckedCreateWithoutProfTurmaDisciplinaInput>
+    connectOrCreate?: DisciplinaCreateOrConnectWithoutProfTurmaDisciplinaInput
+    upsert?: DisciplinaUpsertWithoutProfTurmaDisciplinaInput
     connect?: DisciplinaWhereUniqueInput
-    update?: XOR<XOR<DisciplinaUpdateToOneWithWhereWithoutProfDisciplinasInput, DisciplinaUpdateWithoutProfDisciplinasInput>, DisciplinaUncheckedUpdateWithoutProfDisciplinasInput>
+    update?: XOR<XOR<DisciplinaUpdateToOneWithWhereWithoutProfTurmaDisciplinaInput, DisciplinaUpdateWithoutProfTurmaDisciplinaInput>, DisciplinaUncheckedUpdateWithoutProfTurmaDisciplinaInput>
   }
 
-  export type ProfessorUpdateOneRequiredWithoutProfDisciplinasNestedInput = {
-    create?: XOR<ProfessorCreateWithoutProfDisciplinasInput, ProfessorUncheckedCreateWithoutProfDisciplinasInput>
-    connectOrCreate?: ProfessorCreateOrConnectWithoutProfDisciplinasInput
-    upsert?: ProfessorUpsertWithoutProfDisciplinasInput
+  export type ProfessorUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput = {
+    create?: XOR<ProfessorCreateWithoutProfTurmaDisciplinaInput, ProfessorUncheckedCreateWithoutProfTurmaDisciplinaInput>
+    connectOrCreate?: ProfessorCreateOrConnectWithoutProfTurmaDisciplinaInput
+    upsert?: ProfessorUpsertWithoutProfTurmaDisciplinaInput
     connect?: ProfessorWhereUniqueInput
-    update?: XOR<XOR<ProfessorUpdateToOneWithWhereWithoutProfDisciplinasInput, ProfessorUpdateWithoutProfDisciplinasInput>, ProfessorUncheckedUpdateWithoutProfDisciplinasInput>
+    update?: XOR<XOR<ProfessorUpdateToOneWithWhereWithoutProfTurmaDisciplinaInput, ProfessorUpdateWithoutProfTurmaDisciplinaInput>, ProfessorUncheckedUpdateWithoutProfTurmaDisciplinaInput>
   }
 
-  export type ProfessorCreateNestedOneWithoutProfTurmaInput = {
-    create?: XOR<ProfessorCreateWithoutProfTurmaInput, ProfessorUncheckedCreateWithoutProfTurmaInput>
-    connectOrCreate?: ProfessorCreateOrConnectWithoutProfTurmaInput
-    connect?: ProfessorWhereUniqueInput
+  export type TurmaUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput = {
+    create?: XOR<TurmaCreateWithoutProfTurmaDisciplinaInput, TurmaUncheckedCreateWithoutProfTurmaDisciplinaInput>
+    connectOrCreate?: TurmaCreateOrConnectWithoutProfTurmaDisciplinaInput
+    upsert?: TurmaUpsertWithoutProfTurmaDisciplinaInput
+    connect?: TurmaWhereUniqueInput
+    update?: XOR<XOR<TurmaUpdateToOneWithWhereWithoutProfTurmaDisciplinaInput, TurmaUpdateWithoutProfTurmaDisciplinaInput>, TurmaUncheckedUpdateWithoutProfTurmaDisciplinaInput>
   }
 
-  export type TurmaCreateNestedOneWithoutProfTurmaInput = {
-    create?: XOR<TurmaCreateWithoutProfTurmaInput, TurmaUncheckedCreateWithoutProfTurmaInput>
-    connectOrCreate?: TurmaCreateOrConnectWithoutProfTurmaInput
+  export type TurmaCreateNestedOneWithoutTurmaDisciplinaInput = {
+    create?: XOR<TurmaCreateWithoutTurmaDisciplinaInput, TurmaUncheckedCreateWithoutTurmaDisciplinaInput>
+    connectOrCreate?: TurmaCreateOrConnectWithoutTurmaDisciplinaInput
     connect?: TurmaWhereUniqueInput
   }
 
-  export type ProfessorUpdateOneRequiredWithoutProfTurmaNestedInput = {
-    create?: XOR<ProfessorCreateWithoutProfTurmaInput, ProfessorUncheckedCreateWithoutProfTurmaInput>
-    connectOrCreate?: ProfessorCreateOrConnectWithoutProfTurmaInput
-    upsert?: ProfessorUpsertWithoutProfTurmaInput
-    connect?: ProfessorWhereUniqueInput
-    update?: XOR<XOR<ProfessorUpdateToOneWithWhereWithoutProfTurmaInput, ProfessorUpdateWithoutProfTurmaInput>, ProfessorUncheckedUpdateWithoutProfTurmaInput>
-  }
-
-  export type TurmaUpdateOneRequiredWithoutProfTurmaNestedInput = {
-    create?: XOR<TurmaCreateWithoutProfTurmaInput, TurmaUncheckedCreateWithoutProfTurmaInput>
-    connectOrCreate?: TurmaCreateOrConnectWithoutProfTurmaInput
-    upsert?: TurmaUpsertWithoutProfTurmaInput
+  export type TurmaUpdateOneRequiredWithoutTurmaDisciplinaNestedInput = {
+    create?: XOR<TurmaCreateWithoutTurmaDisciplinaInput, TurmaUncheckedCreateWithoutTurmaDisciplinaInput>
+    connectOrCreate?: TurmaCreateOrConnectWithoutTurmaDisciplinaInput
+    upsert?: TurmaUpsertWithoutTurmaDisciplinaInput
     connect?: TurmaWhereUniqueInput
-    update?: XOR<XOR<TurmaUpdateToOneWithWhereWithoutProfTurmaInput, TurmaUpdateWithoutProfTurmaInput>, TurmaUncheckedUpdateWithoutProfTurmaInput>
+    update?: XOR<XOR<TurmaUpdateToOneWithWhereWithoutTurmaDisciplinaInput, TurmaUpdateWithoutTurmaDisciplinaInput>, TurmaUncheckedUpdateWithoutTurmaDisciplinaInput>
   }
 
   export type TempoLectivoCreateNestedManyWithoutSalaInput = {
@@ -17914,11 +17795,11 @@ export namespace Prisma {
     update?: XOR<XOR<TurmaUpdateToOneWithWhereWithoutTempoLectivoInput, TurmaUpdateWithoutTempoLectivoInput>, TurmaUncheckedUpdateWithoutTempoLectivoInput>
   }
 
-  export type ProfTurmaCreateNestedManyWithoutTurmaInput = {
-    create?: XOR<ProfTurmaCreateWithoutTurmaInput, ProfTurmaUncheckedCreateWithoutTurmaInput> | ProfTurmaCreateWithoutTurmaInput[] | ProfTurmaUncheckedCreateWithoutTurmaInput[]
-    connectOrCreate?: ProfTurmaCreateOrConnectWithoutTurmaInput | ProfTurmaCreateOrConnectWithoutTurmaInput[]
-    createMany?: ProfTurmaCreateManyTurmaInputEnvelope
-    connect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
+  export type ProfTurmaDisciplinaCreateNestedManyWithoutTurmaInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutTurmaInput, ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput> | ProfTurmaDisciplinaCreateWithoutTurmaInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput | ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyTurmaInputEnvelope
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
   }
 
   export type TempoLectivoCreateNestedManyWithoutTurmaInput = {
@@ -17926,6 +17807,13 @@ export namespace Prisma {
     connectOrCreate?: TempoLectivoCreateOrConnectWithoutTurmaInput | TempoLectivoCreateOrConnectWithoutTurmaInput[]
     createMany?: TempoLectivoCreateManyTurmaInputEnvelope
     connect?: TempoLectivoWhereUniqueInput | TempoLectivoWhereUniqueInput[]
+  }
+
+  export type TurmaDisciplinaCreateNestedManyWithoutTurmaInput = {
+    create?: XOR<TurmaDisciplinaCreateWithoutTurmaInput, TurmaDisciplinaUncheckedCreateWithoutTurmaInput> | TurmaDisciplinaCreateWithoutTurmaInput[] | TurmaDisciplinaUncheckedCreateWithoutTurmaInput[]
+    connectOrCreate?: TurmaDisciplinaCreateOrConnectWithoutTurmaInput | TurmaDisciplinaCreateOrConnectWithoutTurmaInput[]
+    createMany?: TurmaDisciplinaCreateManyTurmaInputEnvelope
+    connect?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
   }
 
   export type ClasseCreateNestedOneWithoutTurmaInput = {
@@ -17940,11 +17828,11 @@ export namespace Prisma {
     connect?: CursoWhereUniqueInput
   }
 
-  export type ProfTurmaUncheckedCreateNestedManyWithoutTurmaInput = {
-    create?: XOR<ProfTurmaCreateWithoutTurmaInput, ProfTurmaUncheckedCreateWithoutTurmaInput> | ProfTurmaCreateWithoutTurmaInput[] | ProfTurmaUncheckedCreateWithoutTurmaInput[]
-    connectOrCreate?: ProfTurmaCreateOrConnectWithoutTurmaInput | ProfTurmaCreateOrConnectWithoutTurmaInput[]
-    createMany?: ProfTurmaCreateManyTurmaInputEnvelope
-    connect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
+  export type ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutTurmaInput, ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput> | ProfTurmaDisciplinaCreateWithoutTurmaInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput | ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyTurmaInputEnvelope
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
   }
 
   export type TempoLectivoUncheckedCreateNestedManyWithoutTurmaInput = {
@@ -17954,18 +17842,25 @@ export namespace Prisma {
     connect?: TempoLectivoWhereUniqueInput | TempoLectivoWhereUniqueInput[]
   }
 
-  export type ProfTurmaUpdateManyWithoutTurmaNestedInput = {
-    create?: XOR<ProfTurmaCreateWithoutTurmaInput, ProfTurmaUncheckedCreateWithoutTurmaInput> | ProfTurmaCreateWithoutTurmaInput[] | ProfTurmaUncheckedCreateWithoutTurmaInput[]
-    connectOrCreate?: ProfTurmaCreateOrConnectWithoutTurmaInput | ProfTurmaCreateOrConnectWithoutTurmaInput[]
-    upsert?: ProfTurmaUpsertWithWhereUniqueWithoutTurmaInput | ProfTurmaUpsertWithWhereUniqueWithoutTurmaInput[]
-    createMany?: ProfTurmaCreateManyTurmaInputEnvelope
-    set?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    disconnect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    delete?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    connect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    update?: ProfTurmaUpdateWithWhereUniqueWithoutTurmaInput | ProfTurmaUpdateWithWhereUniqueWithoutTurmaInput[]
-    updateMany?: ProfTurmaUpdateManyWithWhereWithoutTurmaInput | ProfTurmaUpdateManyWithWhereWithoutTurmaInput[]
-    deleteMany?: ProfTurmaScalarWhereInput | ProfTurmaScalarWhereInput[]
+  export type TurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput = {
+    create?: XOR<TurmaDisciplinaCreateWithoutTurmaInput, TurmaDisciplinaUncheckedCreateWithoutTurmaInput> | TurmaDisciplinaCreateWithoutTurmaInput[] | TurmaDisciplinaUncheckedCreateWithoutTurmaInput[]
+    connectOrCreate?: TurmaDisciplinaCreateOrConnectWithoutTurmaInput | TurmaDisciplinaCreateOrConnectWithoutTurmaInput[]
+    createMany?: TurmaDisciplinaCreateManyTurmaInputEnvelope
+    connect?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+  }
+
+  export type ProfTurmaDisciplinaUpdateManyWithoutTurmaNestedInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutTurmaInput, ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput> | ProfTurmaDisciplinaCreateWithoutTurmaInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput | ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput[]
+    upsert?: ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput | ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyTurmaInputEnvelope
+    set?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    disconnect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    delete?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    update?: ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput | ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput[]
+    updateMany?: ProfTurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput | ProfTurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput[]
+    deleteMany?: ProfTurmaDisciplinaScalarWhereInput | ProfTurmaDisciplinaScalarWhereInput[]
   }
 
   export type TempoLectivoUpdateManyWithoutTurmaNestedInput = {
@@ -17980,6 +17875,20 @@ export namespace Prisma {
     update?: TempoLectivoUpdateWithWhereUniqueWithoutTurmaInput | TempoLectivoUpdateWithWhereUniqueWithoutTurmaInput[]
     updateMany?: TempoLectivoUpdateManyWithWhereWithoutTurmaInput | TempoLectivoUpdateManyWithWhereWithoutTurmaInput[]
     deleteMany?: TempoLectivoScalarWhereInput | TempoLectivoScalarWhereInput[]
+  }
+
+  export type TurmaDisciplinaUpdateManyWithoutTurmaNestedInput = {
+    create?: XOR<TurmaDisciplinaCreateWithoutTurmaInput, TurmaDisciplinaUncheckedCreateWithoutTurmaInput> | TurmaDisciplinaCreateWithoutTurmaInput[] | TurmaDisciplinaUncheckedCreateWithoutTurmaInput[]
+    connectOrCreate?: TurmaDisciplinaCreateOrConnectWithoutTurmaInput | TurmaDisciplinaCreateOrConnectWithoutTurmaInput[]
+    upsert?: TurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput | TurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput[]
+    createMany?: TurmaDisciplinaCreateManyTurmaInputEnvelope
+    set?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+    disconnect?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+    delete?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+    connect?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+    update?: TurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput | TurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput[]
+    updateMany?: TurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput | TurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput[]
+    deleteMany?: TurmaDisciplinaScalarWhereInput | TurmaDisciplinaScalarWhereInput[]
   }
 
   export type ClasseUpdateOneRequiredWithoutTurmaNestedInput = {
@@ -17998,18 +17907,18 @@ export namespace Prisma {
     update?: XOR<XOR<CursoUpdateToOneWithWhereWithoutTurmaInput, CursoUpdateWithoutTurmaInput>, CursoUncheckedUpdateWithoutTurmaInput>
   }
 
-  export type ProfTurmaUncheckedUpdateManyWithoutTurmaNestedInput = {
-    create?: XOR<ProfTurmaCreateWithoutTurmaInput, ProfTurmaUncheckedCreateWithoutTurmaInput> | ProfTurmaCreateWithoutTurmaInput[] | ProfTurmaUncheckedCreateWithoutTurmaInput[]
-    connectOrCreate?: ProfTurmaCreateOrConnectWithoutTurmaInput | ProfTurmaCreateOrConnectWithoutTurmaInput[]
-    upsert?: ProfTurmaUpsertWithWhereUniqueWithoutTurmaInput | ProfTurmaUpsertWithWhereUniqueWithoutTurmaInput[]
-    createMany?: ProfTurmaCreateManyTurmaInputEnvelope
-    set?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    disconnect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    delete?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    connect?: ProfTurmaWhereUniqueInput | ProfTurmaWhereUniqueInput[]
-    update?: ProfTurmaUpdateWithWhereUniqueWithoutTurmaInput | ProfTurmaUpdateWithWhereUniqueWithoutTurmaInput[]
-    updateMany?: ProfTurmaUpdateManyWithWhereWithoutTurmaInput | ProfTurmaUpdateManyWithWhereWithoutTurmaInput[]
-    deleteMany?: ProfTurmaScalarWhereInput | ProfTurmaScalarWhereInput[]
+  export type ProfTurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput = {
+    create?: XOR<ProfTurmaDisciplinaCreateWithoutTurmaInput, ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput> | ProfTurmaDisciplinaCreateWithoutTurmaInput[] | ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput[]
+    connectOrCreate?: ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput | ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput[]
+    upsert?: ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput | ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput[]
+    createMany?: ProfTurmaDisciplinaCreateManyTurmaInputEnvelope
+    set?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    disconnect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    delete?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    connect?: ProfTurmaDisciplinaWhereUniqueInput | ProfTurmaDisciplinaWhereUniqueInput[]
+    update?: ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput | ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput[]
+    updateMany?: ProfTurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput | ProfTurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput[]
+    deleteMany?: ProfTurmaDisciplinaScalarWhereInput | ProfTurmaDisciplinaScalarWhereInput[]
   }
 
   export type TempoLectivoUncheckedUpdateManyWithoutTurmaNestedInput = {
@@ -18024,6 +17933,20 @@ export namespace Prisma {
     update?: TempoLectivoUpdateWithWhereUniqueWithoutTurmaInput | TempoLectivoUpdateWithWhereUniqueWithoutTurmaInput[]
     updateMany?: TempoLectivoUpdateManyWithWhereWithoutTurmaInput | TempoLectivoUpdateManyWithWhereWithoutTurmaInput[]
     deleteMany?: TempoLectivoScalarWhereInput | TempoLectivoScalarWhereInput[]
+  }
+
+  export type TurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput = {
+    create?: XOR<TurmaDisciplinaCreateWithoutTurmaInput, TurmaDisciplinaUncheckedCreateWithoutTurmaInput> | TurmaDisciplinaCreateWithoutTurmaInput[] | TurmaDisciplinaUncheckedCreateWithoutTurmaInput[]
+    connectOrCreate?: TurmaDisciplinaCreateOrConnectWithoutTurmaInput | TurmaDisciplinaCreateOrConnectWithoutTurmaInput[]
+    upsert?: TurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput | TurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput[]
+    createMany?: TurmaDisciplinaCreateManyTurmaInputEnvelope
+    set?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+    disconnect?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+    delete?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+    connect?: TurmaDisciplinaWhereUniqueInput | TurmaDisciplinaWhereUniqueInput[]
+    update?: TurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput | TurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput[]
+    updateMany?: TurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput | TurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput[]
+    deleteMany?: TurmaDisciplinaScalarWhereInput | TurmaDisciplinaScalarWhereInput[]
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -18164,8 +18087,9 @@ export namespace Prisma {
 
   export type TurmaCreateWithoutClasseInput = {
     nome: string
-    ProfTurma?: ProfTurmaCreateNestedManyWithoutTurmaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutTurmaInput
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaCreateNestedManyWithoutTurmaInput
     Curso: CursoCreateNestedOneWithoutTurmaInput
   }
 
@@ -18173,8 +18097,9 @@ export namespace Prisma {
     idTurma?: number
     nome: string
     curso: string
-    ProfTurma?: ProfTurmaUncheckedCreateNestedManyWithoutTurmaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
   }
 
   export type TurmaCreateOrConnectWithoutClasseInput = {
@@ -18215,8 +18140,9 @@ export namespace Prisma {
 
   export type TurmaCreateWithoutCursoInput = {
     nome: string
-    ProfTurma?: ProfTurmaCreateNestedManyWithoutTurmaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutTurmaInput
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaCreateNestedManyWithoutTurmaInput
     Classe: ClasseCreateNestedOneWithoutTurmaInput
   }
 
@@ -18224,8 +18150,9 @@ export namespace Prisma {
     idTurma?: number
     nome: string
     classe: string
-    ProfTurma?: ProfTurmaUncheckedCreateNestedManyWithoutTurmaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
   }
 
   export type TurmaCreateOrConnectWithoutCursoInput = {
@@ -18262,7 +18189,7 @@ export namespace Prisma {
 
   export type DisponibilidadeUncheckedCreateWithoutDiaSemanaInput = {
     idDisponibilidade?: number
-    periodoId: string
+    periodo: string
     ordem: number
     professorId: number
   }
@@ -18291,7 +18218,7 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
   }
@@ -18328,7 +18255,7 @@ export namespace Prisma {
     NOT?: DisponibilidadeScalarWhereInput | DisponibilidadeScalarWhereInput[]
     idDisponibilidade?: IntFilter<"Disponibilidade"> | number
     diaSemana?: StringFilter<"Disponibilidade"> | string
-    periodoId?: StringFilter<"Disponibilidade"> | string
+    periodo?: StringFilter<"Disponibilidade"> | string
     ordem?: IntFilter<"Disponibilidade"> | number
     professorId?: IntFilter<"Disponibilidade"> | number
   }
@@ -18358,27 +18285,29 @@ export namespace Prisma {
     periodoId?: StringFilter<"TempoLectivo"> | string
     ordem?: IntFilter<"TempoLectivo"> | number
     professorId?: IntFilter<"TempoLectivo"> | number
-    disciplinaId?: IntFilter<"TempoLectivo"> | number
+    disciplina?: StringFilter<"TempoLectivo"> | string
     salaId?: IntFilter<"TempoLectivo"> | number
     turmaId?: IntFilter<"TempoLectivo"> | number
   }
 
-  export type ProfDisciplinasCreateWithoutDisciplinaInput = {
-    Professor: ProfessorCreateNestedOneWithoutProfDisciplinasInput
+  export type ProfTurmaDisciplinaCreateWithoutDisciplinaInput = {
+    Professor: ProfessorCreateNestedOneWithoutProfTurmaDisciplinaInput
+    Turma: TurmaCreateNestedOneWithoutProfTurmaDisciplinaInput
   }
 
-  export type ProfDisciplinasUncheckedCreateWithoutDisciplinaInput = {
-    idProfDisciplina?: number
+  export type ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput = {
+    idProfTurma?: number
     professorId: number
+    turmaId: number
   }
 
-  export type ProfDisciplinasCreateOrConnectWithoutDisciplinaInput = {
-    where: ProfDisciplinasWhereUniqueInput
-    create: XOR<ProfDisciplinasCreateWithoutDisciplinaInput, ProfDisciplinasUncheckedCreateWithoutDisciplinaInput>
+  export type ProfTurmaDisciplinaCreateOrConnectWithoutDisciplinaInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    create: XOR<ProfTurmaDisciplinaCreateWithoutDisciplinaInput, ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput>
   }
 
-  export type ProfDisciplinasCreateManyDisciplinaInputEnvelope = {
-    data: ProfDisciplinasCreateManyDisciplinaInput | ProfDisciplinasCreateManyDisciplinaInput[]
+  export type ProfTurmaDisciplinaCreateManyDisciplinaInputEnvelope = {
+    data: ProfTurmaDisciplinaCreateManyDisciplinaInput | ProfTurmaDisciplinaCreateManyDisciplinaInput[]
     skipDuplicates?: boolean
   }
 
@@ -18411,29 +18340,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ProfDisciplinasUpsertWithWhereUniqueWithoutDisciplinaInput = {
-    where: ProfDisciplinasWhereUniqueInput
-    update: XOR<ProfDisciplinasUpdateWithoutDisciplinaInput, ProfDisciplinasUncheckedUpdateWithoutDisciplinaInput>
-    create: XOR<ProfDisciplinasCreateWithoutDisciplinaInput, ProfDisciplinasUncheckedCreateWithoutDisciplinaInput>
+  export type ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutDisciplinaInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    update: XOR<ProfTurmaDisciplinaUpdateWithoutDisciplinaInput, ProfTurmaDisciplinaUncheckedUpdateWithoutDisciplinaInput>
+    create: XOR<ProfTurmaDisciplinaCreateWithoutDisciplinaInput, ProfTurmaDisciplinaUncheckedCreateWithoutDisciplinaInput>
   }
 
-  export type ProfDisciplinasUpdateWithWhereUniqueWithoutDisciplinaInput = {
-    where: ProfDisciplinasWhereUniqueInput
-    data: XOR<ProfDisciplinasUpdateWithoutDisciplinaInput, ProfDisciplinasUncheckedUpdateWithoutDisciplinaInput>
+  export type ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutDisciplinaInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    data: XOR<ProfTurmaDisciplinaUpdateWithoutDisciplinaInput, ProfTurmaDisciplinaUncheckedUpdateWithoutDisciplinaInput>
   }
 
-  export type ProfDisciplinasUpdateManyWithWhereWithoutDisciplinaInput = {
-    where: ProfDisciplinasScalarWhereInput
-    data: XOR<ProfDisciplinasUpdateManyMutationInput, ProfDisciplinasUncheckedUpdateManyWithoutDisciplinaInput>
+  export type ProfTurmaDisciplinaUpdateManyWithWhereWithoutDisciplinaInput = {
+    where: ProfTurmaDisciplinaScalarWhereInput
+    data: XOR<ProfTurmaDisciplinaUpdateManyMutationInput, ProfTurmaDisciplinaUncheckedUpdateManyWithoutDisciplinaInput>
   }
 
-  export type ProfDisciplinasScalarWhereInput = {
-    AND?: ProfDisciplinasScalarWhereInput | ProfDisciplinasScalarWhereInput[]
-    OR?: ProfDisciplinasScalarWhereInput[]
-    NOT?: ProfDisciplinasScalarWhereInput | ProfDisciplinasScalarWhereInput[]
-    idProfDisciplina?: IntFilter<"ProfDisciplinas"> | number
-    professorId?: IntFilter<"ProfDisciplinas"> | number
-    disciplinaId?: IntFilter<"ProfDisciplinas"> | number
+  export type ProfTurmaDisciplinaScalarWhereInput = {
+    AND?: ProfTurmaDisciplinaScalarWhereInput | ProfTurmaDisciplinaScalarWhereInput[]
+    OR?: ProfTurmaDisciplinaScalarWhereInput[]
+    NOT?: ProfTurmaDisciplinaScalarWhereInput | ProfTurmaDisciplinaScalarWhereInput[]
+    idProfTurma?: IntFilter<"ProfTurmaDisciplina"> | number
+    professorId?: IntFilter<"ProfTurmaDisciplina"> | number
+    turmaId?: IntFilter<"ProfTurmaDisciplina"> | number
+    disciplinaNome?: StringFilter<"ProfTurmaDisciplina"> | string
   }
 
   export type TempoLectivoUpsertWithWhereUniqueWithoutDisciplinaInput = {
@@ -18488,8 +18418,7 @@ export namespace Prisma {
     telefone?: string | null
     created_at?: Date | string
     updated_at: Date | string
-    ProfDisciplinas?: ProfDisciplinasCreateNestedManyWithoutProfessorInput
-    ProfTurma?: ProfTurmaCreateNestedManyWithoutProfessorInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutProfessorInput
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutProfessorInput
   }
 
@@ -18500,8 +18429,7 @@ export namespace Prisma {
     telefone?: string | null
     created_at?: Date | string
     updated_at: Date | string
-    ProfDisciplinas?: ProfDisciplinasUncheckedCreateNestedManyWithoutProfessorInput
-    ProfTurma?: ProfTurmaUncheckedCreateNestedManyWithoutProfessorInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutProfessorInput
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutProfessorInput
   }
 
@@ -18569,8 +18497,7 @@ export namespace Prisma {
     telefone?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    ProfDisciplinas?: ProfDisciplinasUpdateManyWithoutProfessorNestedInput
-    ProfTurma?: ProfTurmaUpdateManyWithoutProfessorNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutProfessorNestedInput
     TempoLectivo?: TempoLectivoUpdateManyWithoutProfessorNestedInput
   }
 
@@ -18581,8 +18508,7 @@ export namespace Prisma {
     telefone?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    ProfDisciplinas?: ProfDisciplinasUncheckedUpdateManyWithoutProfessorNestedInput
-    ProfTurma?: ProfTurmaUncheckedUpdateManyWithoutProfessorNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutProfessorNestedInput
     TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutProfessorNestedInput
   }
 
@@ -18595,7 +18521,7 @@ export namespace Prisma {
   export type DisponibilidadeUncheckedCreateWithoutProfessorInput = {
     idDisponibilidade?: number
     diaSemana: string
-    periodoId: string
+    periodo: string
     ordem: number
   }
 
@@ -18609,41 +18535,24 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type ProfDisciplinasCreateWithoutProfessorInput = {
-    Disciplina: DisciplinaCreateNestedOneWithoutProfDisciplinasInput
+  export type ProfTurmaDisciplinaCreateWithoutProfessorInput = {
+    disciplina: DisciplinaCreateNestedOneWithoutProfTurmaDisciplinaInput
+    Turma: TurmaCreateNestedOneWithoutProfTurmaDisciplinaInput
   }
 
-  export type ProfDisciplinasUncheckedCreateWithoutProfessorInput = {
-    idProfDisciplina?: number
-    disciplinaId: number
-  }
-
-  export type ProfDisciplinasCreateOrConnectWithoutProfessorInput = {
-    where: ProfDisciplinasWhereUniqueInput
-    create: XOR<ProfDisciplinasCreateWithoutProfessorInput, ProfDisciplinasUncheckedCreateWithoutProfessorInput>
-  }
-
-  export type ProfDisciplinasCreateManyProfessorInputEnvelope = {
-    data: ProfDisciplinasCreateManyProfessorInput | ProfDisciplinasCreateManyProfessorInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type ProfTurmaCreateWithoutProfessorInput = {
-    Turma: TurmaCreateNestedOneWithoutProfTurmaInput
-  }
-
-  export type ProfTurmaUncheckedCreateWithoutProfessorInput = {
+  export type ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput = {
     idProfTurma?: number
     turmaId: number
+    disciplinaNome: string
   }
 
-  export type ProfTurmaCreateOrConnectWithoutProfessorInput = {
-    where: ProfTurmaWhereUniqueInput
-    create: XOR<ProfTurmaCreateWithoutProfessorInput, ProfTurmaUncheckedCreateWithoutProfessorInput>
+  export type ProfTurmaDisciplinaCreateOrConnectWithoutProfessorInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    create: XOR<ProfTurmaDisciplinaCreateWithoutProfessorInput, ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput>
   }
 
-  export type ProfTurmaCreateManyProfessorInputEnvelope = {
-    data: ProfTurmaCreateManyProfessorInput | ProfTurmaCreateManyProfessorInput[]
+  export type ProfTurmaDisciplinaCreateManyProfessorInputEnvelope = {
+    data: ProfTurmaDisciplinaCreateManyProfessorInput | ProfTurmaDisciplinaCreateManyProfessorInput[]
     skipDuplicates?: boolean
   }
 
@@ -18661,7 +18570,7 @@ export namespace Prisma {
     diaSemana: string
     periodoId: string
     ordem: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
   }
@@ -18692,45 +18601,20 @@ export namespace Prisma {
     data: XOR<DisponibilidadeUpdateManyMutationInput, DisponibilidadeUncheckedUpdateManyWithoutProfessorInput>
   }
 
-  export type ProfDisciplinasUpsertWithWhereUniqueWithoutProfessorInput = {
-    where: ProfDisciplinasWhereUniqueInput
-    update: XOR<ProfDisciplinasUpdateWithoutProfessorInput, ProfDisciplinasUncheckedUpdateWithoutProfessorInput>
-    create: XOR<ProfDisciplinasCreateWithoutProfessorInput, ProfDisciplinasUncheckedCreateWithoutProfessorInput>
+  export type ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutProfessorInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    update: XOR<ProfTurmaDisciplinaUpdateWithoutProfessorInput, ProfTurmaDisciplinaUncheckedUpdateWithoutProfessorInput>
+    create: XOR<ProfTurmaDisciplinaCreateWithoutProfessorInput, ProfTurmaDisciplinaUncheckedCreateWithoutProfessorInput>
   }
 
-  export type ProfDisciplinasUpdateWithWhereUniqueWithoutProfessorInput = {
-    where: ProfDisciplinasWhereUniqueInput
-    data: XOR<ProfDisciplinasUpdateWithoutProfessorInput, ProfDisciplinasUncheckedUpdateWithoutProfessorInput>
+  export type ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutProfessorInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    data: XOR<ProfTurmaDisciplinaUpdateWithoutProfessorInput, ProfTurmaDisciplinaUncheckedUpdateWithoutProfessorInput>
   }
 
-  export type ProfDisciplinasUpdateManyWithWhereWithoutProfessorInput = {
-    where: ProfDisciplinasScalarWhereInput
-    data: XOR<ProfDisciplinasUpdateManyMutationInput, ProfDisciplinasUncheckedUpdateManyWithoutProfessorInput>
-  }
-
-  export type ProfTurmaUpsertWithWhereUniqueWithoutProfessorInput = {
-    where: ProfTurmaWhereUniqueInput
-    update: XOR<ProfTurmaUpdateWithoutProfessorInput, ProfTurmaUncheckedUpdateWithoutProfessorInput>
-    create: XOR<ProfTurmaCreateWithoutProfessorInput, ProfTurmaUncheckedCreateWithoutProfessorInput>
-  }
-
-  export type ProfTurmaUpdateWithWhereUniqueWithoutProfessorInput = {
-    where: ProfTurmaWhereUniqueInput
-    data: XOR<ProfTurmaUpdateWithoutProfessorInput, ProfTurmaUncheckedUpdateWithoutProfessorInput>
-  }
-
-  export type ProfTurmaUpdateManyWithWhereWithoutProfessorInput = {
-    where: ProfTurmaScalarWhereInput
-    data: XOR<ProfTurmaUpdateManyMutationInput, ProfTurmaUncheckedUpdateManyWithoutProfessorInput>
-  }
-
-  export type ProfTurmaScalarWhereInput = {
-    AND?: ProfTurmaScalarWhereInput | ProfTurmaScalarWhereInput[]
-    OR?: ProfTurmaScalarWhereInput[]
-    NOT?: ProfTurmaScalarWhereInput | ProfTurmaScalarWhereInput[]
-    idProfTurma?: IntFilter<"ProfTurma"> | number
-    professorId?: IntFilter<"ProfTurma"> | number
-    turmaId?: IntFilter<"ProfTurma"> | number
+  export type ProfTurmaDisciplinaUpdateManyWithWhereWithoutProfessorInput = {
+    where: ProfTurmaDisciplinaScalarWhereInput
+    data: XOR<ProfTurmaDisciplinaUpdateManyMutationInput, ProfTurmaDisciplinaUncheckedUpdateManyWithoutProfessorInput>
   }
 
   export type TempoLectivoUpsertWithWhereUniqueWithoutProfessorInput = {
@@ -18786,7 +18670,7 @@ export namespace Prisma {
     diaSemana: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
   }
@@ -18833,34 +18717,32 @@ export namespace Prisma {
     data: XOR<TempoLectivoUpdateManyMutationInput, TempoLectivoUncheckedUpdateManyWithoutPeriodoInput>
   }
 
-  export type DisciplinaCreateWithoutProfDisciplinasInput = {
+  export type DisciplinaCreateWithoutProfTurmaDisciplinaInput = {
     nome: string
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutDisciplinaInput
   }
 
-  export type DisciplinaUncheckedCreateWithoutProfDisciplinasInput = {
-    idDisciplina?: number
+  export type DisciplinaUncheckedCreateWithoutProfTurmaDisciplinaInput = {
     nome: string
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutDisciplinaInput
   }
 
-  export type DisciplinaCreateOrConnectWithoutProfDisciplinasInput = {
+  export type DisciplinaCreateOrConnectWithoutProfTurmaDisciplinaInput = {
     where: DisciplinaWhereUniqueInput
-    create: XOR<DisciplinaCreateWithoutProfDisciplinasInput, DisciplinaUncheckedCreateWithoutProfDisciplinasInput>
+    create: XOR<DisciplinaCreateWithoutProfTurmaDisciplinaInput, DisciplinaUncheckedCreateWithoutProfTurmaDisciplinaInput>
   }
 
-  export type ProfessorCreateWithoutProfDisciplinasInput = {
+  export type ProfessorCreateWithoutProfTurmaDisciplinaInput = {
     nome: string
     email?: string | null
     telefone?: string | null
     created_at?: Date | string
     updated_at: Date | string
     Disponibilidade?: DisponibilidadeCreateNestedManyWithoutProfessorInput
-    ProfTurma?: ProfTurmaCreateNestedManyWithoutProfessorInput
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutProfessorInput
   }
 
-  export type ProfessorUncheckedCreateWithoutProfDisciplinasInput = {
+  export type ProfessorUncheckedCreateWithoutProfTurmaDisciplinaInput = {
     id_professor?: number
     nome: string
     email?: string | null
@@ -18868,142 +18750,79 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at: Date | string
     Disponibilidade?: DisponibilidadeUncheckedCreateNestedManyWithoutProfessorInput
-    ProfTurma?: ProfTurmaUncheckedCreateNestedManyWithoutProfessorInput
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutProfessorInput
   }
 
-  export type ProfessorCreateOrConnectWithoutProfDisciplinasInput = {
+  export type ProfessorCreateOrConnectWithoutProfTurmaDisciplinaInput = {
     where: ProfessorWhereUniqueInput
-    create: XOR<ProfessorCreateWithoutProfDisciplinasInput, ProfessorUncheckedCreateWithoutProfDisciplinasInput>
+    create: XOR<ProfessorCreateWithoutProfTurmaDisciplinaInput, ProfessorUncheckedCreateWithoutProfTurmaDisciplinaInput>
   }
 
-  export type DisciplinaUpsertWithoutProfDisciplinasInput = {
-    update: XOR<DisciplinaUpdateWithoutProfDisciplinasInput, DisciplinaUncheckedUpdateWithoutProfDisciplinasInput>
-    create: XOR<DisciplinaCreateWithoutProfDisciplinasInput, DisciplinaUncheckedCreateWithoutProfDisciplinasInput>
-    where?: DisciplinaWhereInput
-  }
-
-  export type DisciplinaUpdateToOneWithWhereWithoutProfDisciplinasInput = {
-    where?: DisciplinaWhereInput
-    data: XOR<DisciplinaUpdateWithoutProfDisciplinasInput, DisciplinaUncheckedUpdateWithoutProfDisciplinasInput>
-  }
-
-  export type DisciplinaUpdateWithoutProfDisciplinasInput = {
-    nome?: StringFieldUpdateOperationsInput | string
-    TempoLectivo?: TempoLectivoUpdateManyWithoutDisciplinaNestedInput
-  }
-
-  export type DisciplinaUncheckedUpdateWithoutProfDisciplinasInput = {
-    idDisciplina?: IntFieldUpdateOperationsInput | number
-    nome?: StringFieldUpdateOperationsInput | string
-    TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutDisciplinaNestedInput
-  }
-
-  export type ProfessorUpsertWithoutProfDisciplinasInput = {
-    update: XOR<ProfessorUpdateWithoutProfDisciplinasInput, ProfessorUncheckedUpdateWithoutProfDisciplinasInput>
-    create: XOR<ProfessorCreateWithoutProfDisciplinasInput, ProfessorUncheckedCreateWithoutProfDisciplinasInput>
-    where?: ProfessorWhereInput
-  }
-
-  export type ProfessorUpdateToOneWithWhereWithoutProfDisciplinasInput = {
-    where?: ProfessorWhereInput
-    data: XOR<ProfessorUpdateWithoutProfDisciplinasInput, ProfessorUncheckedUpdateWithoutProfDisciplinasInput>
-  }
-
-  export type ProfessorUpdateWithoutProfDisciplinasInput = {
-    nome?: StringFieldUpdateOperationsInput | string
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    telefone?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    Disponibilidade?: DisponibilidadeUpdateManyWithoutProfessorNestedInput
-    ProfTurma?: ProfTurmaUpdateManyWithoutProfessorNestedInput
-    TempoLectivo?: TempoLectivoUpdateManyWithoutProfessorNestedInput
-  }
-
-  export type ProfessorUncheckedUpdateWithoutProfDisciplinasInput = {
-    id_professor?: IntFieldUpdateOperationsInput | number
-    nome?: StringFieldUpdateOperationsInput | string
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    telefone?: NullableStringFieldUpdateOperationsInput | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    Disponibilidade?: DisponibilidadeUncheckedUpdateManyWithoutProfessorNestedInput
-    ProfTurma?: ProfTurmaUncheckedUpdateManyWithoutProfessorNestedInput
-    TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutProfessorNestedInput
-  }
-
-  export type ProfessorCreateWithoutProfTurmaInput = {
-    nome: string
-    email?: string | null
-    telefone?: string | null
-    created_at?: Date | string
-    updated_at: Date | string
-    Disponibilidade?: DisponibilidadeCreateNestedManyWithoutProfessorInput
-    ProfDisciplinas?: ProfDisciplinasCreateNestedManyWithoutProfessorInput
-    TempoLectivo?: TempoLectivoCreateNestedManyWithoutProfessorInput
-  }
-
-  export type ProfessorUncheckedCreateWithoutProfTurmaInput = {
-    id_professor?: number
-    nome: string
-    email?: string | null
-    telefone?: string | null
-    created_at?: Date | string
-    updated_at: Date | string
-    Disponibilidade?: DisponibilidadeUncheckedCreateNestedManyWithoutProfessorInput
-    ProfDisciplinas?: ProfDisciplinasUncheckedCreateNestedManyWithoutProfessorInput
-    TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutProfessorInput
-  }
-
-  export type ProfessorCreateOrConnectWithoutProfTurmaInput = {
-    where: ProfessorWhereUniqueInput
-    create: XOR<ProfessorCreateWithoutProfTurmaInput, ProfessorUncheckedCreateWithoutProfTurmaInput>
-  }
-
-  export type TurmaCreateWithoutProfTurmaInput = {
+  export type TurmaCreateWithoutProfTurmaDisciplinaInput = {
     nome: string
     TempoLectivo?: TempoLectivoCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaCreateNestedManyWithoutTurmaInput
     Classe: ClasseCreateNestedOneWithoutTurmaInput
     Curso: CursoCreateNestedOneWithoutTurmaInput
   }
 
-  export type TurmaUncheckedCreateWithoutProfTurmaInput = {
+  export type TurmaUncheckedCreateWithoutProfTurmaDisciplinaInput = {
     idTurma?: number
     nome: string
     classe: string
     curso: string
     TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
   }
 
-  export type TurmaCreateOrConnectWithoutProfTurmaInput = {
+  export type TurmaCreateOrConnectWithoutProfTurmaDisciplinaInput = {
     where: TurmaWhereUniqueInput
-    create: XOR<TurmaCreateWithoutProfTurmaInput, TurmaUncheckedCreateWithoutProfTurmaInput>
+    create: XOR<TurmaCreateWithoutProfTurmaDisciplinaInput, TurmaUncheckedCreateWithoutProfTurmaDisciplinaInput>
   }
 
-  export type ProfessorUpsertWithoutProfTurmaInput = {
-    update: XOR<ProfessorUpdateWithoutProfTurmaInput, ProfessorUncheckedUpdateWithoutProfTurmaInput>
-    create: XOR<ProfessorCreateWithoutProfTurmaInput, ProfessorUncheckedCreateWithoutProfTurmaInput>
+  export type DisciplinaUpsertWithoutProfTurmaDisciplinaInput = {
+    update: XOR<DisciplinaUpdateWithoutProfTurmaDisciplinaInput, DisciplinaUncheckedUpdateWithoutProfTurmaDisciplinaInput>
+    create: XOR<DisciplinaCreateWithoutProfTurmaDisciplinaInput, DisciplinaUncheckedCreateWithoutProfTurmaDisciplinaInput>
+    where?: DisciplinaWhereInput
+  }
+
+  export type DisciplinaUpdateToOneWithWhereWithoutProfTurmaDisciplinaInput = {
+    where?: DisciplinaWhereInput
+    data: XOR<DisciplinaUpdateWithoutProfTurmaDisciplinaInput, DisciplinaUncheckedUpdateWithoutProfTurmaDisciplinaInput>
+  }
+
+  export type DisciplinaUpdateWithoutProfTurmaDisciplinaInput = {
+    nome?: StringFieldUpdateOperationsInput | string
+    TempoLectivo?: TempoLectivoUpdateManyWithoutDisciplinaNestedInput
+  }
+
+  export type DisciplinaUncheckedUpdateWithoutProfTurmaDisciplinaInput = {
+    nome?: StringFieldUpdateOperationsInput | string
+    TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutDisciplinaNestedInput
+  }
+
+  export type ProfessorUpsertWithoutProfTurmaDisciplinaInput = {
+    update: XOR<ProfessorUpdateWithoutProfTurmaDisciplinaInput, ProfessorUncheckedUpdateWithoutProfTurmaDisciplinaInput>
+    create: XOR<ProfessorCreateWithoutProfTurmaDisciplinaInput, ProfessorUncheckedCreateWithoutProfTurmaDisciplinaInput>
     where?: ProfessorWhereInput
   }
 
-  export type ProfessorUpdateToOneWithWhereWithoutProfTurmaInput = {
+  export type ProfessorUpdateToOneWithWhereWithoutProfTurmaDisciplinaInput = {
     where?: ProfessorWhereInput
-    data: XOR<ProfessorUpdateWithoutProfTurmaInput, ProfessorUncheckedUpdateWithoutProfTurmaInput>
+    data: XOR<ProfessorUpdateWithoutProfTurmaDisciplinaInput, ProfessorUncheckedUpdateWithoutProfTurmaDisciplinaInput>
   }
 
-  export type ProfessorUpdateWithoutProfTurmaInput = {
+  export type ProfessorUpdateWithoutProfTurmaDisciplinaInput = {
     nome?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     telefone?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     Disponibilidade?: DisponibilidadeUpdateManyWithoutProfessorNestedInput
-    ProfDisciplinas?: ProfDisciplinasUpdateManyWithoutProfessorNestedInput
     TempoLectivo?: TempoLectivoUpdateManyWithoutProfessorNestedInput
   }
 
-  export type ProfessorUncheckedUpdateWithoutProfTurmaInput = {
+  export type ProfessorUncheckedUpdateWithoutProfTurmaDisciplinaInput = {
     id_professor?: IntFieldUpdateOperationsInput | number
     nome?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
@@ -19011,33 +18830,84 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     Disponibilidade?: DisponibilidadeUncheckedUpdateManyWithoutProfessorNestedInput
-    ProfDisciplinas?: ProfDisciplinasUncheckedUpdateManyWithoutProfessorNestedInput
     TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutProfessorNestedInput
   }
 
-  export type TurmaUpsertWithoutProfTurmaInput = {
-    update: XOR<TurmaUpdateWithoutProfTurmaInput, TurmaUncheckedUpdateWithoutProfTurmaInput>
-    create: XOR<TurmaCreateWithoutProfTurmaInput, TurmaUncheckedCreateWithoutProfTurmaInput>
+  export type TurmaUpsertWithoutProfTurmaDisciplinaInput = {
+    update: XOR<TurmaUpdateWithoutProfTurmaDisciplinaInput, TurmaUncheckedUpdateWithoutProfTurmaDisciplinaInput>
+    create: XOR<TurmaCreateWithoutProfTurmaDisciplinaInput, TurmaUncheckedCreateWithoutProfTurmaDisciplinaInput>
     where?: TurmaWhereInput
   }
 
-  export type TurmaUpdateToOneWithWhereWithoutProfTurmaInput = {
+  export type TurmaUpdateToOneWithWhereWithoutProfTurmaDisciplinaInput = {
     where?: TurmaWhereInput
-    data: XOR<TurmaUpdateWithoutProfTurmaInput, TurmaUncheckedUpdateWithoutProfTurmaInput>
+    data: XOR<TurmaUpdateWithoutProfTurmaDisciplinaInput, TurmaUncheckedUpdateWithoutProfTurmaDisciplinaInput>
   }
 
-  export type TurmaUpdateWithoutProfTurmaInput = {
+  export type TurmaUpdateWithoutProfTurmaDisciplinaInput = {
     nome?: StringFieldUpdateOperationsInput | string
+    TempoLectivo?: TempoLectivoUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUpdateManyWithoutTurmaNestedInput
+    Classe?: ClasseUpdateOneRequiredWithoutTurmaNestedInput
+    Curso?: CursoUpdateOneRequiredWithoutTurmaNestedInput
+  }
+
+  export type TurmaUncheckedUpdateWithoutProfTurmaDisciplinaInput = {
+    idTurma?: IntFieldUpdateOperationsInput | number
+    nome?: StringFieldUpdateOperationsInput | string
+    classe?: StringFieldUpdateOperationsInput | string
+    curso?: StringFieldUpdateOperationsInput | string
+    TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
+  }
+
+  export type TurmaCreateWithoutTurmaDisciplinaInput = {
+    nome: string
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutTurmaInput
+    TempoLectivo?: TempoLectivoCreateNestedManyWithoutTurmaInput
+    Classe: ClasseCreateNestedOneWithoutTurmaInput
+    Curso: CursoCreateNestedOneWithoutTurmaInput
+  }
+
+  export type TurmaUncheckedCreateWithoutTurmaDisciplinaInput = {
+    idTurma?: number
+    nome: string
+    classe: string
+    curso: string
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
+    TempoLectivo?: TempoLectivoUncheckedCreateNestedManyWithoutTurmaInput
+  }
+
+  export type TurmaCreateOrConnectWithoutTurmaDisciplinaInput = {
+    where: TurmaWhereUniqueInput
+    create: XOR<TurmaCreateWithoutTurmaDisciplinaInput, TurmaUncheckedCreateWithoutTurmaDisciplinaInput>
+  }
+
+  export type TurmaUpsertWithoutTurmaDisciplinaInput = {
+    update: XOR<TurmaUpdateWithoutTurmaDisciplinaInput, TurmaUncheckedUpdateWithoutTurmaDisciplinaInput>
+    create: XOR<TurmaCreateWithoutTurmaDisciplinaInput, TurmaUncheckedCreateWithoutTurmaDisciplinaInput>
+    where?: TurmaWhereInput
+  }
+
+  export type TurmaUpdateToOneWithWhereWithoutTurmaDisciplinaInput = {
+    where?: TurmaWhereInput
+    data: XOR<TurmaUpdateWithoutTurmaDisciplinaInput, TurmaUncheckedUpdateWithoutTurmaDisciplinaInput>
+  }
+
+  export type TurmaUpdateWithoutTurmaDisciplinaInput = {
+    nome?: StringFieldUpdateOperationsInput | string
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutTurmaNestedInput
     TempoLectivo?: TempoLectivoUpdateManyWithoutTurmaNestedInput
     Classe?: ClasseUpdateOneRequiredWithoutTurmaNestedInput
     Curso?: CursoUpdateOneRequiredWithoutTurmaNestedInput
   }
 
-  export type TurmaUncheckedUpdateWithoutProfTurmaInput = {
+  export type TurmaUncheckedUpdateWithoutTurmaDisciplinaInput = {
     idTurma?: IntFieldUpdateOperationsInput | number
     nome?: StringFieldUpdateOperationsInput | string
     classe?: StringFieldUpdateOperationsInput | string
     curso?: StringFieldUpdateOperationsInput | string
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
     TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutTurmaNestedInput
   }
 
@@ -19056,7 +18926,7 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     turmaId: number
   }
 
@@ -19103,13 +18973,12 @@ export namespace Prisma {
 
   export type DisciplinaCreateWithoutTempoLectivoInput = {
     nome: string
-    ProfDisciplinas?: ProfDisciplinasCreateNestedManyWithoutDisciplinaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutDisciplinaInput
   }
 
   export type DisciplinaUncheckedCreateWithoutTempoLectivoInput = {
-    idDisciplina?: number
     nome: string
-    ProfDisciplinas?: ProfDisciplinasUncheckedCreateNestedManyWithoutDisciplinaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutDisciplinaInput
   }
 
   export type DisciplinaCreateOrConnectWithoutTempoLectivoInput = {
@@ -19139,8 +19008,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at: Date | string
     Disponibilidade?: DisponibilidadeCreateNestedManyWithoutProfessorInput
-    ProfDisciplinas?: ProfDisciplinasCreateNestedManyWithoutProfessorInput
-    ProfTurma?: ProfTurmaCreateNestedManyWithoutProfessorInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutProfessorInput
   }
 
   export type ProfessorUncheckedCreateWithoutTempoLectivoInput = {
@@ -19151,8 +19019,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at: Date | string
     Disponibilidade?: DisponibilidadeUncheckedCreateNestedManyWithoutProfessorInput
-    ProfDisciplinas?: ProfDisciplinasUncheckedCreateNestedManyWithoutProfessorInput
-    ProfTurma?: ProfTurmaUncheckedCreateNestedManyWithoutProfessorInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutProfessorInput
   }
 
   export type ProfessorCreateOrConnectWithoutTempoLectivoInput = {
@@ -19176,7 +19043,8 @@ export namespace Prisma {
 
   export type TurmaCreateWithoutTempoLectivoInput = {
     nome: string
-    ProfTurma?: ProfTurmaCreateNestedManyWithoutTurmaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaCreateNestedManyWithoutTurmaInput
     Classe: ClasseCreateNestedOneWithoutTurmaInput
     Curso: CursoCreateNestedOneWithoutTurmaInput
   }
@@ -19186,7 +19054,8 @@ export namespace Prisma {
     nome: string
     classe: string
     curso: string
-    ProfTurma?: ProfTurmaUncheckedCreateNestedManyWithoutTurmaInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedCreateNestedManyWithoutTurmaInput
   }
 
   export type TurmaCreateOrConnectWithoutTempoLectivoInput = {
@@ -19228,13 +19097,12 @@ export namespace Prisma {
 
   export type DisciplinaUpdateWithoutTempoLectivoInput = {
     nome?: StringFieldUpdateOperationsInput | string
-    ProfDisciplinas?: ProfDisciplinasUpdateManyWithoutDisciplinaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutDisciplinaNestedInput
   }
 
   export type DisciplinaUncheckedUpdateWithoutTempoLectivoInput = {
-    idDisciplina?: IntFieldUpdateOperationsInput | number
     nome?: StringFieldUpdateOperationsInput | string
-    ProfDisciplinas?: ProfDisciplinasUncheckedUpdateManyWithoutDisciplinaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutDisciplinaNestedInput
   }
 
   export type PeriodoUpsertWithoutTempoLectivoInput = {
@@ -19276,8 +19144,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     Disponibilidade?: DisponibilidadeUpdateManyWithoutProfessorNestedInput
-    ProfDisciplinas?: ProfDisciplinasUpdateManyWithoutProfessorNestedInput
-    ProfTurma?: ProfTurmaUpdateManyWithoutProfessorNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutProfessorNestedInput
   }
 
   export type ProfessorUncheckedUpdateWithoutTempoLectivoInput = {
@@ -19288,8 +19155,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     Disponibilidade?: DisponibilidadeUncheckedUpdateManyWithoutProfessorNestedInput
-    ProfDisciplinas?: ProfDisciplinasUncheckedUpdateManyWithoutProfessorNestedInput
-    ProfTurma?: ProfTurmaUncheckedUpdateManyWithoutProfessorNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutProfessorNestedInput
   }
 
   export type SalaUpsertWithoutTempoLectivoInput = {
@@ -19325,7 +19191,8 @@ export namespace Prisma {
 
   export type TurmaUpdateWithoutTempoLectivoInput = {
     nome?: StringFieldUpdateOperationsInput | string
-    ProfTurma?: ProfTurmaUpdateManyWithoutTurmaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUpdateManyWithoutTurmaNestedInput
     Classe?: ClasseUpdateOneRequiredWithoutTurmaNestedInput
     Curso?: CursoUpdateOneRequiredWithoutTurmaNestedInput
   }
@@ -19335,25 +19202,28 @@ export namespace Prisma {
     nome?: StringFieldUpdateOperationsInput | string
     classe?: StringFieldUpdateOperationsInput | string
     curso?: StringFieldUpdateOperationsInput | string
-    ProfTurma?: ProfTurmaUncheckedUpdateManyWithoutTurmaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
   }
 
-  export type ProfTurmaCreateWithoutTurmaInput = {
-    Professor: ProfessorCreateNestedOneWithoutProfTurmaInput
+  export type ProfTurmaDisciplinaCreateWithoutTurmaInput = {
+    disciplina: DisciplinaCreateNestedOneWithoutProfTurmaDisciplinaInput
+    Professor: ProfessorCreateNestedOneWithoutProfTurmaDisciplinaInput
   }
 
-  export type ProfTurmaUncheckedCreateWithoutTurmaInput = {
+  export type ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput = {
     idProfTurma?: number
     professorId: number
+    disciplinaNome: string
   }
 
-  export type ProfTurmaCreateOrConnectWithoutTurmaInput = {
-    where: ProfTurmaWhereUniqueInput
-    create: XOR<ProfTurmaCreateWithoutTurmaInput, ProfTurmaUncheckedCreateWithoutTurmaInput>
+  export type ProfTurmaDisciplinaCreateOrConnectWithoutTurmaInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    create: XOR<ProfTurmaDisciplinaCreateWithoutTurmaInput, ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput>
   }
 
-  export type ProfTurmaCreateManyTurmaInputEnvelope = {
-    data: ProfTurmaCreateManyTurmaInput | ProfTurmaCreateManyTurmaInput[]
+  export type ProfTurmaDisciplinaCreateManyTurmaInputEnvelope = {
+    data: ProfTurmaDisciplinaCreateManyTurmaInput | ProfTurmaDisciplinaCreateManyTurmaInput[]
     skipDuplicates?: boolean
   }
 
@@ -19372,7 +19242,7 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
   }
 
@@ -19383,6 +19253,24 @@ export namespace Prisma {
 
   export type TempoLectivoCreateManyTurmaInputEnvelope = {
     data: TempoLectivoCreateManyTurmaInput | TempoLectivoCreateManyTurmaInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TurmaDisciplinaCreateWithoutTurmaInput = {
+    Disciplina: string
+  }
+
+  export type TurmaDisciplinaUncheckedCreateWithoutTurmaInput = {
+    Disciplina: string
+  }
+
+  export type TurmaDisciplinaCreateOrConnectWithoutTurmaInput = {
+    where: TurmaDisciplinaWhereUniqueInput
+    create: XOR<TurmaDisciplinaCreateWithoutTurmaInput, TurmaDisciplinaUncheckedCreateWithoutTurmaInput>
+  }
+
+  export type TurmaDisciplinaCreateManyTurmaInputEnvelope = {
+    data: TurmaDisciplinaCreateManyTurmaInput | TurmaDisciplinaCreateManyTurmaInput[]
     skipDuplicates?: boolean
   }
 
@@ -19412,20 +19300,20 @@ export namespace Prisma {
     create: XOR<CursoCreateWithoutTurmaInput, CursoUncheckedCreateWithoutTurmaInput>
   }
 
-  export type ProfTurmaUpsertWithWhereUniqueWithoutTurmaInput = {
-    where: ProfTurmaWhereUniqueInput
-    update: XOR<ProfTurmaUpdateWithoutTurmaInput, ProfTurmaUncheckedUpdateWithoutTurmaInput>
-    create: XOR<ProfTurmaCreateWithoutTurmaInput, ProfTurmaUncheckedCreateWithoutTurmaInput>
+  export type ProfTurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    update: XOR<ProfTurmaDisciplinaUpdateWithoutTurmaInput, ProfTurmaDisciplinaUncheckedUpdateWithoutTurmaInput>
+    create: XOR<ProfTurmaDisciplinaCreateWithoutTurmaInput, ProfTurmaDisciplinaUncheckedCreateWithoutTurmaInput>
   }
 
-  export type ProfTurmaUpdateWithWhereUniqueWithoutTurmaInput = {
-    where: ProfTurmaWhereUniqueInput
-    data: XOR<ProfTurmaUpdateWithoutTurmaInput, ProfTurmaUncheckedUpdateWithoutTurmaInput>
+  export type ProfTurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput = {
+    where: ProfTurmaDisciplinaWhereUniqueInput
+    data: XOR<ProfTurmaDisciplinaUpdateWithoutTurmaInput, ProfTurmaDisciplinaUncheckedUpdateWithoutTurmaInput>
   }
 
-  export type ProfTurmaUpdateManyWithWhereWithoutTurmaInput = {
-    where: ProfTurmaScalarWhereInput
-    data: XOR<ProfTurmaUpdateManyMutationInput, ProfTurmaUncheckedUpdateManyWithoutTurmaInput>
+  export type ProfTurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput = {
+    where: ProfTurmaDisciplinaScalarWhereInput
+    data: XOR<ProfTurmaDisciplinaUpdateManyMutationInput, ProfTurmaDisciplinaUncheckedUpdateManyWithoutTurmaInput>
   }
 
   export type TempoLectivoUpsertWithWhereUniqueWithoutTurmaInput = {
@@ -19442,6 +19330,30 @@ export namespace Prisma {
   export type TempoLectivoUpdateManyWithWhereWithoutTurmaInput = {
     where: TempoLectivoScalarWhereInput
     data: XOR<TempoLectivoUpdateManyMutationInput, TempoLectivoUncheckedUpdateManyWithoutTurmaInput>
+  }
+
+  export type TurmaDisciplinaUpsertWithWhereUniqueWithoutTurmaInput = {
+    where: TurmaDisciplinaWhereUniqueInput
+    update: XOR<TurmaDisciplinaUpdateWithoutTurmaInput, TurmaDisciplinaUncheckedUpdateWithoutTurmaInput>
+    create: XOR<TurmaDisciplinaCreateWithoutTurmaInput, TurmaDisciplinaUncheckedCreateWithoutTurmaInput>
+  }
+
+  export type TurmaDisciplinaUpdateWithWhereUniqueWithoutTurmaInput = {
+    where: TurmaDisciplinaWhereUniqueInput
+    data: XOR<TurmaDisciplinaUpdateWithoutTurmaInput, TurmaDisciplinaUncheckedUpdateWithoutTurmaInput>
+  }
+
+  export type TurmaDisciplinaUpdateManyWithWhereWithoutTurmaInput = {
+    where: TurmaDisciplinaScalarWhereInput
+    data: XOR<TurmaDisciplinaUpdateManyMutationInput, TurmaDisciplinaUncheckedUpdateManyWithoutTurmaInput>
+  }
+
+  export type TurmaDisciplinaScalarWhereInput = {
+    AND?: TurmaDisciplinaScalarWhereInput | TurmaDisciplinaScalarWhereInput[]
+    OR?: TurmaDisciplinaScalarWhereInput[]
+    NOT?: TurmaDisciplinaScalarWhereInput | TurmaDisciplinaScalarWhereInput[]
+    id_Turma?: IntFilter<"TurmaDisciplina"> | number
+    Disciplina?: StringFilter<"TurmaDisciplina"> | string
   }
 
   export type ClasseUpsertWithoutTurmaInput = {
@@ -19490,8 +19402,9 @@ export namespace Prisma {
 
   export type TurmaUpdateWithoutClasseInput = {
     nome?: StringFieldUpdateOperationsInput | string
-    ProfTurma?: ProfTurmaUpdateManyWithoutTurmaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutTurmaNestedInput
     TempoLectivo?: TempoLectivoUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUpdateManyWithoutTurmaNestedInput
     Curso?: CursoUpdateOneRequiredWithoutTurmaNestedInput
   }
 
@@ -19499,8 +19412,9 @@ export namespace Prisma {
     idTurma?: IntFieldUpdateOperationsInput | number
     nome?: StringFieldUpdateOperationsInput | string
     curso?: StringFieldUpdateOperationsInput | string
-    ProfTurma?: ProfTurmaUncheckedUpdateManyWithoutTurmaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
     TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
   }
 
   export type TurmaUncheckedUpdateManyWithoutClasseInput = {
@@ -19517,8 +19431,9 @@ export namespace Prisma {
 
   export type TurmaUpdateWithoutCursoInput = {
     nome?: StringFieldUpdateOperationsInput | string
-    ProfTurma?: ProfTurmaUpdateManyWithoutTurmaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUpdateManyWithoutTurmaNestedInput
     TempoLectivo?: TempoLectivoUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUpdateManyWithoutTurmaNestedInput
     Classe?: ClasseUpdateOneRequiredWithoutTurmaNestedInput
   }
 
@@ -19526,8 +19441,9 @@ export namespace Prisma {
     idTurma?: IntFieldUpdateOperationsInput | number
     nome?: StringFieldUpdateOperationsInput | string
     classe?: StringFieldUpdateOperationsInput | string
-    ProfTurma?: ProfTurmaUncheckedUpdateManyWithoutTurmaNestedInput
+    ProfTurmaDisciplina?: ProfTurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
     TempoLectivo?: TempoLectivoUncheckedUpdateManyWithoutTurmaNestedInput
+    TurmaDisciplina?: TurmaDisciplinaUncheckedUpdateManyWithoutTurmaNestedInput
   }
 
   export type TurmaUncheckedUpdateManyWithoutCursoInput = {
@@ -19538,7 +19454,7 @@ export namespace Prisma {
 
   export type DisponibilidadeCreateManyDiaSemanaInput = {
     idDisponibilidade?: number
-    periodoId: string
+    periodo: string
     ordem: number
     professorId: number
   }
@@ -19548,7 +19464,7 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
   }
@@ -19561,14 +19477,14 @@ export namespace Prisma {
 
   export type DisponibilidadeUncheckedUpdateWithoutDiaSemanaInput = {
     idDisponibilidade?: IntFieldUpdateOperationsInput | number
-    periodoId?: StringFieldUpdateOperationsInput | string
+    periodo?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
   }
 
   export type DisponibilidadeUncheckedUpdateManyWithoutDiaSemanaInput = {
     idDisponibilidade?: IntFieldUpdateOperationsInput | number
-    periodoId?: StringFieldUpdateOperationsInput | string
+    periodo?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
   }
@@ -19587,7 +19503,7 @@ export namespace Prisma {
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
   }
@@ -19597,14 +19513,15 @@ export namespace Prisma {
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
   }
 
-  export type ProfDisciplinasCreateManyDisciplinaInput = {
-    idProfDisciplina?: number
+  export type ProfTurmaDisciplinaCreateManyDisciplinaInput = {
+    idProfTurma?: number
     professorId: number
+    turmaId: number
   }
 
   export type TempoLectivoCreateManyDisciplinaInput = {
@@ -19617,18 +19534,21 @@ export namespace Prisma {
     turmaId: number
   }
 
-  export type ProfDisciplinasUpdateWithoutDisciplinaInput = {
-    Professor?: ProfessorUpdateOneRequiredWithoutProfDisciplinasNestedInput
+  export type ProfTurmaDisciplinaUpdateWithoutDisciplinaInput = {
+    Professor?: ProfessorUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
+    Turma?: TurmaUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
   }
 
-  export type ProfDisciplinasUncheckedUpdateWithoutDisciplinaInput = {
-    idProfDisciplina?: IntFieldUpdateOperationsInput | number
+  export type ProfTurmaDisciplinaUncheckedUpdateWithoutDisciplinaInput = {
+    idProfTurma?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
+    turmaId?: IntFieldUpdateOperationsInput | number
   }
 
-  export type ProfDisciplinasUncheckedUpdateManyWithoutDisciplinaInput = {
-    idProfDisciplina?: IntFieldUpdateOperationsInput | number
+  export type ProfTurmaDisciplinaUncheckedUpdateManyWithoutDisciplinaInput = {
+    idProfTurma?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
+    turmaId?: IntFieldUpdateOperationsInput | number
   }
 
   export type TempoLectivoUpdateWithoutDisciplinaInput = {
@@ -19663,18 +19583,14 @@ export namespace Prisma {
   export type DisponibilidadeCreateManyProfessorInput = {
     idDisponibilidade?: number
     diaSemana: string
-    periodoId: string
+    periodo: string
     ordem: number
   }
 
-  export type ProfDisciplinasCreateManyProfessorInput = {
-    idProfDisciplina?: number
-    disciplinaId: number
-  }
-
-  export type ProfTurmaCreateManyProfessorInput = {
+  export type ProfTurmaDisciplinaCreateManyProfessorInput = {
     idProfTurma?: number
     turmaId: number
+    disciplinaNome: string
   }
 
   export type TempoLectivoCreateManyProfessorInput = {
@@ -19682,7 +19598,7 @@ export namespace Prisma {
     diaSemana: string
     periodoId: string
     ordem: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
   }
@@ -19696,43 +19612,32 @@ export namespace Prisma {
   export type DisponibilidadeUncheckedUpdateWithoutProfessorInput = {
     idDisponibilidade?: IntFieldUpdateOperationsInput | number
     diaSemana?: StringFieldUpdateOperationsInput | string
-    periodoId?: StringFieldUpdateOperationsInput | string
+    periodo?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
   }
 
   export type DisponibilidadeUncheckedUpdateManyWithoutProfessorInput = {
     idDisponibilidade?: IntFieldUpdateOperationsInput | number
     diaSemana?: StringFieldUpdateOperationsInput | string
-    periodoId?: StringFieldUpdateOperationsInput | string
+    periodo?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
   }
 
-  export type ProfDisciplinasUpdateWithoutProfessorInput = {
-    Disciplina?: DisciplinaUpdateOneRequiredWithoutProfDisciplinasNestedInput
+  export type ProfTurmaDisciplinaUpdateWithoutProfessorInput = {
+    disciplina?: DisciplinaUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
+    Turma?: TurmaUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
   }
 
-  export type ProfDisciplinasUncheckedUpdateWithoutProfessorInput = {
-    idProfDisciplina?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ProfDisciplinasUncheckedUpdateManyWithoutProfessorInput = {
-    idProfDisciplina?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
-  }
-
-  export type ProfTurmaUpdateWithoutProfessorInput = {
-    Turma?: TurmaUpdateOneRequiredWithoutProfTurmaNestedInput
-  }
-
-  export type ProfTurmaUncheckedUpdateWithoutProfessorInput = {
+  export type ProfTurmaDisciplinaUncheckedUpdateWithoutProfessorInput = {
     idProfTurma?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
+    disciplinaNome?: StringFieldUpdateOperationsInput | string
   }
 
-  export type ProfTurmaUncheckedUpdateManyWithoutProfessorInput = {
+  export type ProfTurmaDisciplinaUncheckedUpdateManyWithoutProfessorInput = {
     idProfTurma?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
+    disciplinaNome?: StringFieldUpdateOperationsInput | string
   }
 
   export type TempoLectivoUpdateWithoutProfessorInput = {
@@ -19749,7 +19654,7 @@ export namespace Prisma {
     diaSemana?: StringFieldUpdateOperationsInput | string
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
   }
@@ -19759,7 +19664,7 @@ export namespace Prisma {
     diaSemana?: StringFieldUpdateOperationsInput | string
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
   }
@@ -19776,7 +19681,7 @@ export namespace Prisma {
     diaSemana: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
     turmaId: number
   }
@@ -19815,7 +19720,7 @@ export namespace Prisma {
     diaSemana?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
   }
@@ -19825,7 +19730,7 @@ export namespace Prisma {
     diaSemana?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
     turmaId?: IntFieldUpdateOperationsInput | number
   }
@@ -19836,7 +19741,7 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     turmaId: number
   }
 
@@ -19855,7 +19760,7 @@ export namespace Prisma {
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     turmaId?: IntFieldUpdateOperationsInput | number
   }
 
@@ -19865,13 +19770,14 @@ export namespace Prisma {
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     turmaId?: IntFieldUpdateOperationsInput | number
   }
 
-  export type ProfTurmaCreateManyTurmaInput = {
+  export type ProfTurmaDisciplinaCreateManyTurmaInput = {
     idProfTurma?: number
     professorId: number
+    disciplinaNome: string
   }
 
   export type TempoLectivoCreateManyTurmaInput = {
@@ -19880,22 +19786,29 @@ export namespace Prisma {
     periodoId: string
     ordem: number
     professorId: number
-    disciplinaId: number
+    disciplina: string
     salaId: number
   }
 
-  export type ProfTurmaUpdateWithoutTurmaInput = {
-    Professor?: ProfessorUpdateOneRequiredWithoutProfTurmaNestedInput
+  export type TurmaDisciplinaCreateManyTurmaInput = {
+    Disciplina: string
   }
 
-  export type ProfTurmaUncheckedUpdateWithoutTurmaInput = {
-    idProfTurma?: IntFieldUpdateOperationsInput | number
-    professorId?: IntFieldUpdateOperationsInput | number
+  export type ProfTurmaDisciplinaUpdateWithoutTurmaInput = {
+    disciplina?: DisciplinaUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
+    Professor?: ProfessorUpdateOneRequiredWithoutProfTurmaDisciplinaNestedInput
   }
 
-  export type ProfTurmaUncheckedUpdateManyWithoutTurmaInput = {
+  export type ProfTurmaDisciplinaUncheckedUpdateWithoutTurmaInput = {
     idProfTurma?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
+    disciplinaNome?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type ProfTurmaDisciplinaUncheckedUpdateManyWithoutTurmaInput = {
+    idProfTurma?: IntFieldUpdateOperationsInput | number
+    professorId?: IntFieldUpdateOperationsInput | number
+    disciplinaNome?: StringFieldUpdateOperationsInput | string
   }
 
   export type TempoLectivoUpdateWithoutTurmaInput = {
@@ -19913,7 +19826,7 @@ export namespace Prisma {
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
   }
 
@@ -19923,8 +19836,20 @@ export namespace Prisma {
     periodoId?: StringFieldUpdateOperationsInput | string
     ordem?: IntFieldUpdateOperationsInput | number
     professorId?: IntFieldUpdateOperationsInput | number
-    disciplinaId?: IntFieldUpdateOperationsInput | number
+    disciplina?: StringFieldUpdateOperationsInput | string
     salaId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type TurmaDisciplinaUpdateWithoutTurmaInput = {
+    Disciplina?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TurmaDisciplinaUncheckedUpdateWithoutTurmaInput = {
+    Disciplina?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TurmaDisciplinaUncheckedUpdateManyWithoutTurmaInput = {
+    Disciplina?: StringFieldUpdateOperationsInput | string
   }
 
 
