@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { AuraLogo } from "@/components/ui/aura-logo"
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -34,12 +35,10 @@ export function AppSidebar() {
   return (
     <aside className="flex h-screen w-64 flex-col border-r border-border bg-sidebar">
       <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-          <Calendar className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <span className="text-lg font-semibold text-sidebar-foreground">AURA</span>
+        <AuraLogo className="h-8 w-8" />
+        <span className="text-xl font-bold tracking-wide text-sidebar-foreground">AURA</span>
       </div>
-      
+
       <nav className="flex-1 space-y-1 p-4">
         <div className="mb-4">
           <p className="px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -64,7 +63,7 @@ export function AppSidebar() {
             </Link>
           )
         })}
-        
+
         <div className="mb-4 mt-6">
           <p className="px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Gestao de Dados
@@ -88,7 +87,7 @@ export function AppSidebar() {
             </Link>
           )
         })}
-        
+
         <div className="mb-4 mt-6">
           <p className="px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Horarios
@@ -113,7 +112,7 @@ export function AppSidebar() {
           )
         })}
       </nav>
-      
+
       <div className="border-t border-sidebar-border p-4">
         <Link
           href="/configuracoes"

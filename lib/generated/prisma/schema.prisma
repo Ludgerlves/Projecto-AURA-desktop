@@ -25,20 +25,20 @@ model DiaSemana {
 }
 
 model Disciplina {
-  idDisciplina    Int               @id @default(autoincrement())
-  nome            String
-  ProfDisciplinas ProfDisciplinas[]
-  TempoLectivo    TempoLectivo[]
+  nome                String                @id
+  ProfTurmaDisciplina ProfTurmaDisciplina[]
+  //ProfDisciplinas ProfDisciplinas[]
+  TempoLectivo        TempoLectivo[]
 }
 
 model Disponibilidade {
   idDisponibilidade Int       @id @default(autoincrement())
   diaSemana         String
-  periodoId         String
+  periodo           String
   ordem             Int
   professorId       Int
   DiaSemana         DiaSemana @relation(fields: [diaSemana], references: [nome])
-  Periodo           Periodo   @relation(fields: [periodoId], references: [periodo])
+  Periodo           Periodo   @relation(fields: [periodo], references: [periodo])
   Professor         Professor @relation(fields: [professorId], references: [id_professor])
 }
 
@@ -61,19 +61,19 @@ model Disponibilidade {
  */
 
 model Professor {
-  id_professor    Int               @id @default(autoincrement())
-  nome            String
-  email           String?
-  telefone        String?
+  id_professor        Int                   @id @default(autoincrement())
+  nome                String
+  email               String?
+  telefone            String?
   //id_Usuario      Int               @unique
   //disciplina_principal String
-  created_at      DateTime          @default(now())
-  updated_at      DateTime
-  Disponibilidade Disponibilidade[]
+  created_at          DateTime              @default(now())
+  updated_at          DateTime
+  Disponibilidade     Disponibilidade[]
   //Utilizador      Utilizador        @relation(fields: [id_Usuario], references: [id])
-  ProfDisciplinas ProfDisciplinas[]
-  ProfTurma       ProfTurma[]
-  TempoLectivo    TempoLectivo[]
+  //ProfDisciplinas ProfDisciplinas[]
+  ProfTurmaDisciplina ProfTurmaDisciplina[]
+  TempoLectivo        TempoLectivo[]
 }
 
 /**
@@ -97,24 +97,34 @@ model Periodo {
   TempoLectivo    TempoLectivo[]
 }
 
-model ProfDisciplinas {
-  idProfDisciplina Int        @id @default(autoincrement())
-  professorId      Int
-  disciplinaId     Int
-  Disciplina       Disciplina @relation(fields: [disciplinaId], references: [idDisciplina], onDelete: Cascade)
-  Professor        Professor  @relation(fields: [professorId], references: [id_professor], onDelete: Cascade)
+/**
+ * model ProfDisciplinas {
+ * idProfDisciplina Int        @id @default(autoincrement())
+ * professorId      Int
+ * disciplina     String
+ * Disciplina       Disciplina @relation(fields: [disciplina], references: [nome], onDelete: Cascade)
+ * Professor        Professor  @relation(fields: [professorId], references: [id_professor], onDelete: Cascade)
+ * @@unique([professorId, disciplina])
+ * }
+ */
+model ProfTurmaDisciplina {
+  idProfTurma    Int        @id @default(autoincrement())
+  professorId    Int
+  turmaId        Int
+  disciplinaNome String
+  disciplina     Disciplina @relation(fields: [disciplinaNome], references: [nome])
+  Professor      Professor  @relation(fields: [professorId], references: [id_professor])
+  Turma          Turma      @relation(fields: [turmaId], references: [idTurma])
 
-  @@unique([professorId, disciplinaId])
+  @@unique([professorId, turmaId, disciplinaNome])
 }
 
-model ProfTurma {
-  idProfTurma Int       @id @default(autoincrement())
-  professorId Int
-  turmaId     Int
-  Professor   Professor @relation(fields: [professorId], references: [id_professor])
-  Turma       Turma     @relation(fields: [turmaId], references: [idTurma])
+model TurmaDisciplina {
+  id_Turma   Int
+  Disciplina String
+  Turma      Turma  @relation(fields: [id_Turma], references: [idTurma])
 
-  @@unique([professorId, turmaId])
+  @@id([id_Turma, Disciplina])
 }
 
 model Sala {
@@ -129,11 +139,11 @@ model TempoLectivo {
   periodoId      String
   ordem          Int
   professorId    Int
-  disciplinaId   Int
+  disciplina     String
   salaId         Int
   turmaId        Int
   DiaSemana      DiaSemana  @relation(fields: [diaSemana], references: [nome])
-  Disciplina     Disciplina @relation(fields: [disciplinaId], references: [idDisciplina])
+  Disciplina     Disciplina @relation(fields: [disciplina], references: [nome])
   Periodo        Periodo    @relation(fields: [periodoId], references: [periodo])
   Professor      Professor  @relation(fields: [professorId], references: [id_professor])
   Sala           Sala       @relation(fields: [salaId], references: [idSala])
@@ -141,14 +151,15 @@ model TempoLectivo {
 }
 
 model Turma {
-  idTurma      Int            @id @default(autoincrement())
-  nome         String
-  classe       String
-  curso        String
-  ProfTurma    ProfTurma[]
-  TempoLectivo TempoLectivo[]
-  Classe       Classe         @relation(fields: [classe], references: [nome])
-  Curso        Curso          @relation(fields: [curso], references: [nome])
+  idTurma             Int                   @id @default(autoincrement())
+  nome                String
+  classe              String
+  curso               String
+  ProfTurmaDisciplina ProfTurmaDisciplina[]
+  TempoLectivo        TempoLectivo[]
+  TurmaDisciplina     TurmaDisciplina[]
+  Classe              Classe                @relation(fields: [classe], references: [nome])
+  Curso               Curso                 @relation(fields: [curso], references: [nome])
 }
 
 /**
