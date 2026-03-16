@@ -54,6 +54,8 @@ model Disponibilidade {
 
   professor Professor @relation(fields: [id_professor], references: [id_professor])
 
+  @@unique([id_professor, nome_dia, nome_periodo, ordem])
+
   @@map("disponibilidades")
 }
 
@@ -63,11 +65,11 @@ enum Periodo {
 }
 
 model Professor {
-  id_professor Int      @id @default(autoincrement())
-  nome         String   @db.VarChar(100)
-  email        String   @db.VarChar(100) 
-  telefone     String   @db.VarChar(15)
-  updated_at   DateTime @updatedAt
+  id_professor    Int      @id @default(autoincrement())
+  nome_professor  String   @db.VarChar(100) 
+  email           String   @db.VarChar(100) @unique
+  telefone        String   @db.VarChar(15)  @unique
+  updated_at      DateTime @updatedAt
 
   profTurmaDisciplina       ProfTurmaDisciplina[]
   disponibilidades          Disponibilidade[]
@@ -100,12 +102,12 @@ model Sala {
 
 model Tempo_Lectivo {
   id_tempoLectivo   Int    @id @default(autoincrement())
-  id_professor      Int
-  nome_turma        String @db.VarChar(20)
-  nome_disciplina   String @db.VarChar(100)
-  nome_sala         String @db.VarChar(20)
-  nome_dia          DiaSemana
-  nome_periodo      Periodo
+  id_professor      Int    
+  nome_turma        String @db.VarChar(100)  
+  nome_disciplina   String @db.VarChar(100) 
+  nome_sala         String @db.VarChar(20)  
+  nome_dia          DiaSemana               
+  nome_periodo      Periodo            
   ordem             Int
 
   professor  Professor  @relation(fields: [id_professor], references: [id_professor])
@@ -117,10 +119,10 @@ model Tempo_Lectivo {
 } 
 
 model Turma {
-  nome_turma     String @db.VarChar(20) @id
-  nome_curso     String @db.VarChar(20)
-  nome_classe    String @db.VarChar(20)
-
+  nome_turma     String @db.VarChar(100) @id
+  nome_curso     String @db.VarChar(100)
+  nome_classe    String @db.VarChar(100) 
+  
   curso    Curso     @relation(fields: [nome_curso], references: [nome_curso])
   classe   Classe    @relation(fields: [nome_classe], references: [nome_classe])
 
@@ -132,8 +134,8 @@ model Turma {
 }
 
 model TurmaDisciplina {
-  nome_turma        String @db.VarChar(20)
-  nome_disciplina   String @db.VarChar(100)
+  nome_turma        String @db.VarChar(20)  
+  nome_disciplina   String @db.VarChar(100) 
   aulas_por_semana  Int
 
   turma      Turma  @relation(fields: [nome_turma], references: [nome_turma])
