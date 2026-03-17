@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Download, Printer, ChevronLeft, ChevronRight } from "lucide-react"
+import { listarAulasPorTurma } from "@/lib/actions/tempoLectivo"
+import { listarTodasTurmas } from "@/app/turmas/turma-action"
 
 // ── DADOS FIXOS ───────────────────────────────────────────────
 // Estes virão da DB no futuro — por agora são fixos para montar a estrutura
@@ -41,16 +43,14 @@ const linhasTarde: LinhaTabela[] = [
   { tipo: "aula",      tempo: "6º tarde",  horaInicio: "17H15", horaFim: "18H00", ordem: 6 },
 ]
 
-const turmas = ["10A", "10B", "11A", "11B", "12A", "12B"]
 const professores = ["Maria Silva", "João Santos", "Ana Costa", "Pedro Oliveira"]
 
 // ── TIPOS ─────────────────────────────────────────────────────
 
-interface Aula {
+interface Aula { 
   disciplina: string
   professor:  string
   sala:       string
-  cor:        string
 }
 
 // horario[turma][periodo][dia][ordem] → Aula | null
@@ -68,6 +68,16 @@ type HorarioData = {
 // ── COMPONENTE ────────────────────────────────────────────────
 
 export function HorariosContent() {
+  const [turmas, setTurmas] = useState<string[]>([])
+
+  useEffect(() => {
+    async function carregarTurmas() {
+      const dados = await listarTodasTurmas()
+      setTurmas(dados.map(t => t.nome_turma))
+    }   
+    carregarTurmas()
+  }, [])
+  
   const [selectedTurma,    setSelectedTurma]    = useState(turmas[0])
   const [selectedProfessor, setSelectedProfessor] = useState("")
   const [viewType,          setViewType]          = useState("turma")
@@ -83,7 +93,55 @@ export function HorariosContent() {
 
   // Futuramente este horario virá da API
   // Por agora é null em todo o lado — células vazias
-  const horario: HorarioData = {}
+  const [horario, setHorario] = useState<HorarioData>({})
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    async function buscar() {
+      setIsLoading(true)           
+      const dados = await listarAulasPorTurma(selectedTurma)
+      const novoHorario = {} as HorarioData
+
+      const mapaDias = {
+        "SEGUNDA": "2ª FEIRA",
+        "TERCA":   "3ª FEIRA",
+        "QUARTA":  "4ª FEIRA",
+        "QUINTA":  "5ª FEIRA",
+        "SEXTA":   "6ª FEIRA",
+      }
+
+      const mapaPeriodos = {
+        "MANHA": "manha",
+        "TARDE": "tarde"
+      }
+
+      for (const aula of dados) {
+        const dia     = mapaDias[aula.nome_dia]
+        const periodo = mapaPeriodos[aula.nome_periodo]
+        const turma   = aula.nome_turma
+        const ordem   = aula.ordem
+
+        if (!novoHorario[turma]) {
+          novoHorario[turma] = {}
+        }
+        if (!novoHorario[turma][periodo]) {
+          novoHorario[turma][periodo] = {}
+        }
+        if (!novoHorario[turma][periodo][dia]) {
+          novoHorario[turma][periodo][dia] = {}
+        }
+
+        novoHorario[turma][periodo][dia][ordem] = {
+          disciplina: aula.disciplina.nome_disciplina,
+          professor:  aula.professor.nome_professor,
+          sala:       aula.sala.nome_sala
+        }
+      } 
+      setHorario(novoHorario)
+      setIsLoading(false)          
+    }
+    buscar()
+  }, [selectedTurma])
 
   const getAula = (
     turma: string,
@@ -98,11 +156,7 @@ export function HorariosContent() {
 
   const CelulaAula = ({ aula }: { aula: Aula | null }) => {
     if (aula) {
-      return (
-        <div
-          className="flex h-full min-h-16 flex-col justify-center rounded-sm p-1 text-white text-xs"
-          style={{ backgroundColor: aula.cor }}
-        >
+      return (         <div className="flex h-full min-h-16 flex-col justify-center rounded-sm p-1 text-white text-xs" >
           <div className="font-semibold">Disc. {aula.disciplina}</div>
           <div>Prof. {aula.professor}</div>
           <div className="opacity-80">Sala {aula.sala}</div>
@@ -259,9 +313,7 @@ export function HorariosContent() {
                           <td key={dia} className="border border-border p-1">
                             {aulaProf ? (
                               <div
-                                className="flex h-full min-h-16 flex-col justify-center rounded-sm p-1 text-white text-xs"
-                                style={{ backgroundColor: aulaProf.aula.cor }}
-                              >
+                                className="flex h-full min-h-16 flex-col justify-center rounded-sm p-1 text-white text-xs">
                                 <div className="font-semibold">Disc. {aulaProf.aula.disciplina}</div>
                                 <div>Turma {aulaProf.turma}</div>
                                 <div className="opacity-80">Sala {aulaProf.aula.sala}</div>

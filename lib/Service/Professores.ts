@@ -119,16 +119,16 @@ export class ProfessorCRUD{
         return prisma.professor.findMany({
             select: {
                 id_professor: true,
-                nome: true,
+                nome_professor: true,
                 email: true,
                 telefone: true,
-                ProfTurmaDisciplina: {
+                profTurmaDisciplina: {
                     select: {
-                        idProfTurma: true,
-                        turmaId: true,
+                        id_profTurma: true,
+                        nome_turma: true,
                         disciplinaNome: true,
-                        disciplina: { select: { nome: true } },
-                        Turma: { select: { idTurma: true, nome: true } },
+                        disciplina: { select: { nome_disciplina: true } },
+                        Turma: { select: { idTurma: true, nome_turma: true } },
                     },
                 },
                 Disponibilidade: {
