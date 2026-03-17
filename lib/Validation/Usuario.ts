@@ -12,7 +12,7 @@ export const profTurmaDisciplinaItemSchema = z.object({
 });
 
 export const baseCreateProfessorSchema = z.object({
-    nome: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
+    nome_professor: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
     email: z.string().email("Email inválido").optional().nullable(),
     telefone: z.string()
         .transform((v) => v.replace(/\D/g, ""))
@@ -21,10 +21,8 @@ export const baseCreateProfessorSchema = z.object({
     disponibilidade: z.array(disponibilidadeItemSchema).optional(),
 });
 
-
-
 export const updateProfessorSchema = z.object({
-    nome: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").optional(),
+    nome_professor: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").optional(),
     email: z.string().email("Email inválido").optional(),
     telefone: z.string()
         .transform((v) => v.replace(/\D/g, ""))
@@ -32,9 +30,9 @@ export const updateProfessorSchema = z.object({
         .optional(),
     profTurmaDisciplina: z.array(profTurmaDisciplinaItemSchema).min(1, "O professor deve ter pelo menos uma atribuição turma-disciplina").optional(),
     disponibilidade: z.array(disponibilidadeItemSchema).optional(),
-}).refine((data) => data.nome || data.email || data.telefone || data.profTurmaDisciplina || data.disponibilidade, {
+}).refine((data) => data.nome_professor || data.email || data.telefone || data.profTurmaDisciplina || data.disponibilidade, {
     message: "Informe ao menos um campo para atualizar",
-    path: ["nome"],
+    path: ["nome_professor"],
 });
 
 

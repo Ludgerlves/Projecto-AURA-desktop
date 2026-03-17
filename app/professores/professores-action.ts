@@ -151,7 +151,7 @@ export async function showProfessor(id: number) {
 
 export async function listarDisciplinas() {
     return await prisma.disciplina.findMany({
-        orderBy: { nome: 'asc' }
+        orderBy: { nome_disciplina: 'asc' }
     });
 }
 
@@ -192,9 +192,9 @@ export async function listProfTurmaDisciplina() {
 
 export async function listarTurmas() {
     return await prisma.turma.findMany({
-        orderBy: { nome: 'asc' },
+        orderBy: { nome_turma: 'asc' },
         include: {
-            TurmaDisciplina: true,
+            turmaDisciplinas: true,
         },
     });
 }
