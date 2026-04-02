@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Plus, Users, CalendarClock, Check } from "lucide-react"
+import { Plus, Users, CalendarClock, Check, Trash2 } from "lucide-react"
 import {
   criarProfessor,
   atualizarProfessor,
@@ -75,48 +75,85 @@ type Periodo = (typeof PERIODOS)[number]
 
 const TOTAL_TEMPOS = 6
 
-interface Disciplina {
-  nome: string
+const MAPA_DIAS_DB_PARA_UI: Record<string, string> = {
+  "SEGUNDA": "Segunda-feira",
+  "TERCA": "Terça-feira",
+  "QUARTA": "Quarta-feira",
+  "QUINTA": "Quinta-feira",
+  "SEXTA": "Sexta-feira",
+  "Segunda": "Segunda-feira",
+  "Terça": "Terça-feira",
+  "Quarta": "Quarta-feira",
+  "Quinta": "Quinta-feira",
+  "Sexta": "Sexta-feira",
 }
 
+const MAPA_UI_PARA_DIAS_DB: Record<string, string> = {
+  "Segunda-feira": "Segunda",
+  "Terça-feira": "Terça",
+  "Quarta-feira": "Quarta",
+  "Quinta-feira": "Quinta",
+  "Sexta-feira": "Sexta",
+}
+
+const MAPA_PERIODO_DB_PARA_UI: Record<string, string> = {
+  "MANHA": "Manhã",
+  "TARDE": "Tarde",
+  "Manhã": "Manhã",
+  "Tarde": "Tarde",
+}
+
+const MAPA_UI_PARA_PERIODO_DB: Record<string, string> = {
+  "Manhã": "Manhã",
+  "Tarde": "Tarde",
+}
+
+// ---------------------------------------------------------------------------
+// Data interfaces — matching Prisma schema field names
+// ---------------------------------------------------------------------------
+
 interface TurmaData {
-  idTurma: number
-  nome: string
-  classe: string
-  curso: string
-  TurmaDisciplina: { id_Turma: number; Disciplina: string }[]
+  id_turma: number
+  descricao_turma: string
+  turmaDisciplinas: { disciplina: { descricao_disciplina: string } }[]
 }
 
 interface DisponibilidadeData {
-  idDisponibilidade: number
-  diaSemana: string
-  periodo: string
+  id_disponibilidade: number
+  id_dia: number
+  id_periodo: number
   ordem: number
-  DiaSemana: { nome: string }
-  Periodo: { periodo: string }
+  dia: { descricao_dia: string }
+  periodo: { descricao_periodo: string }
 }
 
 interface ProfTurmaDisciplinaData {
-  idProfTurma: number
-  turmaId: number
-  disciplinaNome: string
-  disciplina: { nome: string }
-  Turma: { idTurma: number; nome: string }
+  id_atribuicao: number
+  id_turma: number
+  id_disciplina: number
+  disciplina: { descricao_disciplina: string }
+  turma: { id_turma: number; descricao_turma: string }
 }
 
 interface ProfessorData {
   id_professor: number
-  nome: string
+  nome_professor: string
   email: string | null
   telefone: string | null
-  ProfTurmaDisciplina: ProfTurmaDisciplinaData[]
-  Disponibilidade: DisponibilidadeData[]
+  profTurmaDisciplina: ProfTurmaDisciplinaData[]
+  disponibilidades: DisponibilidadeData[]
 }
 
 interface DisponibilidadeSlot {
   diaSemana: string
   periodo: string
   ordem: number
+}
+
+interface Atribuicao {
+  turmaId: number
+  turmaNome: string
+  disciplinaNome: string
 }
 
 interface ProfessorRow {
@@ -126,7 +163,7 @@ interface ProfessorRow {
   email: string
   telefone: string
   disciplinas: string[]
-  turmas: { turmaId: number; turmaNome: string; disciplinaNome: string }[]
+  turmas: Atribuicao[]
   disponibilidade: DisponibilidadeSlot[]
   periodo: string
   temposByDay: Record<string, number[]>
@@ -137,11 +174,17 @@ function mapProfessores(professores: ProfessorData[]): ProfessorRow[] {
     const byDay: Record<string, number[]> = {}
     let periodo = ""
 
-    for (const d of p.Disponibilidade) {
-      const day = d.DiaSemana.nome
-      if (!byDay[day]) byDay[day] = []
-      byDay[day].push(d.ordem)
-      if (!periodo) periodo = d.Periodo.periodo
+    for (const d of (p.disponibilidades || [])) {
+      const dbDay = d.dia?.descricao_dia || ""
+      const day = MAPA_DIAS_DB_PARA_UI[dbDay] || dbDay
+      if (day) {
+        if (!byDay[day]) byDay[day] = []
+        byDay[day].push(d.ordem)
+      }
+      if (!periodo && d.periodo?.descricao_periodo) {
+        const dbPeriodo = d.periodo.descricao_periodo
+        periodo = MAPA_PERIODO_DB_PARA_UI[dbPeriodo] || dbPeriodo
+      }
     }
     for (const day of Object.keys(byDay)) {
       byDay[day].sort((a, b) => a - b)
@@ -150,20 +193,24 @@ function mapProfessores(professores: ProfessorData[]): ProfessorRow[] {
     return {
       id: p.id_professor,
       id_professor: p.id_professor,
-      nome: p.nome,
+      nome: p.nome_professor,
       email: p.email || "",
       telefone: p.telefone || "",
-      disciplinas: p.ProfTurmaDisciplina.map((ptd) => ptd.disciplinaNome),
-      turmas: p.ProfTurmaDisciplina.map((ptd) => ({
-        turmaId: ptd.Turma.idTurma,
-        turmaNome: ptd.Turma.nome,
-        disciplinaNome: ptd.disciplinaNome,
+      disciplinas: (p.profTurmaDisciplina || []).map((ptd) => ptd.disciplina.descricao_disciplina),
+      turmas: (p.profTurmaDisciplina || []).map((ptd) => ({
+        turmaId: ptd.turma.id_turma,
+        turmaNome: ptd.turma.descricao_turma,
+        disciplinaNome: ptd.disciplina.descricao_disciplina,
       })),
-      disponibilidade: p.Disponibilidade.map((d) => ({
-        diaSemana: d.diaSemana,
-        periodo: d.periodo,
-        ordem: d.ordem,
-      })),
+      disponibilidade: (p.disponibilidades || []).map((d) => {
+        const dbDay = d.dia?.descricao_dia || ""
+        const dbPeriodo = d.periodo?.descricao_periodo || ""
+        return {
+          diaSemana: MAPA_DIAS_DB_PARA_UI[dbDay] || dbDay,
+          periodo: MAPA_PERIODO_DB_PARA_UI[dbPeriodo] || dbPeriodo,
+          ordem: d.ordem,
+        }
+      }),
       periodo,
       temposByDay: byDay,
     }
@@ -392,16 +439,20 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
   const [editingProfessor, setEditingProfessor] = useState<ProfessorRow | null>(null)
-  const [turmaSelecionada, setTurmaSelecionada] = useState<number | null>(null)
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
     telefone: "",
-    disciplina: [] as string[],
     periodo: "Manhã" as Periodo,
     selectedTempos: {} as Record<string, number[]>,
   })
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
+
+  // -- Atribuições turma-disciplina (only used in edit mode) --
+  const [atribuicoes, setAtribuicoes] = useState<Atribuicao[]>([])
+  const [addTurmaId, setAddTurmaId] = useState<number | null>(null)
+  const [addDisciplinas, setAddDisciplinas] = useState<string[]>([])
 
   // Sheet state for dedicated availability management
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -528,10 +579,45 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     const slots: DisponibilidadeSlot[] = []
     for (const [dia, ordens] of Object.entries(tempos)) {
       for (const ordem of ordens) {
-        slots.push({ diaSemana: dia, periodo: Periodo, ordem })
+        slots.push({ 
+          diaSemana: MAPA_UI_PARA_DIAS_DB[dia] || dia, 
+          periodo: MAPA_UI_PARA_PERIODO_DB[Periodo] || Periodo, 
+          ordem 
+        })
       }
     }
     return slots
+  }
+
+  // -- Atribuição helpers --
+  const handleAddAtribuicao = () => {
+    if (!addTurmaId || addDisciplinas.length === 0) return
+    const turma = turmas.find((t) => t.id_turma === addTurmaId)
+    if (!turma) return
+
+    const newAtribuicoes = addDisciplinas
+      .filter((discNome) => !atribuicoes.some(
+        (a) => a.turmaId === addTurmaId && a.disciplinaNome === discNome
+      ))
+      .map((discNome) => ({
+        turmaId: addTurmaId,
+        turmaNome: turma.descricao_turma,
+        disciplinaNome: discNome,
+      }))
+
+    setAtribuicoes((prev) => [...prev, ...newAtribuicoes])
+    setAddTurmaId(null)
+    setAddDisciplinas([])
+  }
+
+  const handleRemoveAtribuicao = (index: number) => {
+    setAtribuicoes((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const toggleAddDisciplina = (nome: string, checked: boolean) => {
+    setAddDisciplinas((prev) =>
+      checked ? [...prev, nome] : prev.filter((d) => d !== nome)
+    )
   }
 
   // -- Columns --
@@ -544,8 +630,8 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
       header: "Disciplinas",
       render: (professor: ProfessorRow) => (
         <div className="flex flex-wrap gap-1">
-          {professor.disciplinas.map((d) => (
-            <Badge key={d} variant="outline" className="text-xs">
+          {professor.disciplinas.map((d, i) => (
+            <Badge key={`${d}-${i}`} variant="outline" className="text-xs">
               {d}
             </Badge>
           ))}
@@ -566,27 +652,18 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   ]
 
   // -- Dialog handlers --
-  const toggleDisciplina = (nome: string, checked: boolean) => {
-  setFormData((prev) => ({
-    ...prev,
-    disciplina: checked
-      ? [...prev.disciplina, nome] 
-      : prev.disciplina.filter((d) => d !== nome), 
-  }))
-}
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
     const disponibilidade = buildDisponibilidade(formData.selectedTempos, formData.periodo)
 
-    // Build profTurmaDisciplina from selected turma + disciplines
-    const profTurmaDisciplina = turmaSelecionada
-      ? formData.disciplina.map((nome) => ({
-        turmaId: turmaSelecionada,
-        disciplinaNome: nome,
-      }))
+    // Build profTurmaDisciplina from atribuicoes (only in edit mode)
+    const profTurmaDisciplina = editingProfessor
+      ? atribuicoes.map((a) => ({
+          turmaId: a.turmaId,
+          disciplinaNome: a.disciplinaNome,
+        }))
       : []
 
     const fd = new FormData()
@@ -608,6 +685,9 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
         resetForm()
         router.refresh()
       } else {
+        if (result.errors) {
+          setFieldErrors(result.errors as Record<string, string[]>)
+        }
         setError(result.message || "Erro inesperado")
       }
     })
@@ -617,14 +697,16 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     setFormData({
       nome: "",
       email: "",
-      disciplina: [],
       telefone: "",
       periodo: "Manhã",
       selectedTempos: {},
     })
-    setTurmaSelecionada(null)
+    setAtribuicoes([])
+    setAddTurmaId(null)
+    setAddDisciplinas([])
     setEditingProfessor(null)
     setError(null)
+    setFieldErrors({})
     setIsOpen(false)
   }
 
@@ -644,11 +726,14 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
       nome: professor.nome,
       telefone: professor.telefone,
       email: professor.email,
-      disciplina: professor.disciplinas,
       periodo: (professor.periodo as Periodo) || "Manhã",
       selectedTempos,
     })
+    setAtribuicoes(professor.turmas)
+    setAddTurmaId(null)
+    setAddDisciplinas([])
     setError(null)
+    setFieldErrors({})
     setIsOpen(true)
   }
 
@@ -706,6 +791,13 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   )
   const totalSlots = DIAS_SEMANA.length * TOTAL_TEMPOS
 
+  // Disciplines available for the selected addTurmaId
+  const addTurmaDiscs = addTurmaId
+    ? (turmas.find((t) => t.id_turma === addTurmaId)?.turmaDisciplinas || []).map(
+        (td) => td.disciplina.descricao_disciplina
+      )
+    : []
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -739,6 +831,16 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                   <TabsTrigger value="dados" className="flex-1">
                     Informações
                   </TabsTrigger>
+                  {editingProfessor && (
+                    <TabsTrigger value="turmas" className="flex-1">
+                      Turmas & Disciplinas
+                      {atribuicoes.length > 0 && (
+                        <Badge variant="secondary" className="ml-2 text-[10px] px-1.5 py-0">
+                          {atribuicoes.length}
+                        </Badge>
+                      )}
+                    </TabsTrigger>
+                  )}
                   <TabsTrigger value="disponibilidade" className="flex-1">
                     Disponibilidade
                     {filledSlots > 0 && (
@@ -749,6 +851,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                   </TabsTrigger>
                 </TabsList>
 
+                {/* ── Tab: Informações ── */}
                 <TabsContent value="dados">
                   <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
@@ -759,28 +862,11 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                         onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                         required
                       />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="Turma">Turma</Label>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="w-full justify-between">
-                            {turmaSelecionada
-                              ? turmas.find(t => t.idTurma === turmaSelecionada)?.nome ?? "Selecionar turma"
-                              : "Selecionar turma"}
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-56">
-                          {turmas.map((t) => (
-                            <DropdownMenuItem key={t.idTurma} onClick={() => setTurmaSelecionada(t.idTurma)}>
-                              {t.nome}
-                            </DropdownMenuItem>
-                          ))}
-                          {turmas.length === 0 && (
-                            <DropdownMenuItem disabled>Nenhuma turma registada</DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {fieldErrors.nome_professor && (
+                        <p className="text-[13px] font-medium text-destructive">
+                          {fieldErrors.nome_professor[0]}
+                        </p>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">
@@ -792,6 +878,11 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           required
                         />
+                        {fieldErrors.email && (
+                          <p className="text-[13px] font-medium text-destructive">
+                            {fieldErrors.email[0]}
+                          </p>
+                        )}
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="telefone">Telefone</Label>
@@ -803,65 +894,141 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                           }
                           required
                         />
+                        {fieldErrors.telefone && (
+                          <p className="text-[13px] font-medium text-destructive">
+                            {fieldErrors.telefone[0]}
+                          </p>
+                        )}
                       </div>
                     </div>
-
-                    {turmaSelecionada ? (
-                      <div className="grid gap-2">
-                        <Label className="flex items-center gap-2">
-                          Disciplinas
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {turmas.find(t => t.idTurma === turmaSelecionada)?.nome}
-                          </Badge>
-                        </Label>
-                        {(() => {
-                          const turmaDiscs = turmas.find(t => t.idTurma === turmaSelecionada)?.TurmaDisciplina || []
-                          if (turmaDiscs.length === 0) {
-                            return (
-                              <div className="rounded-md border border-dashed border-border p-4 text-center">
-                                <p className="text-sm text-muted-foreground">
-                                  Nenhuma disciplina associada a esta turma.
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  Associe disciplinas na página de Disciplinas.
-                                </p>
-                              </div>
-                            )
-                          }
-                          return (
-                            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-md border p-3">
-                              {turmaDiscs.map((td) => (
-                                <div key={td.Disciplina} className="flex items-center gap-2">
-                                  <Checkbox
-                                    id={`disc-${td.Disciplina}`}
-                                    checked={formData.disciplina.includes(td.Disciplina)}
-                                    onCheckedChange={(checked) => toggleDisciplina(td.Disciplina,checked==true )}
-                                  />
-                                  <Label
-                                    htmlFor={`disc-${td.Disciplina}`}
-                                    className="text-sm font-normal cursor-pointer"
-                                  >
-                                    {td.Disciplina}
-                                  </Label>
-                                </div>
-                              ))}
-                            </div>
-                          )
-                        })()}
-                      </div>
-                    ) : (
-                      <div className="grid gap-2">
-                        <Label>Disciplinas</Label>
-                        <div className="rounded-md border border-dashed border-border p-4 text-center">
-                          <p className="text-sm text-muted-foreground">
-                            Selecione uma turma para ver as disciplinas disponíveis.
-                          </p>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </TabsContent>
 
+                {/* ── Tab: Turmas & Disciplinas (only in edit mode) ── */}
+                {editingProfessor && (
+                  <TabsContent value="turmas">
+                    <div className="grid gap-4 py-4">
+                      {/* Current assignments */}
+                      <div className="grid gap-2">
+                        <Label>Atribuições actuais</Label>
+                        {atribuicoes.length === 0 ? (
+                          <div className="rounded-md border border-dashed border-border p-4 text-center">
+                            <p className="text-sm text-muted-foreground">
+                              Nenhuma turma/disciplina atribuída.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="rounded-md border p-3 space-y-2 max-h-48 overflow-y-auto">
+                            {atribuicoes.map((a, idx) => (
+                              <div
+                                key={`${a.turmaId}-${a.disciplinaNome}-${idx}`}
+                                className="flex items-center justify-between gap-2 text-sm"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary" className="text-xs">
+                                    {a.turmaNome}
+                                  </Badge>
+                                  <span>{a.disciplinaNome}</span>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                                  onClick={() => handleRemoveAtribuicao(idx)}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Add new assignment */}
+                      <div className="grid gap-3 rounded-md border border-dashed border-border p-3">
+                        <Label className="text-xs text-muted-foreground uppercase tracking-wider">
+                          Adicionar atribuição
+                        </Label>
+                        <div className="grid gap-2">
+                          <Label htmlFor="add-turma">Turma</Label>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" className="w-full justify-between">
+                                {addTurmaId
+                                  ? turmas.find((t) => t.id_turma === addTurmaId)?.descricao_turma ?? "Selecionar turma"
+                                  : "Selecionar turma"}
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-56">
+                              {turmas.map((t, idx) => (
+                                <DropdownMenuItem
+                                  key={`${t.id_turma}-${idx}`}
+                                  onClick={() => {
+                                    setAddTurmaId(t.id_turma)
+                                    setAddDisciplinas([])
+                                  }}
+                                >
+                                  {t.descricao_turma}
+                                </DropdownMenuItem>
+                              ))}
+                              {turmas.length === 0 && (
+                                <DropdownMenuItem key="empty" disabled>
+                                  Nenhuma turma registada
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+
+                        {addTurmaId && (
+                          <div className="grid gap-2">
+                            <Label>Disciplinas</Label>
+                            {addTurmaDiscs.length === 0 ? (
+                              <p className="text-sm text-muted-foreground">
+                                Nenhuma disciplina associada a esta turma.
+                              </p>
+                            ) : (
+                              <div className="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto rounded-md border p-3">
+                                {addTurmaDiscs.map((discNome) => (
+                                  <div key={discNome} className="flex items-center gap-2">
+                                    <Checkbox
+                                      id={`add-disc-${discNome}`}
+                                      checked={addDisciplinas.includes(discNome)}
+                                      onCheckedChange={(checked) =>
+                                        toggleAddDisciplina(discNome, checked === true)
+                                      }
+                                    />
+                                    <Label
+                                      htmlFor={`add-disc-${discNome}`}
+                                      className="text-sm font-normal cursor-pointer"
+                                    >
+                                      {discNome}
+                                    </Label>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          className="w-fit gap-1"
+                          disabled={!addTurmaId || addDisciplinas.length === 0}
+                          onClick={handleAddAtribuicao}
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                          Adicionar
+                        </Button>
+                      </div>
+                    </div>
+                  </TabsContent>
+                )}
+
+                {/* ── Tab: Disponibilidade ── */}
                 <TabsContent value="disponibilidade">
                   <div className="grid gap-4 py-4">
                     <div className="flex items-center justify-between">
@@ -919,7 +1086,11 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                 </TabsContent>
               </Tabs>
 
-              {error && <p className="text-sm text-destructive mt-2">{error}</p>}
+                {error && (
+                  <div className="rounded-md bg-destructive/15 p-3 mt-2">
+                    <p className="text-sm font-medium text-destructive">{error}</p>
+                  </div>
+                )}
 
               <DialogFooter className="mt-4">
                 <Button type="button" variant="outline" onClick={resetForm}>

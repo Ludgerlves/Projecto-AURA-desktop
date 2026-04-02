@@ -1,34 +1,36 @@
-import {prisma} from "@/lib/prisma";
-import{CreateClasseData, UpdateClasseData} from "@/lib/Validation/Classe"
+import { prisma } from "@/lib/prisma";
+import { CreateClasseData, UpdateClasseData } from "@/lib/Validation/Classe";
 
 export class ClasseCRUD {
-    async criarTurma(data: CreateClasseData){
-        return await prisma.classe.create({data})
+    async criarClasse(data: CreateClasseData) {
+        return await prisma.classe.create({ data });
     }
 
-    async atualizarTurma(nomeClasse: string, data: UpdateClasseData){
+    async atualizarClasse(id_classe: number, data: UpdateClasseData) {
         return await prisma.classe.update({
-            where: {nome: nomeClasse},
+            where: { id_classe },
             data,
-        })
+        });
     }
-    async showTurma(nomeClasse: string){
+
+    async showClasse(id_classe: number) {
         return await prisma.classe.findUnique({
-            where: {nome: nomeClasse},
-        })
+            where: { id_classe },
+        });
     }
-    async listarTodasTurmas(){
+
+    async listarTodas() {
         return await prisma.classe.findMany({
-            orderBy: {nome: "asc"}
-        })
+            orderBy: { descricao_classe: "asc" },
+        });
     }
-    async apagarTurma(nomeClasse: string){
+
+    async apagarClasse(id_classe: number) {
         await prisma.classe.delete({
-            where: {nome: nomeClasse},
-        
-        })
-        return {message: "Turma eliminada com sucesso"}
+            where: { id_classe },
+        });
+        return { message: "Classe eliminada com sucesso" };
     }
-    
 }
+
 export const classeService = new ClasseCRUD();

@@ -2,36 +2,39 @@ import { prisma } from '@/lib/prisma';
 import { CreateDisciplinaData, UpdateDisciplinaData } from '@/lib/Validation/Disciplina';
 
 export class DisciplinaCRUD {
+
     async criar(data: CreateDisciplinaData) {
         return await prisma.disciplina.create({ data });
     }
 
-    async atualizar(nome: string, data: UpdateDisciplinaData) {
+    async atualizar(id_disciplina: number, data: UpdateDisciplinaData) {
         return await prisma.disciplina.update({
-            where: { nome },
+            where: { id_disciplina },
             data,
         });
     }
 
-    async mostrar(nome: string) {
+    async mostrar(id_disciplina: number) {
         return await prisma.disciplina.findUnique({
-            where: { nome },
+            where: { id_disciplina },
         });
     }
 
     async listarTodas() {
         return await prisma.disciplina.findMany({
-            orderBy: { nome: 'asc' },
+            orderBy: { descricao_disciplina: "asc" },
         });
     }
 
-    async apagar(nome: string) {
-        // Delete TurmaDisciplina associations first
+    async apagar(id_disciplina: number) {
         await prisma.turmaDisciplina.deleteMany({
-            where: { Disciplina: nome },
+            where: { id_disciplina },
+        });
+        await prisma.profTurmaDisciplina.deleteMany({
+            where: { id_disciplina },
         });
         await prisma.disciplina.delete({
-            where: { nome },
+            where: { id_disciplina },
         });
         return { message: "Disciplina eliminada com sucesso" };
     }

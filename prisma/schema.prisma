@@ -54,7 +54,7 @@ model Disciplina {
 model Disponibilidade {
   id_disponibilidade          Int @id @default(autoincrement())
   id_professor                Int
-  id_dia                      Int
+  id_dia                      Int 
   id_periodo                  Int
   ordem                       Int
 

@@ -1,4 +1,4 @@
-import { DiaSemana, Periodo, PrismaClient } from "../lib/generated/prisma";
+import { PrismaClient } from "../lib/generated/prisma";
 import { PrismaPg } from "@prisma/adapter-pg";
 import "dotenv/config"
 
@@ -8,14 +8,40 @@ const prisma = new PrismaClient({adapter});
 export  {prisma};
 
 async function main() {
+  // 0.1 Criar Dias da Semana
+  const diasData = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+  const dias = [];
+  for (const nome of diasData) {
+    const dia = await prisma.diaSemana.upsert({
+      where: { descricao_dia: nome },
+      update: {},
+      create: { descricao_dia: nome },
+    });
+    dias.push(dia);
+  }
+  console.log(`✅ ${dias.length} dias da semana criados/verificados`);
+
+  // 0.2 Criar Periodos
+  const periodosData = ["Manhã", "Tarde", "Noite"];
+  const periodos = [];
+  for (const nome of periodosData) {
+    const peri = await prisma.periodo.upsert({
+      where: { descricao_periodo: nome },
+      update: {},
+      create: { descricao_periodo: nome },
+    });
+    periodos.push(peri);
+  }
+  console.log(`✅ ${periodos.length} periodos criados/verificados`);
+
   // 1. Criar Classes
-  const classesData = [ { nome: "10ª", sufixo: "Classe" }, { nome: "11ª", sufixo: "Classe" }, { nome: "12ª", sufixo: "Classe" }, { nome: "13ª", sufixo: "Classe" } ];
+  const classesData = ["10ª Classe", "11ª Classe", "12ª Classe", "13ª Classe"];
   const classes = [];
-  for (const { nome } of classesData) {
+  for (const desc of classesData) {
     const classe = await prisma.classe.upsert({
-      where: { nome_classe: nome },
-      update: { nome_classe: nome },
-      create: { nome_classe: nome },
+      where: { descricao_classe: desc },
+      update: {},
+      create: { descricao_classe: desc },
     });
     classes.push(classe);
   }
@@ -26,97 +52,95 @@ async function main() {
   const cursos = [];
   for (const nome of cursosData) {
     const curso = await prisma.curso.upsert({
-      where: { nome_curso: nome }, 
-      update: { nome_curso: nome },
-      create: { nome_curso: nome },
+      where: { descricao_curso: nome }, 
+      update: {},
+      create: { descricao_curso: nome },
     });
     cursos.push(curso);
   }
   console.log(`✅ ${cursos.length} cursos criados/verificados`);
 
-  // 3. Criar Turmas
-  const turmas = [];
-
-  for (const classe of classes) {
-    for (const curso of cursos) {
-      if ((classe.nome_classe !== "13ª Classe") || (curso.nome_curso !== "Ciências Físicas e Biológicas" && curso.nome_curso !== "Ciências Económicas e Jurídicas")) {
-
-      const nome_turma = `${classe.nome_classe} ${curso.nome_curso}`;
-
-      const turma = await prisma.turma.upsert({
-          where: { nome_turma },
-          update: { nome_classe: classe.nome_classe, nome_curso: curso.nome_curso },
-          create: { 
-            nome_turma, 
-            nome_classe: classe.nome_classe, 
-            nome_curso: curso.nome_curso 
-          },
-        });
-
-        turmas.push(turma);
-      }
-    }
-  }
-  console.log(`✅ ${turmas.length} turmas criadas/verificadas`);
-
-  // 4. Criar Salas
+  // 3. Criar Salas
   const salasData = [
-    { nome: "Sala 1", capacidade: 20 },
-    { nome: "Sala 2", capacidade: 20 },
-    { nome: "Sala 3", capacidade: 20 },
-    { nome: "Sala 4", capacidade: 20 },
-    { nome: "Sala 5", capacidade: 20 },
-    { nome: "Sala 6", capacidade: 30 },
-    { nome: "Sala 7", capacidade: 30 },
-    { nome: "Sala 8", capacidade: 20 },
-    { nome: "Sala 9", capacidade: 20 },
-    { nome: "Sala 10", capacidade: 20 },
-    { nome: "Sala 11", capacidade: 25 },
-    { nome: "Sala 12", capacidade: 25 },
-    { nome: "Sala 13", capacidade: 20 },
-    { nome: "Sala 14", capacidade: 20 },
-    { nome: "Sala 15", capacidade: 20 },
-    { nome: "Lab INF 1", capacidade: 30 },
-    { nome: "Lab INF 2", capacidade: 30 },
-    { nome: "Campo", capacidade: 50 }
+    { nome: "Sala 1", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 2", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 3", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 4", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 5", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 6", capacidade: 30, tipo_sala: "normal" },
+    { nome: "Sala 7", capacidade: 30, tipo_sala: "normal" },
+    { nome: "Sala 8", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 9", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 10", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 11", capacidade: 25, tipo_sala: "normal"},
+    { nome: "Sala 12", capacidade: 25, tipo_sala: "normal" },
+    { nome: "Sala 13", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 14", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 15", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Lab INF 1", capacidade: 30, tipo_sala: "Laboratório de Informática" },
+    { nome: "Lab INF 2", capacidade: 30, tipo_sala: "Laboratório de Informática" },
+    { nome: "Campo", capacidade: 50, tipo_sala: "Campo"}
   ];
 
   const salas = [];
-
   for (const item of salasData) {
     const sala = await prisma.sala.upsert({
-      where: { nome_sala: item.nome },
-      update: { capacidade: item.capacidade },
+      where: { descricao_sala: item.nome },
+      update: { capacidade: item.capacidade, tipo_sala: item.tipo_sala },
       create: {
-        nome_sala: item.nome,
+        descricao_sala: item.nome,
         capacidade: item.capacidade,
+        tipo_sala: item.tipo_sala
       }
     });
     salas.push(sala);
   }
   console.log(`✅ ${salas.length} salas criadas/verificadas`);
 
+  // 4. Criar Turmas
+  const turmas = [];
+  for (const classe of classes) {
+    for (const curso of cursos) {
+      if ((classe.descricao_classe !== "13ª Classe") || (curso.descricao_curso !== "Ciências Físicas e Biológicas" && curso.descricao_curso !== "Ciências Económicas e Jurídicas")) {
+      
+        const desc_turma = `${classe.descricao_classe} ${curso.descricao_curso}`;
+
+        const turma = await prisma.turma.upsert({
+          where: { descricao_turma: desc_turma },
+          update: { id_classe: classe.id_classe, id_curso: curso.id_curso },
+          create: { 
+            descricao_turma: desc_turma, 
+            id_classe: classe.id_classe, 
+            id_curso: curso.id_curso,
+            quantidade_alunos: 30
+          },
+        });
+        turmas.push(turma);
+      }
+    }
+  }
+  console.log(`✅ ${turmas.length} turmas criadas/verificadas`);
+
   // 5. Criar Disciplinas
   const disciplinasData = [
-    { nome_disciplina: "Língua Inglesa" },
-    { nome_disciplina: "Física" },
-    { nome_disciplina: "Língua Portuguesa" },
-    { nome_disciplina: "Electrotecnia" },
-    { nome_disciplina: "Matemática" },
-    { nome_disciplina: "TIC" },
-    { nome_disciplina: "SEAC" },
-    { nome_disciplina: "TLP" },
-    { nome_disciplina: "Desenho Técnico"}, 
-    { nome_disciplina: "Educação Física" }
+    { nome: "Língua Inglesa", tipo_sala: "normal" },
+    { nome: "Física", tipo_sala: "normal" },
+    { nome: "Língua Portuguesa", tipo_sala: "normal" },
+    { nome: "Electrotecnia", tipo_sala: "normal" },
+    { nome: "Matemática", tipo_sala: "normal" },
+    { nome: "TIC", tipo_sala: "Laboratório de Informática" },
+    { nome: "SEAC", tipo_sala: "normal" },
+    { nome: "TLP", tipo_sala: "Laboratório de Informática" },
+    { nome: "Desenho Técnico", tipo_sala: "normal"}, 
+    { nome: "Educação Física", tipo_sala: "Campo" }
   ];
 
   const disciplinas = [];
-
   for (const disciplina of disciplinasData) {
     const disc = await prisma.disciplina.upsert({
-      where: { nome_disciplina: disciplina.nome_disciplina },
-      update: {},
-      create: { nome_disciplina: disciplina.nome_disciplina },
+      where: { descricao_disciplina: disciplina.nome },
+      update: { tipo_sala: disciplina.tipo_sala },
+      create: { descricao_disciplina: disciplina.nome, tipo_sala: disciplina.tipo_sala },
     });
     disciplinas.push(disc);
   }
@@ -131,12 +155,11 @@ async function main() {
     { nome: "Sapalalo Teste", email: "sapalalo.teste@escola.ao", telefone: "939000005" },
     { nome: "Vicente Teste", email: "vicente.teste@escola.ao", telefone: "939000006" },
     { nome: "Cardino Teste", email: "cardino.teste@escola.ao", telefone: "939000007" },
-    { nome: "Magalhaẽs Teste", email: "magalhaes@escola.ao", telefone: "939000008" },
+    { nome: "Magalhães Teste", email: "magalhaes@escola.ao", telefone: "939000008" },
     { nome: "Mário Teste", email: "mario.teste@escola.ao", telefone: "939000009" }
   ];
 
   const professores = [];
-
   for (const prof of professoresData) {
     const professor = await prisma.professor.upsert({
       where: { email: prof.email },
@@ -154,124 +177,156 @@ async function main() {
   // 7. Criar Disponibilidades dos Professores
   const disponibilidadesData = [
     // Prof. Genildo Teste
-    { id_professor: professores[0].id_professor, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[0].id_professor, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 2 },
-    { id_professor: professores[0].id_professor, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 2 },
-
+    { id_prof: professores[0].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    { id_prof: professores[0].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
+    { id_prof: professores[0].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
     //Prof. Daniel Teste
-    { id_professor: professores[1].id_professor, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 3 },
-    { id_professor: professores[1].id_professor, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[1].id_professor, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 1 },
-
+    { id_prof: professores[1].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
+    { id_prof: professores[1].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    { id_prof: professores[1].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
     //Prof. Eduardo Teste
-    { id_professor: professores[2].id_professor, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[2].id_professor, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 6 },
-    { id_professor: professores[2].id_professor, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 6 },
-
+    { id_prof: professores[2].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[2].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
+    { id_prof: professores[2].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
     //Prof. Cariongo Teste
-    { id_professor: professores[3].id_professor, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 3 },
-    { id_professor: professores[3].id_professor, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 4 },
-
+    { id_prof: professores[3].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
+    { id_prof: professores[3].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
     //Prof. Sapalalo Teste
-    { id_professor: professores[4].id_professor, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[4].id_professor, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 6 },
-    { id_professor: professores[4].id_professor, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[4].id_professor, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 2 },
-    { id_professor: professores[4].id_professor, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 3 },
-
+    { id_prof: professores[4].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[4].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
+    { id_prof: professores[4].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    { id_prof: professores[4].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
+    { id_prof: professores[4].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
     //Prof. Vicente Teste
-    { id_professor: professores[5].id_professor, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 3 },
-    { id_professor: professores[5].id_professor, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[5].id_professor, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[5].id_professor, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 2 },
-
+    { id_prof: professores[5].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
+    { id_prof: professores[5].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    { id_prof: professores[5].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    { id_prof: professores[5].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
     //Prof. Cardino Teste
-    { id_professor: professores[6].id_professor, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[6].id_professor, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[6].id_professor, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[6].id_professor, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 6 },
-    { id_professor: professores[6].id_professor, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[6].id_professor, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 2 },
-    { id_professor: professores[6].id_professor, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 3 },
-
+    { id_prof: professores[6].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[6].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    { id_prof: professores[6].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[6].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
+    { id_prof: professores[6].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    { id_prof: professores[6].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
+    { id_prof: professores[6].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
     //Prof. Magalhães Teste
-    { id_professor: professores[7].id_professor, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[7].id_professor, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[7].id_professor, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 6 },
-
+    { id_prof: professores[7].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    { id_prof: professores[7].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[7].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
     //Prof. Mário Teste
-    { id_professor: professores[8].id_professor, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.MANHA, ordem: 1 },
-    { id_professor: professores[8].id_professor, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.MANHA, ordem: 2 },
-
+    { id_prof: professores[8].id_professor, dia: dias[2].id_dia, periodo: periodos[0].id_periodo, ordem: 1 },
+    { id_prof: professores[8].id_professor, dia: dias[2].id_dia, periodo: periodos[0].id_periodo, ordem: 2 },
   ];
 
   const disponibilidades = [];
-
   for (const disp of disponibilidadesData) {
     const disponibilidade = await prisma.disponibilidade.upsert({
-      where: { id_professor_nome_dia_nome_periodo_ordem: {
-        id_professor: disp.id_professor,
-        nome_dia: disp.nome_dia,
-        nome_periodo: disp.nome_periodo,
+      where: { id_professor_id_dia_id_periodo_ordem: {
+        id_professor: disp.id_prof,
+        id_dia: disp.dia,
+        id_periodo: disp.periodo,
         ordem: disp.ordem,
       }},
       update: {},
       create: {
-        id_professor: disp.id_professor,
-        nome_dia: disp.nome_dia,
-        nome_periodo: disp.nome_periodo,
+        id_professor: disp.id_prof,
+        id_dia: disp.dia,
+        id_periodo: disp.periodo,
         ordem: disp.ordem,
       },
     });
     disponibilidades.push(disponibilidade);
   }
-  console.log(`✅ ${disponibilidades.length} disponibilidades criadas/verificadas`);
+  console.log(`✅ ${disponibilidades.length} disponibilidades criadas`);
 
-  // 8. Criar registos de TempoLectivo (Cria o Horário da 10ª INF)
+  // 8. Criar TurmaDisciplina e ProfTurmaDisciplina (Para Turma 0 - 10ª INF)
+  const turma10INF = turmas[0]; // 10ª Informática
+  
+  const atribuicoesData = [
+    { p: 0, d: 0 }, // Genildo -> Inglesa
+    { p: 1, d: 1 }, // Daniel -> Física
+    { p: 2, d: 2 }, // Eduardo -> PT
+    { p: 3, d: 3 }, // Cariongo -> Electrotecnia
+    { p: 4, d: 4 }, // Sapalalo -> Matemática
+    { p: 5, d: 5 }, // Vicente -> TIC
+    { p: 6, d: 6 }, // Cardino -> SEAC
+    { p: 6, d: 7 }, // Cardino -> TLP
+    { p: 7, d: 8 }, // Magalhães -> Desenho Técnico
+    { p: 8, d: 9 }, // Mário -> Ed. Física
+  ];
+
+  const profTurmas: { ptId: number; p: number; d: number }[] = [];
+  for (const atr of atribuicoesData) {
+    // 8.1 Associa Disciplina a Turma
+    await prisma.turmaDisciplina.upsert({
+      where: { id_turma_id_disciplina: { id_turma: turma10INF.id_turma, id_disciplina: disciplinas[atr.d].id_disciplina } },
+      update: { aulas_por_semana: 2 },
+      create: { id_turma: turma10INF.id_turma, id_disciplina: disciplinas[atr.d].id_disciplina, aulas_por_semana: 2 }
+    });
+    
+    // 8.2 Associa Professor a Turma e Disciplina
+    const pt = await prisma.profTurmaDisciplina.upsert({
+      where: { id_professor_id_turma_id_disciplina: {
+        id_professor: professores[atr.p].id_professor,
+        id_turma: turma10INF.id_turma,
+        id_disciplina: disciplinas[atr.d].id_disciplina
+      }},
+      update: {},
+      create: {
+        id_professor: professores[atr.p].id_professor,
+        id_turma: turma10INF.id_turma,
+        id_disciplina: disciplinas[atr.d].id_disciplina
+      }
+    });
+    profTurmas.push({ ptId: pt.id_atribuicao, p: atr.p, d: atr.d });
+  }
+
+  // Helper para buscar id_atribuicao
+  const getAtribuicao = (pIdx: number, dIdx: number) => {
+    return profTurmas.find(pt => pt.p === pIdx && pt.d === dIdx)?.ptId || 1;
+  };
+
+  // 9. Criar registos de TempoLectivo (Cria o Horário da 10ª INF)
   const tempoLectivoData = [
     //Segunda
-    { id_professor: professores[0].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[0].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[0].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[0].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 2 },
-    { id_professor: professores[1].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[1].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 3 },
-    { id_professor: professores[1].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[1].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[2].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[2].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[2].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[2].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.SEGUNDA, nome_periodo: Periodo.TARDE, ordem: 6 },
-
+    { p: 0, d: 0, sala: 11, dia: 0, per: 1, ord: 1 },
+    { p: 0, d: 0, sala: 11, dia: 0, per: 1, ord: 2 },
+    { p: 1, d: 1, sala: 11, dia: 0, per: 1, ord: 3 },
+    { p: 1, d: 1, sala: 11, dia: 0, per: 1, ord: 4 },
+    { p: 2, d: 2, sala: 11, dia: 0, per: 1, ord: 5 },
+    { p: 2, d: 2, sala: 11, dia: 0, per: 1, ord: 6 },
     //Terça
-    { id_professor: professores[1].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[1].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[0].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[0].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 2 },
-    { id_professor: professores[3].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[3].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 3 },
-    { id_professor: professores[3].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[3].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[4].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[4].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[4].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[4].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.TERCA, nome_periodo: Periodo.TARDE, ordem: 6 },
-
+    { p: 1, d: 1, sala: 11, dia: 1, per: 1, ord: 1 },
+    { p: 0, d: 0, sala: 11, dia: 1, per: 1, ord: 2 },
+    { p: 3, d: 3, sala: 11, dia: 1, per: 1, ord: 3 },
+    { p: 3, d: 3, sala: 11, dia: 1, per: 1, ord: 4 },
+    { p: 4, d: 4, sala: 11, dia: 1, per: 1, ord: 5 },
+    { p: 4, d: 4, sala: 11, dia: 1, per: 1, ord: 6 },
     //Quarta - Manhã
-    { id_professor: professores[8].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[9].nome_disciplina, nome_sala: salas[17].nome_sala, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.MANHA, ordem: 1 },
-    { id_professor: professores[8].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[9].nome_disciplina, nome_sala: salas[17].nome_sala, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.MANHA, ordem: 2 },
-
+    { p: 8, d: 9, sala: 17, dia: 2, per: 0, ord: 1 },
+    { p: 8, d: 9, sala: 17, dia: 2, per: 0, ord: 2 },
     //Quarta - Tarde
-    { id_professor: professores[4].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[4].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[4].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[4].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 2 },
-    { id_professor: professores[5].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[5].nome_disciplina, nome_sala: salas[16].nome_sala, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 3 },
-    { id_professor: professores[5].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[5].nome_disciplina, nome_sala: salas[16].nome_sala, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[6].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[6].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[2].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[2].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.QUARTA, nome_periodo: Periodo.TARDE, ordem: 6 },
-
+    { p: 4, d: 4, sala: 11, dia: 2, per: 1, ord: 1 },
+    { p: 4, d: 4, sala: 11, dia: 2, per: 1, ord: 2 },
+    { p: 5, d: 5, sala: 16, dia: 2, per: 1, ord: 3 },
+    { p: 5, d: 5, sala: 16, dia: 2, per: 1, ord: 4 },
+    { p: 6, d: 6, sala: 11, dia: 2, per: 1, ord: 5 },
+    { p: 2, d: 2, sala: 11, dia: 2, per: 1, ord: 6 },
     //Quinta
-    { id_professor: professores[5].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[5].nome_disciplina, nome_sala: salas[16].nome_sala, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[5].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[5].nome_disciplina, nome_sala: salas[16].nome_sala, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 2 },
-    { id_professor: professores[4].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[4].nome_disciplina, nome_sala: salas[11].nome_sala, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 3 },
-    { id_professor: professores[6].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[7].nome_disciplina, nome_sala: salas[15].nome_sala, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[6].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[7].nome_disciplina, nome_sala: salas[15].nome_sala, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[6].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[7].nome_disciplina, nome_sala: salas[15].nome_sala, nome_dia: DiaSemana.QUINTA, nome_periodo: Periodo.TARDE, ordem: 6 },
-
+    { p: 5, d: 5, sala: 16, dia: 3, per: 1, ord: 1 },
+    { p: 5, d: 5, sala: 16, dia: 3, per: 1, ord: 2 },
+    { p: 4, d: 4, sala: 11, dia: 3, per: 1, ord: 3 },
+    { p: 6, d: 7, sala: 15, dia: 3, per: 1, ord: 4 },
+    { p: 6, d: 7, sala: 15, dia: 3, per: 1, ord: 5 },
+    { p: 6, d: 7, sala: 15, dia: 3, per: 1, ord: 6 },
     //Sexta
-    { id_professor: professores[6].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[6].nome_disciplina, nome_sala: salas[4].nome_sala, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 1 },
-    { id_professor: professores[6].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[6].nome_disciplina, nome_sala: salas[4].nome_sala, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 2 },
-    { id_professor: professores[6].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[7].nome_disciplina, nome_sala: salas[16].nome_sala, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 3 },
-    { id_professor: professores[7].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[8].nome_disciplina, nome_sala: salas[6].nome_sala, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 4 },
-    { id_professor: professores[7].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[8].nome_disciplina, nome_sala: salas[6].nome_sala, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 5 },
-    { id_professor: professores[7].id_professor, nome_turma: turmas[0].nome_turma, nome_disciplina: disciplinas[8].nome_disciplina, nome_sala: salas[6].nome_sala, nome_dia: DiaSemana.SEXTA, nome_periodo: Periodo.TARDE, ordem: 6 },
+    { p: 6, d: 6, sala: 4,  dia: 4, per: 1, ord: 1 },
+    { p: 6, d: 6, sala: 4,  dia: 4, per: 1, ord: 2 },
+    { p: 6, d: 7, sala: 16, dia: 4, per: 1, ord: 3 },
+    { p: 7, d: 8, sala: 6,  dia: 4, per: 1, ord: 4 },
+    { p: 7, d: 8, sala: 6,  dia: 4, per: 1, ord: 5 },
+    { p: 7, d: 8, sala: 6,  dia: 4, per: 1, ord: 6 },
   ];
 
   await prisma.tempo_Lectivo.deleteMany()
@@ -279,13 +334,15 @@ async function main() {
   for (const aula of tempoLectivoData) {
     await prisma.tempo_Lectivo.create({
       data: {
-        id_professor:    aula.id_professor,
-        nome_turma:      aula.nome_turma,
-        nome_disciplina: aula.nome_disciplina,
-        nome_sala:       aula.nome_sala,
-        nome_dia:        aula.nome_dia,
-        nome_periodo:    aula.nome_periodo,
-        ordem:           aula.ordem,
+        id_atribuicao: getAtribuicao(aula.p, aula.d),
+        id_professor: professores[aula.p].id_professor,
+        id_turma: turma10INF.id_turma,
+        id_disciplina: disciplinas[aula.d].id_disciplina,
+        id_sala: salas[aula.sala].id_sala,
+        id_dia: dias[aula.dia].id_dia,
+        id_periodo: periodos[aula.per].id_periodo,
+        ordem: aula.ord,
+        ano_lectivo: 2024
       }
     })
   }

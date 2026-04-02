@@ -24,26 +24,41 @@ import {
   atualizarTurmasDaDisciplina,
 } from "@/app/disciplinas/disciplinas-action"
 import { useRouter } from "next/navigation"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
+// Interfaces alinhadas com o Prisma Schema
 interface TurmaDisciplinaData {
-  id_Turma: number
-  Disciplina: string
+  disciplina: {
+    descricao_disciplina: string
+  }
 }
 
 interface TurmaData {
-  idTurma: number
-  nome: string
-  classe: string
-  curso: string
-  TurmaDisciplina: TurmaDisciplinaData[]
+  id_turma: number
+  descricao_turma: string
+  curso: {
+    descricao_curso: string
+  }
+  classe: {
+    descricao_classe: string
+  }
+  turmaDisciplinas: TurmaDisciplinaData[] 
 }
 
 interface DisciplinaData {
-  nome: string
+  id_disciplina: number
+  descricao_disciplina: string
+  tipo_sala: string
 }
 
 interface DisciplinaRow {
-  id: string
+  id: number      
   nome: string
   turmas: string[]
 }
@@ -53,22 +68,32 @@ interface DisciplinasContentProps {
   turmas: TurmaData[]
 }
 
+// Tipo para alinhar com o erro do Prisma/TS
+type TurmaConfig = { id_turma: number; aulas_por_semana: number };
+
 export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
   const [editingDisciplina, setEditingDisciplina] = useState<DisciplinaRow | null>(null)
-  const [formData, setFormData] = useState({ nome: "", turmaIds: [] as number[] })
+  
+  const [formData, setFormData] = useState({ 
+    nome: "", 
+    tipo_sala: "normal",
+    turmaConfigs: [] as TurmaConfig[] 
+  })
+  
   const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
 
-  // Build rows with turma associations
   const rows: DisciplinaRow[] = disciplinas.map((d) => {
     const associatedTurmas = turmas
-      .filter((t) => t.TurmaDisciplina.some((td) => td.Disciplina === d.nome))
-      .map((t) => t.nome)
+      .filter((t) => t.turmaDisciplinas.some((td) => td.disciplina.descricao_disciplina === d.descricao_disciplina))
+      .map((t) => t.descricao_turma) 
+      
     return {
-      id: d.nome,
-      nome: d.nome,
+      id: d.id_disciplina,
+      nome: d.descricao_disciplina,
       turmas: associatedTurmas,
     }
   })
@@ -96,37 +121,54 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
     },
   ]
 
+  // CORREÇÃO: Lógica para alternar objetos em vez de apenas IDs
   const toggleTurma = (turmaId: number) => {
+    setFormData((prev) => {
+      const existe = prev.turmaConfigs.find((t) => t.id_turma === turmaId)
+      if (existe) {
+        return {
+          ...prev,
+          turmaConfigs: prev.turmaConfigs.filter((t) => t.id_turma !== turmaId),
+        }
+      } else {
+        return {
+          ...prev,
+          turmaConfigs: [...prev.turmaConfigs, { id_turma: turmaId, aulas_por_semana: 2 }],
+        }
+      }
+    })
+  }
+
+  const updateAulasPorSemana = (turmaId: number, aulas: number) => {
     setFormData((prev) => ({
       ...prev,
-      turmaIds: prev.turmaIds.includes(turmaId)
-        ? prev.turmaIds.filter((id) => id !== turmaId)
-        : [...prev.turmaIds, turmaId],
+      turmaConfigs: prev.turmaConfigs.map(t => 
+        t.id_turma === turmaId ? { ...t, aulas_por_semana: aulas } : t
+      )
     }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setFieldErrors({})
 
     const fd = new FormData()
-    fd.append("nome", formData.nome)
+    fd.append("descricao_disciplina", formData.nome)
+    fd.append("tipo_sala", formData.tipo_sala)
 
     startTransition(async () => {
       let result
       if (editingDisciplina) {
-        // When editing, first update the discipline name, then turma associations
-        result = await atualizarDisciplina(editingDisciplina.nome as any, fd)
+        result = await atualizarDisciplina(editingDisciplina.id, fd)
         if (result.success) {
-          // Update turma associations using the (possibly new) name
-          const nomeFinal = formData.nome || editingDisciplina.nome
-          await atualizarTurmasDaDisciplina(nomeFinal, formData.turmaIds)
+          // CORREÇÃO: Passando o array de objetos correto
+          await atualizarTurmasDaDisciplina(editingDisciplina.id, formData.turmaConfigs)
         }
       } else {
         result = await criarDisciplina(fd)
-        if (result.success) {
-          // Create turma associations for the new discipline
-          await atualizarTurmasDaDisciplina(formData.nome, formData.turmaIds)
+        if (result.success && result.data) {
+          await atualizarTurmasDaDisciplina(result.data.id_disciplina, formData.turmaConfigs)
         }
       }
 
@@ -134,32 +176,43 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
         resetForm()
         router.refresh()
       } else {
+        if (result.errors) {
+          setFieldErrors(result.errors as Record<string, string[]>)
+        }
         setError(result.message || "Erro inesperado")
       }
     })
   }
 
   const resetForm = () => {
-    setFormData({ nome: "", turmaIds: [] })
+    setFormData({ nome: "", tipo_sala: "normal", turmaConfigs: [] })
     setEditingDisciplina(null)
     setError(null)
+    setFieldErrors({})
     setIsOpen(false)
   }
 
   const handleEdit = (disciplina: DisciplinaRow) => {
-    const associatedTurmaIds = turmas
-      .filter((t) => t.TurmaDisciplina.some((td) => td.Disciplina === disciplina.nome))
-      .map((t) => t.idTurma)
+    // CORREÇÃO: Mapear para o formato de objeto esperado ao carregar para edição
+    const associatedConfigs = turmas
+      .filter((t) => t.turmaDisciplinas.some((td) => td.disciplina.descricao_disciplina === disciplina.nome))
+      .map((t) => ({ id_turma: t.id_turma, aulas_por_semana: 2 })) // Ajuste conforme a lógica de aulas do seu DB
 
     setEditingDisciplina(disciplina)
-    setFormData({ nome: disciplina.nome, turmaIds: associatedTurmaIds })
+    const existingData = disciplinas.find((d) => d.id_disciplina === disciplina.id)
+    setFormData({ 
+      nome: disciplina.nome, 
+      tipo_sala: existingData?.tipo_sala || "normal",
+      turmaConfigs: associatedConfigs 
+    })
     setError(null)
+    setFieldErrors({})
     setIsOpen(true)
   }
 
   const handleDelete = (disciplina: DisciplinaRow) => {
     startTransition(async () => {
-      const result = await apagarDisciplina(disciplina.nome as any)
+      const result = await apagarDisciplina(disciplina.id)
       if (result.success) {
         router.refresh()
       } else {
@@ -168,10 +221,10 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
     })
   }
 
-  // Group turmas by curso for better visual organization
   const turmasByCurso = turmas.reduce<Record<string, TurmaData[]>>((acc, t) => {
-    if (!acc[t.curso]) acc[t.curso] = []
-    acc[t.curso].push(t)
+    const nomeCurso = t.curso.descricao_curso
+    if (!acc[nomeCurso]) acc[nomeCurso] = []
+    acc[nomeCurso].push(t)
     return acc
   }, {})
 
@@ -213,18 +266,44 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
                     placeholder="Ex: Matemática, Física..."
                     required
                   />
+                  {fieldErrors.descricao_disciplina && (
+                    <p className="text-[13px] font-medium text-destructive">
+                      {fieldErrors.descricao_disciplina[0]}
+                    </p>
+                  )}
                 </div>
 
-                {/* Turma checkboxes */}
+                <div className="grid gap-2">
+                  <Label htmlFor="tipo_sala">Tipo de Sala</Label>
+                  <Select
+                    value={formData.tipo_sala}
+                    onValueChange={(val) => setFormData({ ...formData, tipo_sala: val })}
+                  >
+                    <SelectTrigger id="tipo_sala">
+                      <SelectValue placeholder="Selecione o tipo de sala..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="Laboratório de Informática">Laboratório de Informática</SelectItem>
+                      <SelectItem value="Campo">Campo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {fieldErrors.tipo_sala && (
+                    <p className="text-[13px] font-medium text-destructive">
+                      {fieldErrors.tipo_sala[0]}
+                    </p>
+                  )}
+                </div>
+
                 <div className="grid gap-3">
                   <div className="flex items-center justify-between">
                     <Label className="flex items-center gap-2">
                       <GraduationCap className="h-4 w-4 text-primary" />
                       Turmas Associadas
                     </Label>
-                    {formData.turmaIds.length > 0 && (
+                    {formData.turmaConfigs.length > 0 && (
                       <Badge variant="secondary" className="text-xs">
-                        {formData.turmaIds.length} selecionada{formData.turmaIds.length !== 1 ? "s" : ""}
+                        {formData.turmaConfigs.length} selecionada{formData.turmaConfigs.length !== 1 ? "s" : ""}
                       </Badge>
                     )}
                   </div>
@@ -241,30 +320,49 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
                           </div>
                           <div className="grid grid-cols-2 gap-1 p-2">
                             {cursoTurmas.map((t) => {
-                              const isChecked = formData.turmaIds.includes(t.idTurma)
+                              // CORREÇÃO: Verificação de check agora olha para id_turma dentro do objeto
+                              const isChecked = formData.turmaConfigs.some(config => config.id_turma === t.id_turma)
                               return (
-                                <label
-                                  key={t.idTurma}
-                                  htmlFor={`turma-${t.idTurma}`}
-                                  className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 cursor-pointer transition-all duration-150 ${isChecked
+                                <div
+                                  key={t.id_turma}
+                                  className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-md px-2.5 py-2 transition-all duration-150 ${isChecked
                                       ? "bg-primary/10 border border-primary/30"
                                       : "hover:bg-muted/50 border border-transparent"
                                     }`}
                                 >
-                                  <Checkbox
-                                    id={`turma-${t.idTurma}`}
-                                    checked={isChecked}
-                                    onCheckedChange={() => toggleTurma(t.idTurma)}
-                                  />
-                                  <div className="flex flex-col">
-                                    <span className="text-sm font-medium leading-tight">
-                                      {t.nome}
-                                    </span>
-                                    <span className="text-[10px] text-muted-foreground leading-tight">
-                                      {t.classe}
-                                    </span>
-                                  </div>
-                                </label>
+                                  <label
+                                    htmlFor={`turma-${t.id_turma}`}
+                                    className="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0"
+                                  >
+                                    <Checkbox
+                                      id={`turma-${t.id_turma}`}
+                                      checked={isChecked}
+                                      onCheckedChange={() => toggleTurma(t.id_turma)}
+                                      className="flex-shrink-0"
+                                    />
+                                    <div className="flex flex-col min-w-0 overflow-hidden">
+                                      <span className="text-sm font-medium leading-tight truncate">
+                                        {t.descricao_turma}
+                                      </span>
+                                      <span className="text-[10px] text-muted-foreground leading-tight truncate">
+                                        {t.classe.descricao_classe}
+                                      </span>
+                                    </div>
+                                  </label>
+                                  {isChecked && (
+                                    <div className="flex items-center gap-1.5 flex-shrink-0 sm:ml-4 ml-7">
+                                      <span className="text-[11px] text-muted-foreground whitespace-nowrap">Aulas:</span>
+                                      <Input 
+                                        type="number" 
+                                        min="1" 
+                                        max="10" 
+                                        className="h-7 w-12 text-[11px] px-1 text-center"
+                                        value={formData.turmaConfigs.find(config => config.id_turma === t.id_turma)?.aulas_por_semana || 2}
+                                        onChange={(e) => updateAulasPorSemana(t.id_turma, parseInt(e.target.value) || 1)}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
                               )
                             })}
                           </div>
@@ -276,15 +374,14 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
                       <p className="text-sm text-muted-foreground">
                         Nenhuma turma registada.
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Registe turmas na página de Turmas.
-                      </p>
                     </div>
                   )}
                 </div>
 
                 {error && (
-                  <p className="text-sm text-destructive">{error}</p>
+                  <div className="rounded-md bg-destructive/15 p-3">
+                    <p className="text-sm font-medium text-destructive">{error}</p>
+                  </div>
                 )}
               </div>
               <DialogFooter>
@@ -292,11 +389,7 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
                   Cancelar
                 </Button>
                 <Button type="submit" disabled={isPending}>
-                  {isPending
-                    ? "A guardar..."
-                    : editingDisciplina
-                      ? "Guardar"
-                      : "Criar"}
+                  {isPending ? "A guardar..." : editingDisciplina ? "Guardar" : "Criar"}
                 </Button>
               </DialogFooter>
             </form>
@@ -310,9 +403,7 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
         </div>
         <div>
           <p className="text-2xl font-bold">{disciplinas.length}</p>
-          <p className="text-sm text-muted-foreground">
-            Disciplinas registadas
-          </p>
+          <p className="text-sm text-muted-foreground">Disciplinas registadas</p>
         </div>
       </div>
 
