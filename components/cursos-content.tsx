@@ -15,12 +15,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DataTable } from "@/components/data-table"
 import { Plus, BookMarked } from "lucide-react"
-import { criarCurso, atualizarCurso, apagarCurso } from "@/app/curso/curso"
+import { criarCurso, atualizarCurso, apagarCurso } from "@/app/turmas/turma-action"
 import { useRouter } from "next/navigation"
 
 interface CursoData {
-  idCurso: number
-  nome: string
+  id_curso:        number
+  descricao_curso: string
 }
 
 interface CursoRow extends CursoData {
@@ -41,12 +41,12 @@ export function CursosContent({ cursos }: CursosContentProps) {
 
   const rows: CursoRow[] = cursos.map((c) => ({
     ...c,
-    id: c.idCurso,
+    id: c.id_curso,
   }))
 
   const columns = [
-    { key: "idCurso" as const, header: "ID" },
-    { key: "nome" as const, header: "Nome" },
+    { key: "id_curso" as const, header: "ID" },
+    { key: "descricao_curso" as const, header: "Descrição" },
   ]
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,11 +54,11 @@ export function CursosContent({ cursos }: CursosContentProps) {
     setError(null)
 
     const fd = new FormData()
-    fd.append("nome", formData.nome)
+    fd.append("descricao_curso", formData.nome)
 
     startTransition(async () => {
       const result = editingCurso
-        ? await atualizarCurso(editingCurso.idCurso, fd)
+        ? await atualizarCurso(editingCurso.id_curso, fd)
         : await criarCurso(fd)
       if (result.success) {
         resetForm()
@@ -78,14 +78,14 @@ export function CursosContent({ cursos }: CursosContentProps) {
 
   const handleEdit = (curso: CursoRow) => {
     setEditingCurso(curso)
-    setFormData({ nome: curso.nome })
+    setFormData({ nome: curso.descricao_curso })
     setError(null)
     setIsOpen(true)
   }
 
   const handleDelete = (curso: CursoRow) => {
     startTransition(async () => {
-      const result = await apagarCurso(curso.idCurso)
+      const result = await apagarCurso(curso.id_curso)
       if (result.success) {
         router.refresh()
       } else {
@@ -169,7 +169,7 @@ export function CursosContent({ cursos }: CursosContentProps) {
       <DataTable
         data={rows}
         columns={columns}
-        searchKey="nome"
+        searchKey="descricao_curso"
         searchPlaceholder="Pesquisar cursos..."
         onEdit={handleEdit}
         onDelete={handleDelete}

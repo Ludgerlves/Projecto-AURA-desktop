@@ -1,32 +1,36 @@
-import {prisma} from "@/lib/prisma"
-import {CreateSalaData, UpdateSalaData} from "@/lib/Validation/Sala"
+import { prisma } from "@/lib/prisma";
+import { CreateSalaData, UpdateSalaData } from "@/lib/Validation/Sala";
 
-export class SalaCRUD{
-    async criarSala(data: CreateSalaData){
-        return await prisma.sala.create({data})
+export class SalaCRUD {
+    async criarSala(data: CreateSalaData) {
+        return await prisma.sala.create({ data });
     }
-    async atualizarSala(id: number, data: UpdateSalaData){
+
+    async atualizarSala(id_sala: number, data: UpdateSalaData) {
         return await prisma.sala.update({
-            where: {idSala: id},
+            where: { id_sala },
             data,
-        })
+        });
     }
-    async showSala(id: number){
+
+    async showSala(id_sala: number) {
         return await prisma.sala.findUnique({
-            where: {idSala: id},
-            
-        })
+            where: { id_sala },
+        });
     }
-    async listarTodasSalas(){
+
+    async listarTodas() {
         return await prisma.sala.findMany({
-            orderBy: {nome: "asc"}
-        })
+            orderBy: { descricao_sala: "asc" },
+        });
     }
-    async apagarSala(id: number){
+
+    async apagarSala(id_sala: number) {
         await prisma.sala.delete({
-            where: {idSala: id},
-        })
-        return {message: "Sala eliminada com sucesso"}
+            where: { id_sala },
+        });
+        return { message: "Sala eliminada com sucesso" };
     }
 }
-export const salaService = new SalaCRUD()
+
+export const salaService = new SalaCRUD();

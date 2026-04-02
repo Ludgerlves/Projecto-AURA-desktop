@@ -1,8 +1,6 @@
 "use client"
 
-import React from "react"
-
-import { useState } from "react"
+import React, { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -26,97 +24,58 @@ import {
 import { DataTable } from "@/components/data-table"
 import { Plus, DoorOpen } from "lucide-react"
 
-interface Sala {
-  id: string
-  nome: string
-  bloco: string
+import { criarSala, atualizarSala, apagarSala } from "@/app/salas/salas-action"
+import { useRouter } from "next/navigation"
+
+interface SalaData {
+  id_sala: number
+  descricao_sala: string
   capacidade: number
-  tipo: "normal" | "laboratorio" | "informatica" | "ginasio" | "auditorio"
-  equipamentos: string[]
-  status: "disponivel" | "ocupada" | "manutencao"
+  tipo_sala: string
 }
 
-const initialSalas: Sala[] = [
-  { id: "1", nome: "Sala 101", bloco: "A", capacidade: 30, tipo: "normal", equipamentos: ["Projetor", "Quadro interativo"], status: "disponivel" },
-  { id: "2", nome: "Sala 102", bloco: "A", capacidade: 30, tipo: "normal", equipamentos: ["Projetor"], status: "disponivel" },
-  { id: "3", nome: "Sala 201", bloco: "A", capacidade: 28, tipo: "normal", equipamentos: ["Projetor", "Ar condicionado"], status: "ocupada" },
-  { id: "4", nome: "Sala 202", bloco: "A", capacidade: 28, tipo: "normal", equipamentos: ["Projetor"], status: "disponivel" },
-  { id: "5", nome: "Lab. Fisica", bloco: "B", capacidade: 24, tipo: "laboratorio", equipamentos: ["Bancadas", "Equipamento cientifico"], status: "disponivel" },
-  { id: "6", nome: "Lab. Quimica", bloco: "B", capacidade: 24, tipo: "laboratorio", equipamentos: ["Bancadas", "Exaustor", "Equipamento cientifico"], status: "manutencao" },
-  { id: "7", nome: "Lab. Informatica 1", bloco: "C", capacidade: 25, tipo: "informatica", equipamentos: ["Computadores", "Projetor"], status: "disponivel" },
-  { id: "8", nome: "Lab. Informatica 2", bloco: "C", capacidade: 25, tipo: "informatica", equipamentos: ["Computadores", "Projetor"], status: "disponivel" },
-  { id: "9", nome: "Ginasio", bloco: "D", capacidade: 60, tipo: "ginasio", equipamentos: ["Equipamento desportivo"], status: "disponivel" },
-  { id: "10", nome: "Auditorio", bloco: "E", capacidade: 150, tipo: "auditorio", equipamentos: ["Sistema de som", "Projetor", "Palco"], status: "manutencao" },
-]
+interface SalasContentProps {
+  salas: SalaData[]
+}
 
-const tipoColors = {
+const tipoColors: Record<string, string> = {
   normal: "bg-blue-600 text-white",
-  laboratorio: "bg-green-600 text-white",
-  informatica: "bg-indigo-600 text-white",
-  ginasio: "bg-orange-600 text-white",
-  auditorio: "bg-purple-600 text-white",
+  "Laboratório de Informática": "bg-indigo-600 text-white",
+  Campo: "bg-green-600 text-white",
 }
 
-const statusColors = {
-  disponivel: "bg-green-600 text-white",
-  ocupada: "bg-accent text-accent-foreground",
-  manutencao: "bg-destructive text-destructive-foreground",
-}
-
-export function SalasContent() {
-  const [salas, setSalas] = useState<Sala[]>(initialSalas)
+export function SalasContent({ salas }: SalasContentProps) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  
   const [isOpen, setIsOpen] = useState(false)
-  const [editingSala, setEditingSala] = useState<Sala | null>(null)
+  const [editingSala, setEditingSala] = useState<SalaData | null>(null)
+  
   const [formData, setFormData] = useState({
     nome: "",
-    bloco: "",
     capacidade: "",
-    tipo: "",
-    equipamentos: "",
-    status: "disponivel",
+    tipo: "normal",
   })
 
+  // Format array for DataTable
+  const dataTableRows = salas.map(s => ({
+    ...s,
+    id: s.id_sala
+  }))
+
   const columns = [
-    { key: "nome" as const, header: "Sala" },
-    { key: "bloco" as const, header: "Bloco" },
+    { key: "descricao_sala" as const, header: "Sala" },
     {
       key: "capacidade" as const,
       header: "Capacidade",
-      render: (sala: Sala) => `${sala.capacidade} lugares`,
+      render: (sala: any) => `${sala.capacidade} lugares`,
     },
     {
-      key: "tipo",
+      key: "tipo_sala",
       header: "Tipo",
-      render: (sala: Sala) => (
-        <Badge className={tipoColors[sala.tipo]}>
-          {sala.tipo.charAt(0).toUpperCase() + sala.tipo.slice(1)}
-        </Badge>
-      ),
-    },
-    {
-      key: "equipamentos",
-      header: "Equipamentos",
-      render: (sala: Sala) => (
-        <div className="flex flex-wrap gap-1">
-          {sala.equipamentos.slice(0, 2).map((e) => (
-            <Badge key={e} variant="outline" className="text-xs">
-              {e}
-            </Badge>
-          ))}
-          {sala.equipamentos.length > 2 && (
-            <Badge variant="outline" className="text-xs">
-              +{sala.equipamentos.length - 2}
-            </Badge>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      render: (sala: Sala) => (
-        <Badge className={statusColors[sala.status]}>
-          {sala.status.charAt(0).toUpperCase() + sala.status.slice(1)}
+      render: (sala: any) => (
+        <Badge className={tipoColors[sala.tipo_sala] || "bg-gray-600 text-white"}>
+          {sala.tipo_sala}
         </Badge>
       ),
     },
@@ -124,58 +83,56 @@ export function SalasContent() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (editingSala) {
-      setSalas((prev) =>
-        prev.map((s) =>
-          s.id === editingSala.id
-            ? {
-                ...s,
-                nome: formData.nome,
-                bloco: formData.bloco,
-                capacidade: parseInt(formData.capacidade) || 0,
-                tipo: formData.tipo as Sala["tipo"],
-                equipamentos: formData.equipamentos.split(",").map((e) => e.trim()),
-                status: formData.status as Sala["status"],
-              }
-            : s
-        )
-      )
-    } else {
-      const newSala: Sala = {
-        id: String(Date.now()),
-        nome: formData.nome,
-        bloco: formData.bloco,
-        capacidade: parseInt(formData.capacidade) || 0,
-        tipo: formData.tipo as Sala["tipo"],
-        equipamentos: formData.equipamentos.split(",").map((e) => e.trim()),
-        status: formData.status as Sala["status"],
+
+    const fd = new FormData()
+    fd.append("descricao_sala", formData.nome)
+    fd.append("capacidade", formData.capacidade)
+    fd.append("tipo_sala", formData.tipo)
+
+    startTransition(async () => {
+      let result;
+      if (editingSala) {
+        result = await atualizarSala(editingSala.id_sala, fd)
+      } else {
+        result = await criarSala(fd)
       }
-      setSalas((prev) => [...prev, newSala])
-    }
-    resetForm()
+
+      if (result.success) {
+        resetForm()
+        router.refresh()
+      } else {
+        alert(result.message)
+      }
+    })
   }
 
   const resetForm = () => {
-    setFormData({ nome: "", bloco: "", capacidade: "", tipo: "", equipamentos: "", status: "disponivel" })
+    setFormData({ nome: "", capacidade: "", tipo: "normal" })
     setEditingSala(null)
     setIsOpen(false)
   }
 
-  const handleEdit = (sala: Sala) => {
+  const handleEdit = (sala: any) => {
     setEditingSala(sala)
     setFormData({
-      nome: sala.nome,
-      bloco: sala.bloco,
+      nome: sala.descricao_sala,
       capacidade: String(sala.capacidade),
-      tipo: sala.tipo,
-      equipamentos: sala.equipamentos.join(", "),
-      status: sala.status,
+      tipo: sala.tipo_sala,
     })
     setIsOpen(true)
   }
 
-  const handleDelete = (sala: Sala) => {
-    setSalas((prev) => prev.filter((s) => s.id !== sala.id))
+  const handleDelete = (sala: any) => {
+    if (!confirm(`Tem certeza que deseja apagar a sala "${sala.descricao_sala}"?`)) return;
+
+    startTransition(async () => {
+      const result = await apagarSala(sala.id_sala)
+      if (result.success) {
+        router.refresh()
+      } else {
+        alert(result.message)
+      }
+    })
   }
 
   return (
@@ -207,35 +164,15 @@ export function SalasContent() {
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="nome">Nome da Sala</Label>
-                    <Input
-                      id="nome"
-                      value={formData.nome}
-                      onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                      placeholder="Ex: Sala 101"
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="bloco">Bloco</Label>
-                    <Select
-                      value={formData.bloco}
-                      onValueChange={(value) => setFormData({ ...formData, bloco: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecionar" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["A", "B", "C", "D", "E"].map((bloco) => (
-                          <SelectItem key={bloco} value={bloco}>
-                            Bloco {bloco}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="nome">Nome da Sala</Label>
+                  <Input
+                    id="nome"
+                    value={formData.nome}
+                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                    placeholder="Ex: Sala 101"
+                    required
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -259,46 +196,19 @@ export function SalasContent() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="laboratorio">Laboratorio</SelectItem>
-                        <SelectItem value="informatica">Informatica</SelectItem>
-                        <SelectItem value="ginasio">Ginasio</SelectItem>
-                        <SelectItem value="auditorio">Auditorio</SelectItem>
+                        <SelectItem value="Laboratório de Informática">Laboratório de Informática</SelectItem>
+                        <SelectItem value="Campo">Campo</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="equipamentos">Equipamentos (separados por virgula)</Label>
-                  <Input
-                    id="equipamentos"
-                    value={formData.equipamentos}
-                    onChange={(e) => setFormData({ ...formData, equipamentos: e.target.value })}
-                    placeholder="Projetor, Quadro interativo"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value) => setFormData({ ...formData, status: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecionar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="disponivel">Disponivel</SelectItem>
-                      <SelectItem value="ocupada">Ocupada</SelectItem>
-                      <SelectItem value="manutencao">Manutencao</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button type="button" variant="outline" onClick={resetForm} disabled={isPending}>
                   Cancelar
                 </Button>
-                <Button type="submit">
-                  {editingSala ? "Guardar" : "Adicionar"}
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? "A processar..." : editingSala ? "Guardar" : "Adicionar"}
                 </Button>
               </DialogFooter>
             </form>
@@ -313,15 +223,15 @@ export function SalasContent() {
         <div>
           <p className="text-2xl font-bold">{salas.length}</p>
           <p className="text-sm text-muted-foreground">
-            Salas registadas ({salas.filter((s) => s.status === "disponivel").length} disponiveis)
+            Salas registadas
           </p>
         </div>
       </div>
 
       <DataTable
-        data={salas}
+        data={dataTableRows}
         columns={columns}
-        searchKey="nome"
+        searchKey="descricao_sala"
         searchPlaceholder="Pesquisar salas..."
         onEdit={handleEdit}
         onDelete={handleDelete}

@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { DiaSemana, Periodo, Prisma } from "../generated/prisma";
+import { Prisma } from "../generated/prisma";
 
 export class TempoLectivoCrud {
+
     async criarTempoLectivo(data: Prisma.Tempo_LectivoCreateInput) {
         return await prisma.tempo_Lectivo.create({ data });
     }
@@ -16,78 +17,110 @@ export class TempoLectivoCrud {
     async showTempoLectivo(id: number) {
         return await prisma.tempo_Lectivo.findUnique({
             where: { id_tempoLectivo: id },
-            include: { 
-                professor: true,
+            include: {
+                professor:  true,
                 disciplina: true,
-                sala: true,
-                turma: true 
+                sala:       true,
+                turma:      true,
+                dia:        true,
+                periodo:    true,
             },
         });
     }
 
-    async listarTodosTemposLectivos() {
+    async listarTodos() {
         return await prisma.tempo_Lectivo.findMany({
             orderBy: [
-                { nome_dia: "asc" },
-                { nome_periodo: "asc" },
-                { ordem: "asc" },
-             ],
-            include: { 
-                professor: true,
+                { id_dia:    "asc" },
+                { id_periodo: "asc" },
+                { ordem:     "asc" },
+            ],
+            include: {
+                professor:  true,
                 disciplina: true,
-                sala: true,
-                turma: true 
+                sala:       true,
+                turma:      true,
+                dia:        true,
+                periodo:    true,
             },
         });
     }
 
-    async listarTemposLectivosporDia(nome_dia: DiaSemana) {
+    async listarPorTurma(descricao_turma: string) {
+        const turma = await prisma.turma.findFirst({ where: { descricao_turma } });
+        if (!turma) return [];
         return await prisma.tempo_Lectivo.findMany({
-            where: { nome_dia: nome_dia },
-            include: { 
-                professor: true,
+            where: { id_turma: turma.id_turma },
+            include: {
+                professor:  true,
                 disciplina: true,
-                sala: true,
-                turma: true 
+                sala:       true,
+                turma:      true,
+                dia:        true,
+                periodo:    true,
             },
             orderBy: [
-                { nome_periodo: "asc" },
-                { ordem: "asc" },
-            ]
+                { id_dia:    "asc" },
+                { id_periodo: "asc" },
+                { ordem:     "asc" },
+            ],
         });
     }
 
-    async listarTemposLectivosporPeriodo(nome_periodo: Periodo) {
+    async listarPorProfessor(nome_professor: string) {
+        const professor = await prisma.professor.findFirst({ where: { nome_professor } });
+        if (!professor) return [];
         return await prisma.tempo_Lectivo.findMany({
-            where: { nome_periodo: nome_periodo },
-            include: { 
-                professor: true,
+            where: { id_professor: professor.id_professor },
+            include: {
+                professor:  true,
                 disciplina: true,
-                sala: true,
-                turma: true 
+                sala:       true,
+                turma:      true,
+                dia:        true,
+                periodo:    true,
             },
             orderBy: [
-                { nome_dia: "asc" },
-                { nome_periodo: "asc" },
-                { ordem: "asc" },
-            ]
+                { id_dia:    "asc" },
+                { id_periodo: "asc" },
+                { ordem:     "asc" },
+            ],
         });
     }
 
-    async listarTemposLectivosporTurma(nome_turma: string) {
+    async listarPorDia(id_dia: number) {
         return await prisma.tempo_Lectivo.findMany({
-            where: { nome_turma },
-            include: { 
-                professor: true,
+            where: { id_dia },
+            include: {
+                professor:  true,
                 disciplina: true,
-                sala: true,
-                turma: true 
+                sala:       true,
+                turma:      true,
+                dia:        true,
+                periodo:    true,
             },
             orderBy: [
-                { nome_dia: "asc" },
-                { nome_periodo: "asc" },
-                { ordem: "asc" },
-            ]
+                { id_periodo: "asc" },
+                { ordem:      "asc" },
+            ],
+        });
+    }
+
+    async listarPorPeriodo(id_periodo: number) {
+        return await prisma.tempo_Lectivo.findMany({
+            where: { id_periodo },
+            include: {
+                professor:  true,
+                disciplina: true,
+                sala:       true,
+                turma:      true,
+                dia:        true,
+                periodo:    true,
+            },
+            orderBy: [
+                { id_dia:  "asc" },
+                { ordem:   "asc" },
+            ],
         });
     }
 
@@ -97,6 +130,13 @@ export class TempoLectivoCrud {
         });
         return { message: "Tempo Lectivo eliminado com sucesso" };
     }
+
+    async apagarTodosPorAno(ano_lectivo: number) {
+        await prisma.tempo_Lectivo.deleteMany({
+            where: { ano_lectivo },
+        });
+        return { message: "Horário eliminado com sucesso" };
+    }
 }
 
-export const tempoLectivoService = new TempoLectivoCrud()
+export const tempoLectivoService = new TempoLectivoCrud();

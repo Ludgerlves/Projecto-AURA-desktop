@@ -1,200 +1,354 @@
+// app/professores/professores-action.ts
 'use server'
 
-import { professorService } from "@/lib/Service/Professores"
-import { baseCreateProfessorSchema, updateProfessorSchema, disponibilidadeItemSchema } from "@/lib/Validation/Usuario"
-import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
-import { prisma } from "@/lib/prisma";
-
+import { professorService } from "@/lib/Service/Professor"
+import { baseCreateProfessorSchema, updateProfessorSchema } from "@/lib/Validation/Professor"
+import { prisma } from "@/lib/prisma"
+import { z } from 'zod'
+import { revalidatePath } from 'next/cache'
 
 export type ActionResponse<T = any> = {
-    success: boolean;
-    data?: T | undefined;
-    errors?: Record<string, string[] | undefined> | undefined;
-    message?: string;
-};
-
-function parseProfTurmaDisciplina(formData: FormData): { turmaId: number; disciplinaNome: string }[] {
-    const raw = formData.get('profTurmaDisciplina') as string | null;
-    if (!raw) return [];
-    try {
-        return JSON.parse(raw);
-    } catch {
-        return [];
-    }
+    success: boolean
+    data?: T | undefined
+    errors?: Record<string, string[] | undefined> | undefined
+    message?: string
 }
 
-function parseDisponibilidade(formData: FormData): { diaSemana: string; periodoId: string; ordem: number }[] {
-    const raw = formData.get('disponibilidade') as string | null;
-    if (!raw) return [];
-    try {
-        return JSON.parse(raw);
-    } catch {
-        return [];
-    }
+// ══════════════════════════════════════════════════════════
+// TYPES PARA DISPONIBILIDADE E PROFTURMADISCIPLINA
+// ══════════════════════════════════════════════════════════
+
+interface DisponibilidadeSlot {
+    diaSemana: string   // Nome do dia (ex: "Segunda-feira")
+    periodo: string     // Nome do período (ex: "Manhã")
+    ordem: number       // Número do tempo (1-6)
 }
 
-export async function criarProfessor(
-    formData: FormData
-): Promise<ActionResponse> {
+interface ProfTurmaDisciplinaInput {
+    turmaId: number
+    disciplinaNome: string
+}
+
+// ══════════════════════════════════════════════════════════
+// HELPER: CONVERTER NOME DO DIA PARA ID
+// ══════════════════════════════════════════════════════════
+
+async function getDiaId(nomeDia: string): Promise<number | null> {
+    const dia = await prisma.diaSemana.findFirst({
+        where: { descricao_dia: nomeDia }
+    })
+    return dia?.id_dia || null
+}
+
+async function getPeriodoId(nomePeriodo: string): Promise<number | null> {
+    const periodo = await prisma.periodo.findFirst({
+        where: { descricao_periodo: nomePeriodo }
+    })
+    return periodo?.id_periodo || null
+}
+
+async function getDisciplinaId(nomeDisciplina: string): Promise<number | null> {
+    const disciplina = await prisma.disciplina.findFirst({
+        where: { descricao_disciplina: nomeDisciplina }
+    })
+    return disciplina?.id_disciplina || null
+}
+
+// ══════════════════════════════════════════════════════════
+// CRIAR PROFESSOR
+// ══════════════════════════════════════════════════════════
+
+export async function criarProfessor(formData: FormData): Promise<ActionResponse> {
     try {
-        const nome = formData.get('nome') as string;
-        const email = formData.get('email') as string;
-        const telefone = formData.get('telefone') as string;
-        const profTurmaDisciplina = parseProfTurmaDisciplina(formData);
-        const disponibilidade = parseDisponibilidade(formData);
+        const nome_professor = formData.get('nome') as string
+        const email          = formData.get('email') as string
+        const telefone       = formData.get('telefone') as string
+        
+        // Parse dos arrays JSON
+        const profTurmaDisciplinaJson = formData.get('profTurmaDisciplina') as string
+        const disponibilidadeJson     = formData.get('disponibilidade') as string
+        
+        const profTurmaDisciplina: ProfTurmaDisciplinaInput[] = profTurmaDisciplinaJson 
+            ? JSON.parse(profTurmaDisciplinaJson) 
+            : []
+        const disponibilidadeSlots: DisponibilidadeSlot[] = disponibilidadeJson 
+            ? JSON.parse(disponibilidadeJson) 
+            : []
 
-        const professorData = {
-            nome,
-            email,
-            telefone,
-            profTurmaDisciplina,
-            disponibilidade,
-        };
+        // Validar dados básicos
+        const validatedData = baseCreateProfessorSchema.parse({ 
+            nome_professor, 
+            email, 
+            telefone 
+        })
 
-        const validatedData = baseCreateProfessorSchema.parse(professorData);
-        const professor = await professorService.criarProfessor(validatedData);
+        // 1. Criar Professor
+        const professor = await professorService.criarProfessor(validatedData)
 
-        revalidatePath('/professores');
+        // 2. Criar ProfTurmaDisciplina
+        if (profTurmaDisciplina.length > 0) {
+            for (const ptd of profTurmaDisciplina) {
+                const disciplinaId = await getDisciplinaId(ptd.disciplinaNome)
+                
+                if (!disciplinaId) {
+                    console.warn(`Disciplina "${ptd.disciplinaNome}" não encontrada`)
+                    continue
+                }
 
-        return {
-            success: true,
-            data: professor,
-            message: 'Professor criado com sucesso!'
-        };
-
-    } catch (error: any) {
-        console.error('Erro ao criar professor:', error);
-
-        if (error instanceof z.ZodError) {
-            return {
-                success: false,
-                errors: error.flatten().fieldErrors || undefined,
-                message: 'Erro de validação',
-            };
+                await prisma.profTurmaDisciplina.create({
+                    data: {
+                        id_professor: professor.id_professor,
+                        id_turma: ptd.turmaId,
+                        id_disciplina: disciplinaId
+                    }
+                })
+            }
         }
 
-        return {
-            success: false,
-            message: error.message || 'Erro inesperado',
-        };
-    }
-}
+        // 3. Criar Disponibilidades
+        if (disponibilidadeSlots.length > 0) {
+            const disponibilidadesData = []
+            
+            for (const slot of disponibilidadeSlots) {
+                const diaId = await getDiaId(slot.diaSemana)
+                const periodoId = await getPeriodoId(slot.periodo)
+                
+                if (!diaId || !periodoId) {
+                    console.warn(`Dia/Período não encontrado: ${slot.diaSemana} - ${slot.periodo}`)
+                    continue
+                }
 
-export async function criarProfessorAction(
-    prevState: ActionResponse | undefined,
-    formData: FormData
-): Promise<ActionResponse> {
-    return await criarProfessor(formData);
-}
+                disponibilidadesData.push({
+                    id_professor: professor.id_professor,
+                    id_dia: diaId,
+                    id_periodo: periodoId,
+                    ordem: slot.ordem
+                })
+            }
 
-export async function atualizarProfessor(
-    id: number,
-    formData: FormData
-): Promise<ActionResponse> {
-    try {
-        const nome = formData.get('nome') as string | null;
-        const email = formData.get('email') as string | null;
-        const telefone = formData.get('telefone') as string | null;
-        const profTurmaDisciplina = parseProfTurmaDisciplina(formData);
-        const disponibilidade = parseDisponibilidade(formData);
-
-        const validateData = updateProfessorSchema.parse({
-            nome: nome || undefined,
-            email: email || undefined,
-            telefone: telefone || undefined,
-            profTurmaDisciplina: profTurmaDisciplina.length > 0 ? profTurmaDisciplina : undefined,
-            disponibilidade: disponibilidade.length > 0 ? disponibilidade : undefined,
-        });
-        const professor = await professorService.atualizarProfessor(id, validateData)
-        revalidatePath('/professores');
-        return {
-            success: true, data: professor, message: 'Professor atualizado com sucesso',
-        };
-    } catch (error: any) {
-        if (error instanceof z.ZodError) {
-            return {
-                success: false,
-                errors: error.flatten().fieldErrors || undefined,
-                message: 'Erro de validação',
-            };
+            if (disponibilidadesData.length > 0) {
+                await prisma.disponibilidade.createMany({
+                    data: disponibilidadesData
+                })
+            }
         }
 
-        return { success: false, message: error.message || 'Erro inesperado' };
-    }
-}
-export async function apagarProfessor(id: number): Promise<ActionResponse> {
-    try {
-        await professorService.showProfessor(id);
-        const result = await professorService.apagarProfessor(id);
-        revalidatePath('/professores');
-        return { success: true, data: result, message: 'Professor apagado com sucesso' };
-
-
+        revalidatePath('/professores')
+        return { success: true, data: professor, message: 'Professor criado com sucesso!' }
     } catch (error: any) {
-        return { success: false, message: error.message }
+        if (error instanceof z.ZodError) {
+            return { 
+                success: false, 
+                errors: error.flatten().fieldErrors || undefined, 
+                message: 'Verifique os erros nos campos abaixo.' 
+            }
+        }
+        if (error?.code === 'P2002') {
+            return { success: false, message: 'Já existe um professor registado com estes dados (Email).' }
+        }
+        return { success: false, message: error.message || 'Erro inesperado ao criar professor.' }
     }
-
 }
+
+// ══════════════════════════════════════════════════════════
+// ATUALIZAR PROFESSOR
+// ══════════════════════════════════════════════════════════
+
+export async function atualizarProfessor(id_professor: number, formData: FormData): Promise<ActionResponse> {
+    try {
+        const nome_professor = formData.get('nome') as string | null
+        const email          = formData.get('email') as string | null
+        const telefone       = formData.get('telefone') as string | null
+
+        const profTurmaDisciplinaJson = formData.get('profTurmaDisciplina') as string
+        const disponibilidadeJson     = formData.get('disponibilidade') as string
+        
+        const profTurmaDisciplina: ProfTurmaDisciplinaInput[] = profTurmaDisciplinaJson 
+            ? JSON.parse(profTurmaDisciplinaJson) 
+            : []
+        const disponibilidadeSlots: DisponibilidadeSlot[] = disponibilidadeJson 
+            ? JSON.parse(disponibilidadeJson) 
+            : []
+
+        // Validar dados
+        const validatedData = updateProfessorSchema.parse({
+            nome_professor: nome_professor || undefined,
+            email:          email          || undefined,
+            telefone:       telefone       || undefined,
+        })
+
+        // 1. Atualizar Professor
+        const professor = await professorService.atualizarProfessor(id_professor, validatedData)
+
+        // 2. Atualizar ProfTurmaDisciplina (deletar e recriar)
+        await prisma.profTurmaDisciplina.deleteMany({
+            where: { id_professor }
+        })
+
+        if (profTurmaDisciplina.length > 0) {
+            for (const ptd of profTurmaDisciplina) {
+                const disciplinaId = await getDisciplinaId(ptd.disciplinaNome)
+                
+                if (!disciplinaId) continue
+
+                await prisma.profTurmaDisciplina.create({
+                    data: {
+                        id_professor,
+                        id_turma: ptd.turmaId,
+                        id_disciplina: disciplinaId
+                    }
+                })
+            }
+        }
+
+        // 3. Atualizar Disponibilidades (deletar e recriar)
+        await prisma.disponibilidade.deleteMany({
+            where: { id_professor }
+        })
+
+        if (disponibilidadeSlots.length > 0) {
+            const disponibilidadesData = []
+            
+            for (const slot of disponibilidadeSlots) {
+                const diaId = await getDiaId(slot.diaSemana)
+                const periodoId = await getPeriodoId(slot.periodo)
+                
+                if (!diaId || !periodoId) continue
+
+                disponibilidadesData.push({
+                    id_professor,
+                    id_dia: diaId,
+                    id_periodo: periodoId,
+                    ordem: slot.ordem
+                })
+            }
+
+            if (disponibilidadesData.length > 0) {
+                await prisma.disponibilidade.createMany({
+                    data: disponibilidadesData
+                })
+            }
+        }
+
+        revalidatePath('/professores')
+        return { success: true, data: professor, message: 'Professor atualizado com sucesso!' }
+    } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            return { 
+                success: false, 
+                errors: error.flatten().fieldErrors || undefined, 
+                message: 'Verifique os erros nos campos abaixo.' 
+            }
+        }
+        if (error?.code === 'P2002') {
+            return { success: false, message: 'Já existe um professor registado com este dado.' }
+        }
+        return { success: false, message: error.message || 'Erro inesperado ao atualizar professor.' }
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// ATUALIZAR APENAS DISPONIBILIDADE (NOVA FUNÇÃO!)
+// ══════════════════════════════════════════════════════════
+
+export async function atualizarDisponibilidade(
+    id_professor: number, 
+    disponibilidadeSlots: DisponibilidadeSlot[]
+): Promise<ActionResponse> {
+    try {
+        // 1. Deletar disponibilidades antigas
+        await prisma.disponibilidade.deleteMany({
+            where: { id_professor }
+        })
+
+        // 2. Criar novas disponibilidades
+        if (disponibilidadeSlots.length > 0) {
+            const disponibilidadesData = []
+            
+            for (const slot of disponibilidadeSlots) {
+                const diaId = await getDiaId(slot.diaSemana)
+                const periodoId = await getPeriodoId(slot.periodo)
+                
+                if (!diaId || !periodoId) {
+                    console.warn(`Dia/Período não encontrado: ${slot.diaSemana} - ${slot.periodo}`)
+                    continue
+                }
+
+                disponibilidadesData.push({
+                    id_professor,
+                    id_dia: diaId,
+                    id_periodo: periodoId,
+                    ordem: slot.ordem
+                })
+            }
+
+            if (disponibilidadesData.length > 0) {
+                await prisma.disponibilidade.createMany({
+                    data: disponibilidadesData
+                })
+            }
+        }
+
+        revalidatePath('/professores')
+        return { success: true, message: 'Disponibilidade atualizada com sucesso!' }
+    } catch (error: any) {
+        return { success: false, message: error.message || 'Erro ao atualizar disponibilidade' }
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// APAGAR PROFESSOR
+// ══════════════════════════════════════════════════════════
+
+export async function apagarProfessor(id_professor: number): Promise<ActionResponse> {
+    try {
+        const result = await professorService.apagarProfessor(id_professor)
+        revalidatePath('/professores')
+        return { success: true, data: result, message: 'Professor apagado com sucesso!' }
+    } catch (error: any) {
+        return { success: false, message: error.message || 'Erro inesperado' }
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+// LISTAR
+// ══════════════════════════════════════════════════════════
 
 export async function listarTodos() {
-    return await professorService.listarTodos();
+    return await professorService.listarTodos()
 }
 
-export async function showProfessor(id: number) {
-    try {
-        return await professorService.showProfessor(id);
-    } catch (error) {
-        return null;
-    }
+export async function showProfessor(id_professor: number) {
+    return await professorService.showProfessor(id_professor)
 }
 
 export async function listarDisciplinas() {
     return await prisma.disciplina.findMany({
-        orderBy: { nome_disciplina: 'asc' }
-    });
-}
-
-export async function atualizarDisponibilidade(
-    professorId: number,
-    slots: { diaSemana: string; periodo: string; ordem: number }[]
-): Promise<ActionResponse> {
-    try {
-        const validated = z.array(disponibilidadeItemSchema).parse(slots);
-        await professorService.atualizarProfessor(professorId, {
-            disponibilidade: validated,
-        });
-        revalidatePath('/professores');
-        return { success: true, message: 'Disponibilidade atualizada com sucesso' };
-    } catch (error: any) {
-        if (error instanceof z.ZodError) {
-            return { success: false, message: 'Dados de disponibilidade inválidos' };
-        }
-        return { success: false, message: error.message || 'Erro inesperado' };
-    }
+        orderBy: { descricao_disciplina: 'asc' }
+    })
 }
 
 export async function listarDiasSemana() {
     return await prisma.diaSemana.findMany({
-        orderBy: { nome: 'asc' }
-    });
+        orderBy: { id_dia: 'asc' }
+    })
 }
 
 export async function listarPeriodos() {
     return await prisma.periodo.findMany({
-        orderBy: { periodo: 'asc' }
-    });
-}
-
-export async function listProfTurmaDisciplina() {
-    return await prisma.profTurmaDisciplina.findMany()
+        orderBy: { id_periodo: 'asc' }
+    })
 }
 
 export async function listarTurmas() {
     return await prisma.turma.findMany({
-        orderBy: { nome_turma: 'asc' },
-        include: {
-            turmaDisciplinas: true,
+        orderBy: { descricao_turma: 'asc' },
+        include: { 
+            turmaDisciplinas: {
+                include: {
+                    disciplina: true
+                }
+            } 
         },
-    });
+    })
 }

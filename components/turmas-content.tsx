@@ -1,3 +1,4 @@
+// components/turmas-content.tsx
 "use client"
 
 import React, { useState, useTransition } from "react"
@@ -14,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Checkbox } from "@/components/ui/checkbox"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { DataTable } from "@/components/data-table"
 import { Card, CardContent } from "@/components/ui/card"
 import { Plus, GraduationCap, Layers, BookMarked, ArrowRight } from "lucide-react"
@@ -25,21 +26,35 @@ import {
 } from "@/app/turmas/turma-action"
 import { useRouter } from "next/navigation"
 
-// ==================== Types ====================
+// ══════════════════════════════════════════════════════════
+// TYPES - CORRIGIDOS PARA BATER COM A BASE
+// ══════════════════════════════════════════════════════════
 
 interface ClasseData {
-  nome: string
+  id_classe: number
+  descricao_classe: string
 }
 
 interface CursoData {
-  nome: string
+  id_curso: number
+  descricao_curso: string
+}
+
+interface SalaData {
+  id_sala: number
+  descricao_sala: string
 }
 
 interface TurmaData {
-  idTurma: number
-  nome: string
-  classe: string
-  curso: string
+  id_turma: number
+  descricao_turma: string
+  id_curso: number
+  id_classe: number
+  id_sala: number | null
+  quantidade_alunos: number
+  curso: CursoData
+  classe: ClasseData
+  sala_preferencial: SalaData | null
 }
 
 interface TurmasContentProps {
@@ -48,23 +63,21 @@ interface TurmasContentProps {
   cursos: CursoData[]
 }
 
-// ==================== Row types with id for DataTable ====================
-
 interface TurmaRow extends TurmaData {
   id: number
-  classeNome: string
-  cursoNome: string
 }
 
 interface ClasseRow extends ClasseData {
-  id: string
+  id: number
 }
 
 interface CursoRow extends CursoData {
-  id: string
+  id: number
 }
 
-// ==================== Component ====================
+// ══════════════════════════════════════════════════════════
+// COMPONENTE PRINCIPAL
+// ══════════════════════════════════════════════════════════
 
 export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   const router = useRouter()
@@ -72,74 +85,106 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState("turmas")
 
-  // --- Turma state ---
+  // ──────────────────────────────────────────────────────
+  // STATE - TURMA (CORRIGIDO)
+  // ──────────────────────────────────────────────────────
   const [turmaOpen, setTurmaOpen] = useState(false)
   const [editingTurma, setEditingTurma] = useState<TurmaRow | null>(null)
-  const [turmaForm, setTurmaForm] = useState({ nome: "", classe: "", curso: "" })
+  const [turmaForm, setTurmaForm] = useState({
+    descricao_turma: "",
+    id_classe: 0,
+    id_curso: 0,
+    quantidade_alunos: 0,
+  })
 
-  // --- Classe state ---
+  // ──────────────────────────────────────────────────────
+  // STATE - CLASSE
+  // ──────────────────────────────────────────────────────
   const [classeOpen, setClasseOpen] = useState(false)
   const [editingClasse, setEditingClasse] = useState<ClasseRow | null>(null)
-  const [classeForm, setClasseForm] = useState({ nome: "" })
+  const [classeForm, setClasseForm] = useState({ descricao_classe: "" })
 
-  // --- Curso state ---
+  // ──────────────────────────────────────────────────────
+  // STATE - CURSO
+  // ──────────────────────────────────────────────────────
   const [cursoOpen, setCursoOpen] = useState(false)
   const [editingCurso, setEditingCurso] = useState<CursoRow | null>(null)
-  const [cursoForm, setCursoForm] = useState({ nome: "" })
+  const [cursoForm, setCursoForm] = useState({ descricao_curso: "" })
 
-  // ==================== Mapped rows ====================
-
-  const classeMap = new Map(classes.map((c) => [c.nome, c.nome]))
-  const cursoMap = new Map(cursos.map((c) => [c.nome, c.nome]))
+  // ══════════════════════════════════════════════════════════
+  // MAPPED ROWS
+  // ══════════════════════════════════════════════════════════
 
   const turmaRows: TurmaRow[] = turmas.map((t) => ({
     ...t,
-    id: t.idTurma,
-    classeNome: classeMap.get(t.classe) || "—",
-    cursoNome: cursoMap.get(t.curso) || "—",
+    id: t.id_turma,
   }))
 
-  const classeRows: ClasseRow[] = classes.map((c) => ({ ...c, id: c.nome }))
-  const cursoRows: CursoRow[] = cursos.map((c) => ({ ...c, id: c.nome }))
+  const classeRows: ClasseRow[] = classes.map((c) => ({
+    ...c,
+    id: c.id_classe,
+  }))
 
-  // ==================== Turma helpers ====================
+  const cursoRows: CursoRow[] = cursos.map((c) => ({
+    ...c,
+    id: c.id_curso,
+  }))
 
-  const gerarNomeTurma = (classe: string, curso: string) => {
-    if (classe && curso) return `${classe} - ${curso}`
-    if (classe) return classe
-    if (curso) return curso
+  // ══════════════════════════════════════════════════════════
+  // HANDLERS - TURMA (CORRIGIDOS)
+  // ══════════════════════════════════════════════════════════
+
+  const gerarDescricaoTurma = (id_classe: number, id_curso: number): string => {
+    const classe = classes.find(c => c.id_classe === id_classe)
+    const curso = cursos.find(c => c.id_curso === id_curso)
+    
+    if (classe && curso) {
+      return `${classe.descricao_classe} - ${curso.descricao_curso}`
+    }
     return ""
   }
-
-  const turmaColumns = [
-    { key: "nome" as const, header: "Turma" },
-    { key: "classeNome" as const, header: "Classe" },
-    { key: "cursoNome" as const, header: "Curso" },
-  ]
 
   const handleTurmaSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    
+    if (!turmaForm.id_classe || !turmaForm.id_curso) {
+      setError("É necessário selecionar uma classe e um curso.")
+      return
+    }
+
+    if (!turmaForm.quantidade_alunos || turmaForm.quantidade_alunos <= 0) {
+      setError("Quantidade de alunos deve ser maior que zero.")
+      return
+    }
+
     const fd = new FormData()
-    fd.append("nome", turmaForm.nome)
-    fd.append("classe", turmaForm.classe)
-    fd.append("curso", turmaForm.curso)
+    fd.append("descricao_turma", turmaForm.descricao_turma)
+    fd.append("id_classe", turmaForm.id_classe.toString())
+    fd.append("id_curso", turmaForm.id_curso.toString())
+    fd.append("quantidade_alunos", turmaForm.quantidade_alunos.toString())
 
     startTransition(async () => {
       const result = editingTurma
-        ? await atualizarTurma(editingTurma.idTurma, fd)
+        ? await atualizarTurma(editingTurma.id_turma, fd)
         : await criarTurma(fd)
+        
       if (result.success) {
         resetTurmaForm()
         router.refresh()
       } else {
-        setError(result.message || "Erro inesperado")
+        setError(result.message || "Ocorreu um erro inesperado")
       }
     })
   }
 
   const resetTurmaForm = () => {
-    setTurmaForm({ nome: "", classe: "", curso: "" })
+    setTurmaForm({
+      descricao_turma: "",
+      id_classe: 0,
+      id_curso: 0,
+      quantidade_alunos: 0,
+    })
     setEditingTurma(null)
     setError(null)
     setTurmaOpen(false)
@@ -148,38 +193,46 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   const handleTurmaEdit = (turma: TurmaRow) => {
     setEditingTurma(turma)
     setTurmaForm({
-      nome: turma.nome,
-      classe: String(turma.classe),
-      curso: String(turma.curso),
+      descricao_turma: turma.descricao_turma,
+      id_classe: turma.id_classe,
+      id_curso: turma.id_curso,
+      quantidade_alunos: turma.quantidade_alunos,
     })
     setError(null)
     setTurmaOpen(true)
   }
 
   const handleTurmaDelete = (turma: TurmaRow) => {
+    if (!confirm(`Tem certeza que deseja apagar a turma "${turma.descricao_turma}"?`)) {
+      return
+    }
+    
     startTransition(async () => {
-      const result = await apagarTurma(turma.idTurma)
-      if (result.success) router.refresh()
-      else setError(result.message || "Erro ao apagar turma")
+      const result = await apagarTurma(turma.id_turma)
+      if (result.success) {
+        router.refresh()
+      } else {
+        setError(result.message || "Erro ao apagar turma")
+      }
     })
   }
 
-  // ==================== Classe handlers ====================
-
-  const classeColumns = [
-    { key: "nome" as const, header: "Nome" },
-  ]
+  // ══════════════════════════════════════════════════════════
+  // HANDLERS - CLASSE
+  // ══════════════════════════════════════════════════════════
 
   const handleClasseSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    
     const fd = new FormData()
-    fd.append("nome", classeForm.nome)
+    fd.append("descricao_classe", classeForm.descricao_classe)
 
     startTransition(async () => {
       const result = editingClasse
-        ? await atualizarClasse(editingClasse.nome, fd)
+        ? await atualizarClasse(editingClasse.id_classe, fd)
         : await criarClasse(fd)
+        
       if (result.success) {
         resetClasseForm()
         router.refresh()
@@ -190,7 +243,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   }
 
   const resetClasseForm = () => {
-    setClasseForm({ nome: "" })
+    setClasseForm({ descricao_classe: "" })
     setEditingClasse(null)
     setError(null)
     setClasseOpen(false)
@@ -198,35 +251,42 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
 
   const handleClasseEdit = (classe: ClasseRow) => {
     setEditingClasse(classe)
-    setClasseForm({ nome: classe.nome })
+    setClasseForm({ descricao_classe: classe.descricao_classe })
     setError(null)
     setClasseOpen(true)
   }
 
   const handleClasseDelete = (classe: ClasseRow) => {
+    if (!confirm(`Tem certeza que deseja apagar a classe "${classe.descricao_classe}"?`)) {
+      return
+    }
+    
     startTransition(async () => {
-      const result = await apagarClasse(classe.nome)
-      if (result.success) router.refresh()
-      else setError(result.message || "Erro ao apagar classe")
+      const result = await apagarClasse(classe.id_classe)
+      if (result.success) {
+        router.refresh()
+      } else {
+        setError(result.message || "Erro ao apagar classe")
+      }
     })
   }
 
-  // ==================== Curso handlers ====================
-
-  const cursoColumns = [
-    { key: "nome" as const, header: "Nome" },
-  ]
+  // ══════════════════════════════════════════════════════════
+  // HANDLERS - CURSO
+  // ══════════════════════════════════════════════════════════
 
   const handleCursoSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    
     const fd = new FormData()
-    fd.append("nome", cursoForm.nome)
+    fd.append("descricao_curso", cursoForm.descricao_curso)
 
     startTransition(async () => {
       const result = editingCurso
-        ? await atualizarCurso(editingCurso.nome, fd)
+        ? await atualizarCurso(editingCurso.id_curso, fd)
         : await criarCurso(fd)
+        
       if (result.success) {
         resetCursoForm()
         router.refresh()
@@ -237,7 +297,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   }
 
   const resetCursoForm = () => {
-    setCursoForm({ nome: "" })
+    setCursoForm({ descricao_curso: "" })
     setEditingCurso(null)
     setError(null)
     setCursoOpen(false)
@@ -245,237 +305,246 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
 
   const handleCursoEdit = (curso: CursoRow) => {
     setEditingCurso(curso)
-    setCursoForm({ nome: curso.nome })
+    setCursoForm({ descricao_curso: curso.descricao_curso })
     setError(null)
     setCursoOpen(true)
   }
 
   const handleCursoDelete = (curso: CursoRow) => {
+    if (!confirm(`Tem certeza que deseja apagar o curso "${curso.descricao_curso}"?`)) {
+      return
+    }
+    
     startTransition(async () => {
-      const result = await apagarCurso(curso.nome)
-      if (result.success) router.refresh()
-      else setError(result.message || "Erro ao apagar curso")
+      const result = await apagarCurso(curso.id_curso)
+      if (result.success) {
+        router.refresh()
+      } else {
+        setError(result.message || "Erro ao apagar curso")
+      }
     })
   }
 
-  // ==================== Render ====================
+  // ══════════════════════════════════════════════════════════
+  // RENDER
+  // ══════════════════════════════════════════════════════════
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Turmas</h1>
-        <p className="text-muted-foreground">
-          Gerir turmas, classes e cursos do sistema
-        </p>
+        <p className="text-muted-foreground">Gerir turmas, classes e cursos do sistema</p>
       </div>
 
-      {/* Stats Cards - Botões clicáveis */}
+      {/* Cards de Resumo */}
       <div className="grid gap-4 md:grid-cols-3">
-        <button
+        <Card 
+          className={`cursor-pointer transition-all hover:shadow-md ${
+            activeTab === "turmas" ? "border-primary bg-primary/5" : ""
+          }`}
           onClick={() => setActiveTab("turmas")}
-          className="text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Card className="cursor-pointer transition-all hover:border-primary hover:shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Turmas</p>
-                  <p className="text-2xl font-bold">{turmaRows.length}</p>
-                </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                  <GraduationCap className="h-6 w-6 text-primary" />
-                </div>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Turmas</p>
+                <p className="text-2xl font-bold">{turmaRows.length}</p>
               </div>
-              <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground">
-                <span>Ver turmas</span>
-                <ArrowRight className="h-3 w-3" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <GraduationCap className="h-6 w-6 text-primary" />
               </div>
-            </CardContent>
-          </Card>
-        </button>
-        <button
+            </div>
+            <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground">
+              <span>Ver lista completa</span>
+              <ArrowRight className="h-3 w-3" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className={`cursor-pointer transition-all hover:shadow-md ${
+            activeTab === "classes" ? "border-blue-500 bg-blue-500/5" : ""
+          }`}
           onClick={() => setActiveTab("classes")}
-          className="text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Card className="cursor-pointer transition-all hover:border-blue-500 hover:shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Classes</p>
-                  <p className="text-2xl font-bold">{classeRows.length}</p>
-                </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
-                  <Layers className="h-6 w-6 text-blue-500" />
-                </div>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Classes</p>
+                <p className="text-2xl font-bold">{classeRows.length}</p>
               </div>
-              <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground">
-                <span>Ver classes</span>
-                <ArrowRight className="h-3 w-3" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
+                <Layers className="h-6 w-6 text-blue-500" />
               </div>
-            </CardContent>
-          </Card>
-        </button>
-        <button
+            </div>
+            <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground">
+              <span>Gerir classes</span>
+              <ArrowRight className="h-3 w-3" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className={`cursor-pointer transition-all hover:shadow-md ${
+            activeTab === "cursos" ? "border-green-500 bg-green-500/5" : ""
+          }`}
           onClick={() => setActiveTab("cursos")}
-          className="text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
-          <Card className="cursor-pointer transition-all hover:border-green-500 hover:shadow-md">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Cursos</p>
-                  <p className="text-2xl font-bold">{cursoRows.length}</p>
-                </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10">
-                  <BookMarked className="h-6 w-6 text-green-500" />
-                </div>
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Cursos</p>
+                <p className="text-2xl font-bold">{cursoRows.length}</p>
               </div>
-              <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground">
-                <span>Ver cursos</span>
-                <ArrowRight className="h-3 w-3" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10">
+                <BookMarked className="h-6 w-6 text-green-500" />
               </div>
-            </CardContent>
-          </Card>
-        </button>
+            </div>
+            <div className="mt-4 flex items-center gap-1 text-xs text-muted-foreground">
+              <span>Gerir cursos</span>
+              <ArrowRight className="h-3 w-3" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {error && (
-        <p className="text-sm text-destructive bg-destructive/10 rounded-md p-3">{error}</p>
-      )}
-
+      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-
-        {/* ==================== Tab Turmas ==================== */}
+        {/* ════════════════════════════════════════════════
+            TAB: TURMAS
+        ════════════════════════════════════════════════ */}
         <TabsContent value="turmas" className="space-y-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-semibold">Lista de Turmas</h2>
-              <p className="text-sm text-muted-foreground">
-                {turmaRows.length === 0 
-                  ? "Nenhuma turma criada ainda" 
-                  : `${turmaRows.length} turma${turmaRows.length !== 1 ? 's' : ''} registada${turmaRows.length !== 1 ? 's' : ''}`}
-              </p>
-            </div>
+            <h2 className="text-lg font-semibold">Lista de Turmas</h2>
+            
+            {/* Dialog Criar/Editar Turma */}
             <Dialog open={turmaOpen} onOpenChange={setTurmaOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2" onClick={() => resetTurmaForm()}>
-                  <Plus className="h-4 w-4" />
-                  Nova Turma
+                <Button className="gap-2" onClick={resetTurmaForm}>
+                  <Plus className="h-4 w-4" /> Nova Turma
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>
                     {editingTurma ? "Editar Turma" : "Nova Turma"}
                   </DialogTitle>
                   <DialogDescription>
-                    {editingTurma
-                      ? "Atualize os dados da turma"
-                      : "Preencha os dados para criar uma nova turma"}
+                    Selecione a classe e o curso. A descrição será gerada automaticamente.
                   </DialogDescription>
                 </DialogHeader>
+                
                 <form onSubmit={handleTurmaSubmit}>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="grid gap-2">
-                        <Label className="flex items-center gap-2">
-                          Classe
-                          <span className="text-xs text-muted-foreground font-normal">(obrigatório)</span>
-                        </Label>
-                        <div className="flex flex-col gap-2 rounded-md border-2 border-border bg-muted/30 p-4 max-h-48 overflow-y-auto">
-                          {classes.length === 0 ? (
-                            <div className="text-center py-4">
-                              <p className="text-sm text-muted-foreground mb-2">Nenhuma classe criada</p>
-                              <p className="text-xs text-muted-foreground">
-                                Crie uma classe na aba "Classes" primeiro
-                              </p>
-                            </div>
-                          ) : (
-                            classes.map((c) => (
-                              <label
-                                key={c.nome}
-                                className={`flex items-center gap-3 cursor-pointer p-2 rounded-md transition-colors ${
-                                  turmaForm.classe === c.nome
-                                    ? "bg-primary/10 border border-primary/20"
-                                    : "hover:bg-muted/50"
-                                }`}
-                              >
-                                <Checkbox
-                                  checked={turmaForm.classe === c.nome}
-                                  onCheckedChange={(checked) => {
-                                    if (checked) {
-                                      const newForm = { ...turmaForm, classe: c.nome }
-                                      newForm.nome = gerarNomeTurma(newForm.classe, turmaForm.curso)
-                                      setTurmaForm(newForm)
-                                    }
-                                  }}
-                                />
-                                <span className="text-sm font-medium flex-1">{c.nome}</span>
-                              </label>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                      <div className="grid gap-2">
-                        <Label className="flex items-center gap-2">
-                          Curso
-                          <span className="text-xs text-muted-foreground font-normal">(obrigatório)</span>
-                        </Label>
-                        <div className="flex flex-col gap-2 rounded-md border-2 border-border bg-muted/30 p-4 max-h-48 overflow-y-auto">
-                          {cursos.length === 0 ? (
-                            <div className="text-center py-4">
-                              <p className="text-sm text-muted-foreground mb-2">Nenhum curso criado</p>
-                              <p className="text-xs text-muted-foreground">
-                                Crie um curso na aba "Cursos" primeiro
-                              </p>
-                            </div>
-                          ) : (
-                            cursos.map((c) => (
-                              <label
-                                key={c.nome}
-                                className={`flex items-center gap-3 cursor-pointer p-2 rounded-md transition-colors ${
-                                  turmaForm.curso === c.nome
-                                    ? "bg-primary/10 border border-primary/20"
-                                    : "hover:bg-muted/50"
-                                }`}
-                              >
-                                <Checkbox
-                                  checked={turmaForm.curso === c.nome}
-                                  onCheckedChange={(checked) => {
-                                    if (checked) {
-                                      const newForm = { ...turmaForm, curso: c.nome }
-                                      newForm.nome = gerarNomeTurma(turmaForm.classe, newForm.curso)
-                                      setTurmaForm(newForm)
-                                    }
-                                  }}
-                                />
-                                <span className="text-sm font-medium flex-1">{c.nome}</span>
-                              </label>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    {turmaForm.nome && (
-                      <div className="rounded-md border-2 border-primary/20 bg-primary/5 p-4">
-                        <p className="text-xs font-medium text-muted-foreground mb-1">Nome gerado automaticamente:</p>
-                        <p className="text-lg font-semibold text-primary">{turmaForm.nome}</p>
+                  <div className="grid gap-6 py-4">
+                    {/* Error Display */}
+                    {error && (
+                      <div className="text-sm text-destructive bg-destructive/10 rounded-md p-3 border border-destructive/20">
+                        {error}
                       </div>
                     )}
-                    {(!turmaForm.classe || !turmaForm.curso) && (
-                      <div className="rounded-md border border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-900 p-3">
-                        <p className="text-xs text-amber-700 dark:text-amber-300">
-                          ⚠️ Selecione uma classe e um curso para gerar o nome da turma
+                    {/* Seleção de Classe */}
+                    <div className="grid gap-3">
+                      <Label className="text-base font-semibold">Classe *</Label>
+                      <RadioGroup
+                        value={turmaForm.id_classe.toString()}
+                        onValueChange={(value) => {
+                          const id_classe = Number(value)
+                          const descricao = gerarDescricaoTurma(id_classe, turmaForm.id_curso)
+                          setTurmaForm({
+                            ...turmaForm,
+                            id_classe,
+                            descricao_turma: descricao,
+                          })
+                        }}
+                        className="grid grid-cols-2 gap-3"
+                      >
+                        {classes.map((classe) => (
+                          <div key={classe.id_classe} className="flex items-center space-x-2">
+                            <RadioGroupItem 
+                              value={classe.id_classe.toString()} 
+                              id={`classe-${classe.id_classe}`}
+                            />
+                            <Label 
+                              htmlFor={`classe-${classe.id_classe}`}
+                              className="font-normal cursor-pointer"
+                            >
+                              {classe.descricao_classe}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+
+                    {/* Seleção de Curso */}
+                    <div className="grid gap-3">
+                      <Label className="text-base font-semibold">Curso *</Label>
+                      <RadioGroup
+                        value={turmaForm.id_curso.toString()}
+                        onValueChange={(value) => {
+                          const id_curso = Number(value)
+                          const descricao = gerarDescricaoTurma(turmaForm.id_classe, id_curso)
+                          setTurmaForm({
+                            ...turmaForm,
+                            id_curso,
+                            descricao_turma: descricao,
+                          })
+                        }}
+                        className="grid grid-cols-2 gap-3"
+                      >
+                        {cursos.map((curso) => (
+                          <div key={curso.id_curso} className="flex items-center space-x-2">
+                            <RadioGroupItem 
+                              value={curso.id_curso.toString()} 
+                              id={`curso-${curso.id_curso}`}
+                            />
+                            <Label 
+                              htmlFor={`curso-${curso.id_curso}`}
+                              className="font-normal cursor-pointer"
+                            >
+                              {curso.descricao_curso}
+                            </Label>
+                          </div>
+                        ))}
+                      </RadioGroup>
+                    </div>
+
+                    {/* Quantidade de Alunos */}
+                    <div className="grid gap-2">
+                      <Label htmlFor="quantidade">Quantidade de Alunos *</Label>
+                      <Input
+                        id="quantidade"
+                        type="number"
+                        min="1"
+                        value={turmaForm.quantidade_alunos || ""}
+                        onChange={(e) =>
+                          setTurmaForm({
+                            ...turmaForm,
+                            quantidade_alunos: Number(e.target.value),
+                          })
+                        }
+                        placeholder="Ex: 30"
+                        required
+                      />
+                    </div>
+
+                    {/* Preview da Descrição */}
+                    {turmaForm.descricao_turma && (
+                      <div className="p-4 bg-primary/10 rounded-md border border-primary/20">
+                        <p className="text-xs uppercase font-semibold text-primary mb-1">
+                          Nome da Turma
                         </p>
+                        <p className="text-lg font-bold">{turmaForm.descricao_turma}</p>
                       </div>
                     )}
                   </div>
+                  
                   <DialogFooter>
                     <Button type="button" variant="outline" onClick={resetTurmaForm}>
                       Cancelar
                     </Button>
                     <Button type="submit" disabled={isPending}>
-                      {isPending ? "A guardar..." : editingTurma ? "Guardar" : "Criar"}
+                      {isPending ? "A processar..." : "Guardar"}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -483,32 +552,33 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
             </Dialog>
           </div>
 
+          {/* Tabela de Turmas */}
           <DataTable
             data={turmaRows}
-            columns={turmaColumns}
-            searchKey="nome"
+            columns={[
+              { key: "descricao_turma", header: "Turma" },
+              { key: "classe", header: "Classe", render: (row: TurmaRow) => row.classe?.descricao_classe },
+              { key: "curso", header: "Curso", render: (row: TurmaRow) => row.curso?.descricao_curso },
+              { key: "quantidade_alunos", header: "Capacidade" },
+            ]}
+            searchKey="descricao_turma"
             searchPlaceholder="Pesquisar turmas..."
             onEdit={handleTurmaEdit}
             onDelete={handleTurmaDelete}
           />
         </TabsContent>
 
-        {/* ==================== Tab Classes ==================== */}
+        {/* ════════════════════════════════════════════════
+            TAB: CLASSES
+        ════════════════════════════════════════════════ */}
         <TabsContent value="classes" className="space-y-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-semibold">Lista de Classes</h2>
-              <p className="text-sm text-muted-foreground">
-                {classeRows.length === 0 
-                  ? "Nenhuma classe criada ainda" 
-                  : `${classeRows.length} classe${classeRows.length !== 1 ? 's' : ''} registada${classeRows.length !== 1 ? 's' : ''}`}
-              </p>
-            </div>
+            <h2 className="text-lg font-semibold">Lista de Classes</h2>
+            
             <Dialog open={classeOpen} onOpenChange={setClasseOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2" onClick={() => resetClasseForm()}>
-                  <Plus className="h-4 w-4" />
-                  Nova Classe
+                <Button className="gap-2" onClick={resetClasseForm}>
+                  <Plus className="h-4 w-4" /> Nova Classe
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -516,31 +586,35 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                   <DialogTitle>
                     {editingClasse ? "Editar Classe" : "Nova Classe"}
                   </DialogTitle>
-                  <DialogDescription>
-                    {editingClasse
-                      ? "Atualize o nome da classe"
-                      : "Preencha o nome para criar uma nova classe"}
-                  </DialogDescription>
                 </DialogHeader>
+                
                 <form onSubmit={handleClasseSubmit}>
                   <div className="grid gap-4 py-4">
+                    {error && (
+                      <div className="text-sm text-destructive bg-destructive/10 rounded-md p-3 border border-destructive/20">
+                        {error}
+                      </div>
+                    )}
                     <div className="grid gap-2">
-                      <Label htmlFor="classe-nome">Nome</Label>
+                      <Label htmlFor="classe-nome">Nome da Classe</Label>
                       <Input
                         id="classe-nome"
-                        value={classeForm.nome}
-                        onChange={(e) => setClasseForm({ nome: e.target.value })}
+                        value={classeForm.descricao_classe}
+                        onChange={(e) =>
+                          setClasseForm({ ...classeForm, descricao_classe: e.target.value })
+                        }
                         placeholder="Ex: 10ª Classe"
                         required
                       />
                     </div>
                   </div>
+                  
                   <DialogFooter>
                     <Button type="button" variant="outline" onClick={resetClasseForm}>
                       Cancelar
                     </Button>
                     <Button type="submit" disabled={isPending}>
-                      {isPending ? "A guardar..." : editingClasse ? "Guardar" : "Criar"}
+                      {isPending ? "A guardar..." : "Guardar"}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -550,30 +624,28 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
 
           <DataTable
             data={classeRows}
-            columns={classeColumns}
-            searchKey="nome"
+            columns={[
+              { key: "id_classe", header: "ID" },
+              { key: "descricao_classe", header: "Descrição" },
+            ]}
+            searchKey="descricao_classe"
             searchPlaceholder="Pesquisar classes..."
             onEdit={handleClasseEdit}
             onDelete={handleClasseDelete}
           />
         </TabsContent>
 
-        {/* ==================== Tab Cursos ==================== */}
+        {/* ════════════════════════════════════════════════
+            TAB: CURSOS
+        ════════════════════════════════════════════════ */}
         <TabsContent value="cursos" className="space-y-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-lg font-semibold">Lista de Cursos</h2>
-              <p className="text-sm text-muted-foreground">
-                {cursoRows.length === 0 
-                  ? "Nenhum curso criado ainda" 
-                  : `${cursoRows.length} curso${cursoRows.length !== 1 ? 's' : ''} registado${cursoRows.length !== 1 ? 's' : ''}`}
-              </p>
-            </div>
+            <h2 className="text-lg font-semibold">Lista de Cursos</h2>
+            
             <Dialog open={cursoOpen} onOpenChange={setCursoOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2" onClick={() => resetCursoForm()}>
-                  <Plus className="h-4 w-4" />
-                  Novo Curso
+                <Button className="gap-2" onClick={resetCursoForm}>
+                  <Plus className="h-4 w-4" /> Novo Curso
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -581,31 +653,35 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                   <DialogTitle>
                     {editingCurso ? "Editar Curso" : "Novo Curso"}
                   </DialogTitle>
-                  <DialogDescription>
-                    {editingCurso
-                      ? "Atualize o nome do curso"
-                      : "Preencha o nome para criar um novo curso"}
-                  </DialogDescription>
                 </DialogHeader>
+                
                 <form onSubmit={handleCursoSubmit}>
                   <div className="grid gap-4 py-4">
+                    {error && (
+                      <div className="text-sm text-destructive bg-destructive/10 rounded-md p-3 border border-destructive/20">
+                        {error}
+                      </div>
+                    )}
                     <div className="grid gap-2">
-                      <Label htmlFor="curso-nome">Nome</Label>
+                      <Label htmlFor="curso-nome">Nome do Curso</Label>
                       <Input
                         id="curso-nome"
-                        value={cursoForm.nome}
-                        onChange={(e) => setCursoForm({ nome: e.target.value })}
-                        placeholder="Ex: Ciências"
+                        value={cursoForm.descricao_curso}
+                        onChange={(e) =>
+                          setCursoForm({ ...cursoForm, descricao_curso: e.target.value })
+                        }
+                        placeholder="Ex: Informática"
                         required
                       />
                     </div>
                   </div>
+                  
                   <DialogFooter>
                     <Button type="button" variant="outline" onClick={resetCursoForm}>
                       Cancelar
                     </Button>
                     <Button type="submit" disabled={isPending}>
-                      {isPending ? "A guardar..." : editingCurso ? "Guardar" : "Criar"}
+                      {isPending ? "A guardar..." : "Guardar"}
                     </Button>
                   </DialogFooter>
                 </form>
@@ -615,8 +691,11 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
 
           <DataTable
             data={cursoRows}
-            columns={cursoColumns}
-            searchKey="nome"
+            columns={[
+              { key: "id_curso", header: "ID" },
+              { key: "descricao_curso", header: "Descrição" },
+            ]}
+            searchKey="descricao_curso"
             searchPlaceholder="Pesquisar cursos..."
             onEdit={handleCursoEdit}
             onDelete={handleCursoDelete}
