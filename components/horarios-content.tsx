@@ -116,6 +116,8 @@ export function HorariosContent() {
           "Manhã": "manha", "Tarde": "tarde"
         }
 
+        console.log("Dados recebidos para o horário:", dados)
+
         dados.forEach((aula: any) => {
           const dia = mapaDias[aula.dia?.descricao_dia || ""]
           const periodo = mapaPeriodos[aula.periodo?.descricao_periodo || ""]
