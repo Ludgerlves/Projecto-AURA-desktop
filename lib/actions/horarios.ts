@@ -52,8 +52,8 @@ export default async function  gerarHorarios(turmas : any[]){
 
   const operacoes = profsFormatados.flatMap(prof => {
     return prof.id_dia.map(dia => {
-      return prisma.tempo_Lectivo.create({
-        data: {
+      return prisma.tempo_Lectivo.createMany({
+        data: [{
           ano_lectivo: prof.ano_lectivo,
           id_atribuicao: prof.id_atribuicao,
           id_dia: dia,
@@ -63,7 +63,18 @@ export default async function  gerarHorarios(turmas : any[]){
           id_sala: prof.id_sala,
           id_turma: prof.id_turma,
           ordem: gerarID(1, 6), // Ordem baseada na posição do dia na lista de dias do professor
-        }
+        },
+        {
+          ano_lectivo: prof.ano_lectivo,
+          id_atribuicao: prof.id_atribuicao,
+          id_dia: dia,
+          id_disciplina: prof.id_disciplina,
+          id_periodo: prof.id_periodo,
+          id_professor: prof.id_professor,
+          id_sala: prof.id_sala,
+          id_turma: prof.id_turma,
+          ordem: gerarID(1, 6),
+        }]
       });
     });
   })
