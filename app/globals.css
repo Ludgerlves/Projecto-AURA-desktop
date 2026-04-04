@@ -3,41 +3,48 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Dark theme only - Schedule Generation System */
+/* AURA — paleta inspirada no logo (navy + teal, fundos suaves) */
 :root {
-  --background: #1c1917;
-  --foreground: #f5f5f4;
-  --card: #292524;
-  --card-foreground: #f5f5f4;
-  --popover: #292524;
-  --popover-foreground: #f5f5f4;
-  --primary: #b91c1c;
-  --primary-foreground: #faf7f5;
-  --secondary: #92400e;
-  --secondary-foreground: #fef3c7;
-  --muted: #1f1c1a;
-  --muted-foreground: #d6d3d1;
-  --accent: #b45309;
-  --accent-foreground: #fef3c7;
-  --destructive: #ef4444;
+  --aura-navy: #1e293b;
+  --aura-navy-muted: #334155;
+  --aura-teal: #0d9488;
+  --aura-teal-bright: #14b8a6;
+  --aura-teal-soft: #ecfdf5;
+  --aura-teal-mid: #99f6e4;
+
+  --background: #f4f7f9;
+  --foreground: #1e293b;
+  --card: #ffffff;
+  --card-foreground: #1e293b;
+  --popover: #ffffff;
+  --popover-foreground: #1e293b;
+  --primary: #0d9488;
+  --primary-foreground: #f8fafc;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #1e293b;
+  --muted: #eef2f6;
+  --muted-foreground: #64748b;
+  --accent: #ccfbf1;
+  --accent-foreground: #0f766e;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #44403c;
-  --input: #44403c;
-  --ring: #b91c1c;
-  --chart-1: #f87171;
-  --chart-2: #ef4444;
-  --chart-3: #dc2626;
-  --chart-4: #fbbf24;
-  --chart-5: #f59e0b;
-  --radius: 0.625rem;
-  --sidebar: #1c1917;
-  --sidebar-foreground: #f5f5f4;
-  --sidebar-primary: #b91c1c;
-  --sidebar-primary-foreground: #faf7f5;
-  --sidebar-accent: #b45309;
-  --sidebar-accent-foreground: #fef3c7;
-  --sidebar-border: #44403c;
-  --sidebar-ring: #b91c1c;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #14b8a6;
+  --chart-1: #0d9488;
+  --chart-2: #14b8a6;
+  --chart-3: #5eead4;
+  --chart-4: #1e293b;
+  --chart-5: #94a3b8;
+  --radius: 0.75rem;
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #1e293b;
+  --sidebar-primary: #0d9488;
+  --sidebar-primary-foreground: #f8fafc;
+  --sidebar-accent: #ecfdf5;
+  --sidebar-accent-foreground: #0f766e;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #14b8a6;
 }
 
 @theme inline {
@@ -79,6 +86,10 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-aura-navy: var(--aura-navy);
+  --color-aura-teal: var(--aura-teal);
+  --color-aura-teal-soft: var(--aura-teal-soft);
+  --color-aura-teal-mid: var(--aura-teal-mid);
 }
 
 @layer base {
@@ -86,6 +97,6 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
 }
