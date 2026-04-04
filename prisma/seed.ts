@@ -8,316 +8,352 @@ const prisma = new PrismaClient({adapter});
 export  {prisma};
 
 async function main() {
-  console.log("🌱 A semear dados de TempoLectivo...");
+  // 0.1 Criar Dias da Semana
+  const diasData = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+  const dias = [];
+  for (const nome of diasData) {
+    const dia = await prisma.diaSemana.upsert({
+      where: { descricao_dia: nome },
+      update: {},
+      create: { descricao_dia: nome },
+    });
+    dias.push(dia);
+  }
+  console.log(`✅ ${dias.length} dias da semana criados/verificados`);
 
-  // 1. Criar Dias da Semana
-  const diasSemana = await Promise.all(
-    ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"].map(
-      (nome) =>
-        prisma.diaSemana.upsert({
-          where: { nome },
-          update: {},
-          create: { nome },
-        })
-    )
-  );
-  console.log(`✅ ${diasSemana.length} dias da semana criados/verificados`);
-
-  // 2. Criar Períodos
+  // 0.2 Criar Periodos
   const periodosData = ["Manhã", "Tarde", "Noite"];
-  const periodos = await Promise.all(
-    periodosData.map((periodo) =>
-      prisma.periodo.upsert({
-        where: { periodo },
-        update: {},
-        create: { periodo },
-      })
-    )
-  );
-  console.log(`✅ ${periodos.length} períodos criados/verificados`);
+  const periodos = [];
+  for (const nome of periodosData) {
+    const peri = await prisma.periodo.upsert({
+      where: { descricao_periodo: nome },
+      update: {},
+      create: { descricao_periodo: nome },
+    });
+    periodos.push(peri);
+  }
+  console.log(`✅ ${periodos.length} periodos criados/verificados`);
 
-  // 3. Criar Classes
+  // 1. Criar Classes
   const classesData = ["10ª Classe", "11ª Classe", "12ª Classe", "13ª Classe"];
   const classes = [];
-  for (const nome of classesData) {
+  for (const desc of classesData) {
     const classe = await prisma.classe.upsert({
-      where: { idClasse: classesData.indexOf(nome) + 1 },
-      update: { nome },
-      create: { nome },
+      where: { descricao_classe: desc },
+      update: {},
+      create: { descricao_classe: desc },
     });
     classes.push(classe);
   }
   console.log(`✅ ${classes.length} classes criadas/verificadas`);
 
-  // 4. Criar Cursos
-  const cursosData = ["Informática", "Contabilidade e Gestão", "Electrónica"];
+  // 2. Criar Cursos
+  const cursosData = ["Informática", "Contabilidade e Gestão", "Ciências Económicas e Jurídicas", "Ciências Físicas e Biológicas", "Electrónica", "Obras de Construcção Civil"];
   const cursos = [];
   for (const nome of cursosData) {
     const curso = await prisma.curso.upsert({
-      where: { idCurso: cursosData.indexOf(nome) + 1 },
-      update: { nome },
-      create: { nome },
+      where: { descricao_curso: nome }, 
+      update: {},
+      create: { descricao_curso: nome },
     });
     cursos.push(curso);
   }
   console.log(`✅ ${cursos.length} cursos criados/verificados`);
 
-  // 5. Criar Turmas
-  const turmasData = [
-    { nome: "INF10A", classeId: classes[0].idClasse, cursoId: cursos[0].idCurso },
-    { nome: "INF11A", classeId: classes[1].idClasse, cursoId: cursos[0].idCurso },
-    { nome: "CG10A", classeId: classes[0].idClasse, cursoId: cursos[1].idCurso },
-    { nome: "EL12A", classeId: classes[2].idClasse, cursoId: cursos[2].idCurso },
-  ];
-  const turmas = [];
-  for (let i = 0; i < turmasData.length; i++) {
-    const turma = await prisma.turma.upsert({
-      where: { idTurma: i + 1 },
-      update: turmasData[i],
-      create: turmasData[i],
-    });
-    turmas.push(turma);
-  }
-  console.log(`✅ ${turmas.length} turmas criadas/verificadas`);
-
-  // 6. Criar Salas
+  // 3. Criar Salas
   const salasData = [
-    { nome: "Sala 1" },
-    { nome: "Sala 2" },
-    { nome: "Lab Info 1" },
-    { nome: "Lab Info 2" },
+    { nome: "Sala 1", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 2", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 3", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 4", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 5", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 6", capacidade: 30, tipo_sala: "normal" },
+    { nome: "Sala 7", capacidade: 30, tipo_sala: "normal" },
+    { nome: "Sala 8", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 9", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 10", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 11", capacidade: 25, tipo_sala: "normal"},
+    { nome: "Sala 12", capacidade: 25, tipo_sala: "normal" },
+    { nome: "Sala 13", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 14", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Sala 15", capacidade: 20, tipo_sala: "normal" },
+    { nome: "Lab INF 1", capacidade: 30, tipo_sala: "Laboratório de Informática" },
+    { nome: "Lab INF 2", capacidade: 30, tipo_sala: "Laboratório de Informática" },
+    { nome: "Campo", capacidade: 50, tipo_sala: "Campo"}
   ];
+
   const salas = [];
-  for (let i = 0; i < salasData.length; i++) {
+  for (const item of salasData) {
     const sala = await prisma.sala.upsert({
-      where: { idSala: i + 1 },
-      update: salasData[i],
-      create: salasData[i],
+      where: { descricao_sala: item.nome },
+      update: { capacidade: item.capacidade, tipo_sala: item.tipo_sala },
+      create: {
+        descricao_sala: item.nome,
+        capacidade: item.capacidade,
+        tipo_sala: item.tipo_sala
+      }
     });
     salas.push(sala);
   }
   console.log(`✅ ${salas.length} salas criadas/verificadas`);
 
-  // 7. Criar Disciplinas
+  // 4. Criar Turmas
+  const turmas = [];
+  for (const classe of classes) {
+    for (const curso of cursos) {
+      if ((classe.descricao_classe !== "13ª Classe") || (curso.descricao_curso !== "Ciências Físicas e Biológicas" && curso.descricao_curso !== "Ciências Económicas e Jurídicas")) {
+      
+        const desc_turma = `${classe.descricao_classe} ${curso.descricao_curso}`;
+
+        const turma = await prisma.turma.upsert({
+          where: { descricao_turma: desc_turma },
+          update: { id_classe: classe.id_classe, id_curso: curso.id_curso },
+          create: { 
+            descricao_turma: desc_turma, 
+            id_classe: classe.id_classe, 
+            id_curso: curso.id_curso,
+            quantidade_alunos: 30
+          },
+        });
+        turmas.push(turma);
+      }
+    }
+  }
+  console.log(`✅ ${turmas.length} turmas criadas/verificadas`);
+
+  // 5. Criar Disciplinas
   const disciplinasData = [
-    "Programação",
-    "Redes de Computadores",
-    "Matemática",
-    "Português",
-    "Electrónica Digital",
-    "Contabilidade",
+    { nome: "Língua Inglesa", tipo_sala: "normal" },
+    { nome: "Física", tipo_sala: "normal" },
+    { nome: "Língua Portuguesa", tipo_sala: "normal" },
+    { nome: "Electrotecnia", tipo_sala: "normal" },
+    { nome: "Matemática", tipo_sala: "normal" },
+    { nome: "TIC", tipo_sala: "Laboratório de Informática" },
+    { nome: "SEAC", tipo_sala: "normal" },
+    { nome: "TLP", tipo_sala: "Laboratório de Informática" },
+    { nome: "Desenho Técnico", tipo_sala: "normal"}, 
+    { nome: "Educação Física", tipo_sala: "Campo" }
   ];
+
   const disciplinas = [];
-  for (let i = 0; i < disciplinasData.length; i++) {
+  for (const disciplina of disciplinasData) {
     const disc = await prisma.disciplina.upsert({
-      where: { idDisciplina: i + 1 },
-      update: { nome: disciplinasData[i] },
-      create: { nome: disciplinasData[i] },
+      where: { descricao_disciplina: disciplina.nome },
+      update: { tipo_sala: disciplina.tipo_sala },
+      create: { descricao_disciplina: disciplina.nome, tipo_sala: disciplina.tipo_sala },
     });
     disciplinas.push(disc);
   }
   console.log(`✅ ${disciplinas.length} disciplinas criadas/verificadas`);
 
-  // 8. Criar Utilizadores e Professores
+  // 6. Criar Professores
   const professoresData = [
-    { nome: "Prof. António Silva", email: "antonio.silva@escola.ao" },
-    { nome: "Prof. Maria Santos", email: "maria.santos@escola.ao" },
-    { nome: "Prof. João Fernandes", email: "joao.fernandes@escola.ao" },
+    { nome: "Genildo Teste", email: "genildo.teste@escola.ao", telefone:"939000001" },
+    { nome: "Daniel Teste", email: "daniel.teste@escola.ao", telefone: "939000002" },
+    { nome: "Eduardo Teste", email: "eduardo.teste@escola.ao", telefone: "939000003" },
+    { nome: "Cariongo Teste", email: "cariongo.teste@escola.ao", telefone: "939000004" },
+    { nome: "Sapalalo Teste", email: "sapalalo.teste@escola.ao", telefone: "939000005" },
+    { nome: "Vicente Teste", email: "vicente.teste@escola.ao", telefone: "939000006" },
+    { nome: "Cardino Teste", email: "cardino.teste@escola.ao", telefone: "939000007" },
+    { nome: "Magalhães Teste", email: "magalhaes@escola.ao", telefone: "939000008" },
+    { nome: "Mário Teste", email: "mario.teste@escola.ao", telefone: "939000009" }
   ];
-  const professores = [];
-  for (let i = 0; i < professoresData.length; i++) {
-    const utilizador = await prisma.utilizador.upsert({
-      where: { email: professoresData[i].email },
-      update: {
-        nome: professoresData[i].nome,
-        updated_at: new Date(),
-      },
-      create: {
-        nome: professoresData[i].nome,
-        email: professoresData[i].email,
-        tipo: "Professor",
-        updated_at: new Date(),
-      },
-    });
 
+  const professores = [];
+  for (const prof of professoresData) {
     const professor = await prisma.professor.upsert({
-      where: { id_Usuario: utilizador.id },
-      update: { updated_at: new Date() },
+      where: { email: prof.email },
+      update: { nome_professor: prof.nome, telefone: prof.telefone },
       create: {
-        id_Usuario: utilizador.id,
-        updated_at: new Date(),
+        nome_professor: prof.nome,
+        email: prof.email,
+        telefone: prof.telefone,
       },
     });
     professores.push(professor);
   }
   console.log(`✅ ${professores.length} professores criados/verificados`);
 
-  // 9. Limpar registos antigos de TempoLectivo (para permitir re-execução)
-  await prisma.tempoLectivo.deleteMany();
-  console.log("🗑️  Registos antigos de TempoLectivo removidos");
+  // 7. Criar Disponibilidades dos Professores
+  const disponibilidadesData = [
+    // Prof. Genildo Teste
+    { id_prof: professores[0].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    { id_prof: professores[0].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
+    { id_prof: professores[0].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
+    //Prof. Daniel Teste
+    { id_prof: professores[1].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
+    { id_prof: professores[1].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    { id_prof: professores[1].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    //Prof. Eduardo Teste
+    { id_prof: professores[2].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[2].id_professor, dia: dias[0].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
+    { id_prof: professores[2].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
+    //Prof. Cariongo Teste
+    { id_prof: professores[3].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
+    { id_prof: professores[3].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    //Prof. Sapalalo Teste
+    { id_prof: professores[4].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[4].id_professor, dia: dias[1].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
+    { id_prof: professores[4].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    { id_prof: professores[4].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
+    { id_prof: professores[4].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
+    //Prof. Vicente Teste
+    { id_prof: professores[5].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
+    { id_prof: professores[5].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    { id_prof: professores[5].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    { id_prof: professores[5].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
+    //Prof. Cardino Teste
+    { id_prof: professores[6].id_professor, dia: dias[2].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[6].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    { id_prof: professores[6].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[6].id_professor, dia: dias[3].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
+    { id_prof: professores[6].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 1 },
+    { id_prof: professores[6].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 2 },
+    { id_prof: professores[6].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 3 },
+    //Prof. Magalhães Teste
+    { id_prof: professores[7].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 4 },
+    { id_prof: professores[7].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 5 },
+    { id_prof: professores[7].id_professor, dia: dias[4].id_dia, periodo: periodos[1].id_periodo, ordem: 6 },
+    //Prof. Mário Teste
+    { id_prof: professores[8].id_professor, dia: dias[2].id_dia, periodo: periodos[0].id_periodo, ordem: 1 },
+    { id_prof: professores[8].id_professor, dia: dias[2].id_dia, periodo: periodos[0].id_periodo, ordem: 2 },
+  ];
 
-  // 10. Criar registos de TempoLectivo (Horários) — SEM conflitos
+  const disponibilidades = [];
+  for (const disp of disponibilidadesData) {
+    const disponibilidade = await prisma.disponibilidade.upsert({
+      where: { id_professor_id_dia_id_periodo_ordem: {
+        id_professor: disp.id_prof,
+        id_dia: disp.dia,
+        id_periodo: disp.periodo,
+        ordem: disp.ordem,
+      }},
+      update: {},
+      create: {
+        id_professor: disp.id_prof,
+        id_dia: disp.dia,
+        id_periodo: disp.periodo,
+        ordem: disp.ordem,
+      },
+    });
+    disponibilidades.push(disponibilidade);
+  }
+  console.log(`✅ ${disponibilidades.length} disponibilidades criadas`);
+
+  // 8. Criar TurmaDisciplina e ProfTurmaDisciplina (Para Turma 0 - 10ª INF)
+  const turma10INF = turmas[0]; // 10ª Informática
+  
+  const atribuicoesData = [
+    { p: 0, d: 0 }, // Genildo -> Inglesa
+    { p: 1, d: 1 }, // Daniel -> Física
+    { p: 2, d: 2 }, // Eduardo -> PT
+    { p: 3, d: 3 }, // Cariongo -> Electrotecnia
+    { p: 4, d: 4 }, // Sapalalo -> Matemática
+    { p: 5, d: 5 }, // Vicente -> TIC
+    { p: 6, d: 6 }, // Cardino -> SEAC
+    { p: 6, d: 7 }, // Cardino -> TLP
+    { p: 7, d: 8 }, // Magalhães -> Desenho Técnico
+    { p: 8, d: 9 }, // Mário -> Ed. Física
+  ];
+
+  const profTurmas: { ptId: number; p: number; d: number }[] = [];
+  for (const atr of atribuicoesData) {
+    // 8.1 Associa Disciplina a Turma
+    await prisma.turmaDisciplina.upsert({
+      where: { id_turma_id_disciplina: { id_turma: turma10INF.id_turma, id_disciplina: disciplinas[atr.d].id_disciplina } },
+      update: { aulas_por_semana: 2 },
+      create: { id_turma: turma10INF.id_turma, id_disciplina: disciplinas[atr.d].id_disciplina, aulas_por_semana: 2 }
+    });
+    
+    // 8.2 Associa Professor a Turma e Disciplina
+    const pt = await prisma.profTurmaDisciplina.upsert({
+      where: { id_professor_id_turma_id_disciplina: {
+        id_professor: professores[atr.p].id_professor,
+        id_turma: turma10INF.id_turma,
+        id_disciplina: disciplinas[atr.d].id_disciplina
+      }},
+      update: {},
+      create: {
+        id_professor: professores[atr.p].id_professor,
+        id_turma: turma10INF.id_turma,
+        id_disciplina: disciplinas[atr.d].id_disciplina
+      }
+    });
+    profTurmas.push({ ptId: pt.id_atribuicao, p: atr.p, d: atr.d });
+  }
+
+  // Helper para buscar id_atribuicao
+  const getAtribuicao = (pIdx: number, dIdx: number) => {
+    return profTurmas.find(pt => pt.p === pIdx && pt.d === dIdx)?.ptId || 1;
+  };
+
+  // 9. Criar registos de TempoLectivo (Cria o Horário da 10ª INF)
   const tempoLectivoData = [
-    // Segunda-feira - Manhã
-    {
-      diaSemanaId: diasSemana[0].idDiaSemana,
-      periodoId: periodos[0].periodo,       // Manhã
-      ordem: 1,
-      professorId: professores[0].id_professor, // Prof. António Silva
-      disciplinaId: disciplinas[0].idDisciplina, // Programação
-      salaId: salas[2].idSala,                    // Lab Info 1
-      turmaId: turmas[0].idTurma,                 // INF10A
-    },
-    {
-      diaSemanaId: diasSemana[0].idDiaSemana,
-      periodoId: periodos[0].periodo,       // Manhã
-      ordem: 2,
-      professorId: professores[1].id_professor, // Prof. Maria Santos
-      disciplinaId: disciplinas[2].idDisciplina, // Matemática
-      salaId: salas[0].idSala,                    // Sala 1
-      turmaId: turmas[0].idTurma,                 // INF10A
-    },
-    // Segunda-feira - Tarde
-    {
-      diaSemanaId: diasSemana[0].idDiaSemana,
-      periodoId: periodos[1].periodo,       // Tarde
-      ordem: 1,
-      professorId: professores[2].id_professor, // Prof. João Fernandes
-      disciplinaId: disciplinas[1].idDisciplina, // Redes
-      salaId: salas[3].idSala,                    // Lab Info 2
-      turmaId: turmas[1].idTurma,                 // INF11A
-    },
-    // Terça-feira - Manhã
-    {
-      diaSemanaId: diasSemana[1].idDiaSemana,
-      periodoId: periodos[0].periodo,       // Manhã
-      ordem: 1,
-      professorId: professores[0].id_professor, // Prof. António Silva
-      disciplinaId: disciplinas[3].idDisciplina, // Português
-      salaId: salas[1].idSala,                    // Sala 2
-      turmaId: turmas[2].idTurma,                 // CG10A
-    },
-    {
-      diaSemanaId: diasSemana[1].idDiaSemana,
-      periodoId: periodos[0].periodo,       // Manhã
-      ordem: 2,
-      professorId: professores[1].id_professor, // Prof. Maria Santos
-      disciplinaId: disciplinas[5].idDisciplina, // Contabilidade
-      salaId: salas[0].idSala,                    // Sala 1
-      turmaId: turmas[2].idTurma,                 // CG10A
-    },
-    // Quarta-feira - Manhã
-    {
-      diaSemanaId: diasSemana[2].idDiaSemana,
-      periodoId: periodos[0].periodo,       // Manhã
-      ordem: 1,
-      professorId: professores[2].id_professor, // Prof. João Fernandes
-      disciplinaId: disciplinas[4].idDisciplina, // Electrónica Digital
-      salaId: salas[1].idSala,                    // Sala 2
-      turmaId: turmas[3].idTurma,                 // EL12A
-    },
-    // Quinta-feira - Tarde
-    {
-      diaSemanaId: diasSemana[3].idDiaSemana,
-      periodoId: periodos[1].periodo,       // Tarde
-      ordem: 1,
-      professorId: professores[0].id_professor, // Prof. António Silva
-      disciplinaId: disciplinas[0].idDisciplina, // Programação
-      salaId: salas[2].idSala,                    // Lab Info 1
-      turmaId: turmas[1].idTurma,                 // INF11A
-    },
-    // Sexta-feira - Manhã
-    {
-      diaSemanaId: diasSemana[4].idDiaSemana,
-      periodoId: periodos[0].periodo,       // Manhã
-      ordem: 1,
-      professorId: professores[1].id_professor, // Prof. Maria Santos
-      disciplinaId: disciplinas[2].idDisciplina, // Matemática
-      salaId: salas[0].idSala,                    // Sala 1
-      turmaId: turmas[3].idTurma,                 // EL12A
-    },
+    //Segunda
+    { p: 0, d: 0, sala: 11, dia: 0, per: 1, ord: 1 },
+    { p: 0, d: 0, sala: 11, dia: 0, per: 1, ord: 2 },
+    { p: 1, d: 1, sala: 11, dia: 0, per: 1, ord: 3 },
+    { p: 1, d: 1, sala: 11, dia: 0, per: 1, ord: 4 },
+    { p: 2, d: 2, sala: 11, dia: 0, per: 1, ord: 5 },
+    { p: 2, d: 2, sala: 11, dia: 0, per: 1, ord: 6 },
+    //Terça
+    { p: 1, d: 1, sala: 11, dia: 1, per: 1, ord: 1 },
+    { p: 0, d: 0, sala: 11, dia: 1, per: 1, ord: 2 },
+    { p: 3, d: 3, sala: 11, dia: 1, per: 1, ord: 3 },
+    { p: 3, d: 3, sala: 11, dia: 1, per: 1, ord: 4 },
+    { p: 4, d: 4, sala: 11, dia: 1, per: 1, ord: 5 },
+    { p: 4, d: 4, sala: 11, dia: 1, per: 1, ord: 6 },
+    //Quarta - Manhã
+    { p: 8, d: 9, sala: 17, dia: 2, per: 0, ord: 1 },
+    { p: 8, d: 9, sala: 17, dia: 2, per: 0, ord: 2 },
+    //Quarta - Tarde
+    { p: 4, d: 4, sala: 11, dia: 2, per: 1, ord: 1 },
+    { p: 4, d: 4, sala: 11, dia: 2, per: 1, ord: 2 },
+    { p: 5, d: 5, sala: 16, dia: 2, per: 1, ord: 3 },
+    { p: 5, d: 5, sala: 16, dia: 2, per: 1, ord: 4 },
+    { p: 6, d: 6, sala: 11, dia: 2, per: 1, ord: 5 },
+    { p: 2, d: 2, sala: 11, dia: 2, per: 1, ord: 6 },
+    //Quinta
+    { p: 5, d: 5, sala: 16, dia: 3, per: 1, ord: 1 },
+    { p: 5, d: 5, sala: 16, dia: 3, per: 1, ord: 2 },
+    { p: 4, d: 4, sala: 11, dia: 3, per: 1, ord: 3 },
+    { p: 6, d: 7, sala: 15, dia: 3, per: 1, ord: 4 },
+    { p: 6, d: 7, sala: 15, dia: 3, per: 1, ord: 5 },
+    { p: 6, d: 7, sala: 15, dia: 3, per: 1, ord: 6 },
+    //Sexta
+    { p: 6, d: 6, sala: 4,  dia: 4, per: 1, ord: 1 },
+    { p: 6, d: 6, sala: 4,  dia: 4, per: 1, ord: 2 },
+    { p: 6, d: 7, sala: 16, dia: 4, per: 1, ord: 3 },
+    { p: 7, d: 8, sala: 6,  dia: 4, per: 1, ord: 4 },
+    { p: 7, d: 8, sala: 6,  dia: 4, per: 1, ord: 5 },
+    { p: 7, d: 8, sala: 6,  dia: 4, per: 1, ord: 6 },
   ];
 
-  for (const data of tempoLectivoData) {
-    await prisma.tempoLectivo.create({ data });
+  await prisma.tempo_Lectivo.deleteMany()
+
+  for (const aula of tempoLectivoData) {
+    await prisma.tempo_Lectivo.create({
+      data: {
+        id_atribuicao: getAtribuicao(aula.p, aula.d),
+        id_professor: professores[aula.p].id_professor,
+        id_turma: turma10INF.id_turma,
+        id_disciplina: disciplinas[aula.d].id_disciplina,
+        id_sala: salas[aula.sala].id_sala,
+        id_dia: dias[aula.dia].id_dia,
+        id_periodo: periodos[aula.per].id_periodo,
+        ordem: aula.ord,
+        ano_lectivo: 2024
+      }
+    })
   }
-  console.log(`✅ ${tempoLectivoData.length} registos válidos de TempoLectivo criados`);
-
-  // ============================================================
-  // 11. DADOS COM CONFLITOS INTENCIONAIS (para testar validação)
-  // ============================================================
-  console.log("\n⚠️  A inserir dados COM CONFLITOS para teste...");
-
-  const conflitosData = [
-    // ──────────────────────────────────────────────────────────
-    // CONFLITO 1 — Professor duplicado
-    // Prof. António Silva já dá Programação na Segunda, Manhã, ordem 1, Lab Info 1, INF10A
-    // Agora também dá Redes na Segunda, Manhã, ordem 1, Sala 2, CG10A
-    // → O mesmo professor em dois sítios ao mesmo tempo!
-    // ──────────────────────────────────────────────────────────
-    {
-      diaSemanaId: diasSemana[0].idDiaSemana,   // Segunda-feira
-      periodoId: periodos[0].periodo,            // Manhã
-      ordem: 1,
-      professorId: professores[0].id_professor,  // Prof. António Silva (CONFLITO!)
-      disciplinaId: disciplinas[1].idDisciplina, // Redes
-      salaId: salas[1].idSala,                   // Sala 2
-      turmaId: turmas[2].idTurma,                // CG10A
-    },
-
-    // ──────────────────────────────────────────────────────────
-    // CONFLITO 2 — Sala duplicada
-    // Lab Info 1 já está ocupado na Segunda, Manhã, ordem 1 (pelo Prof. António / Programação / INF10A)
-    // Agora Prof. João também está no Lab Info 1, Segunda, Manhã, ordem 1
-    // → Duas aulas na mesma sala ao mesmo tempo!
-    // ──────────────────────────────────────────────────────────
-    {
-      diaSemanaId: diasSemana[0].idDiaSemana,   // Segunda-feira
-      periodoId: periodos[0].periodo,            // Manhã
-      ordem: 1,
-      professorId: professores[2].id_professor,  // Prof. João Fernandes
-      disciplinaId: disciplinas[4].idDisciplina, // Electrónica Digital
-      salaId: salas[2].idSala,                   // Lab Info 1 (CONFLITO!)
-      turmaId: turmas[3].idTurma,                // EL12A
-    },
-
-    // ──────────────────────────────────────────────────────────
-    // CONFLITO 3 — Turma duplicada
-    // INF10A já tem aula na Segunda, Manhã, ordem 2 (Prof. Maria / Matemática / Sala 1)
-    // Agora INF10A também tem Contabilidade na Segunda, Manhã, ordem 2
-    // → A mesma turma em duas aulas ao mesmo tempo!
-    // ──────────────────────────────────────────────────────────
-    {
-      diaSemanaId: diasSemana[0].idDiaSemana,   // Segunda-feira
-      periodoId: periodos[0].periodo,            // Manhã
-      ordem: 2,
-      professorId: professores[2].id_professor,  // Prof. João Fernandes
-      disciplinaId: disciplinas[5].idDisciplina, // Contabilidade
-      salaId: salas[1].idSala,                   // Sala 2
-      turmaId: turmas[0].idTurma,                // INF10A (CONFLITO!)
-    },
-  ];
-
-  for (const data of conflitosData) {
-    await prisma.tempoLectivo.create({ data });
-  }
-  console.log(`⚠️  ${conflitosData.length} registos COM CONFLITOS inseridos`);
-
-  // 12. Resumo dos conflitos inseridos
-  console.log("\n📋 Resumo dos conflitos inseridos:");
-  console.log("   1. PROFESSOR: Prof. António Silva — Segunda, Manhã, ordem 1 — 2 turmas ao mesmo tempo");
-  console.log("   2. SALA:      Lab Info 1 — Segunda, Manhã, ordem 1 — 2 aulas ao mesmo tempo");
-  console.log("   3. TURMA:     INF10A — Segunda, Manhã, ordem 2 — 2 aulas ao mesmo tempo");
-
-  console.log("\n🎉 Seed concluído com sucesso!");
+  console.log(`✅ ${tempoLectivoData.length} registos de tempo lectivo criados`)   
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect();
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
   })
-  .catch(async (e) => {
-    console.error("❌ Erro no seed:", e);
-    await prisma.$disconnect();
-    process.exit(1);
+  .finally(async () => {
+    await prisma.$disconnect()
   });

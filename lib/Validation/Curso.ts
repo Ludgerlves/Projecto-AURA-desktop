@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 export const createCursoSchema = z.object({
-    nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+    descricao_curso: z.string().min(2, "Descrição deve ter pelo menos 2 caracteres"),
 });
 
 export const updateCursoSchema = z.object({
-    nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+    descricao_curso: z.string().min(2, "Descrição deve ter pelo menos 2 caracteres").optional(),
 });
 
 export type CreateCursoData = z.infer<typeof createCursoSchema>;

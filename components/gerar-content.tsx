@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -8,17 +8,23 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import {
-  AlertCircle,
   CheckCircle2,
-  Sparkles,
   Play,
   RefreshCcw,
   XCircle,
   Clock,
   Users,
   DoorOpen,
-  AlertTriangle,
 } from "lucide-react"
+import gerarHorarios from "@/lib/actions/horarios"
+import useSWR from "swr"
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
+interface Turma {
+  id: string
+  nome: string
+}
 
 interface ConflictItem {
   id: string
@@ -36,121 +42,88 @@ interface GenerationResult {
   horariosGerados: number
 }
 
-const turmasDisponiveis = [
-  { id: "10A", nome: "10A - Ciencias", checked: true },
-  { id: "10B", nome: "10B - Humanidades", checked: true },
-  { id: "11A", nome: "11A - Ciencias", checked: true },
-  { id: "11B", nome: "11B - Economia", checked: false },
-  { id: "12A", nome: "12A - Ciencias", checked: true },
-  { id: "12B", nome: "12B - Artes", checked: false },
-  { id: "9A", nome: "9A - Geral", checked: true },
-  { id: "9B", nome: "9B - Geral", checked: false },
-]
-
 export function GerarContent() {
-  const [selectedTurmas, setSelectedTurmas] = useState<string[]>(
-    turmasDisponiveis.filter((t) => t.checked).map((t) => t.id)
-  )
-  const [result, setResult] = useState<GenerationResult>({
-    status: "idle",
-    progress: 0,
-    turmasProcessadas: 0,
-    totalTurmas: 0,
-    conflitos: [],
-    horariosGerados: 0,
-  })
+  // 1. Hooks de dados no TOPO (Sempre executados na mesma ordem)
+  const { data, error, isLoading } = useSWR<{ turmas: Turma[] }>('/api/turmas', fetcher);
 
+  const [selectedTurmas, setSelectedTurmas] = useState<string[]>([]);
+  const [result, setResult] = useState<GenerationResult>({
+    status: "idle", progress: 0, turmasProcessadas: 0, totalTurmas: 0, conflitos: [], horariosGerados: 0,
+  });
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // 2. Sincronizar o estado inicial quando os dados da API chegarem
+  useEffect(() => {
+    if (data?.turmas && selectedTurmas.length === 0) {
+      setSelectedTurmas(data.turmas.map((t) => t.id));
+    }
+  }, [data]);
+
+  // Limpeza de intervalos ao desmontar o componente
+  useEffect(() => {
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, []);
+
+  // 3. Handlers
   const toggleTurma = (id: string) => {
     setSelectedTurmas((prev) =>
       prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
-    )
-  }
+    );
+  };
 
-  const selectAll = () => {
-    setSelectedTurmas(turmasDisponiveis.map((t) => t.id))
-  }
+  const selectAll = () => setSelectedTurmas(data?.turmas.map((t) => t.id) || []);
+  const deselectAll = () => setSelectedTurmas([]);
 
-  const deselectAll = () => {
-    setSelectedTurmas([])
-  }
-
-  const simulateGeneration = () => {
-    setResult({
+  const simulateGeneration = async () => {
+    setResult(prev => ({
+      ...prev,
       status: "generating",
       progress: 0,
-      turmasProcessadas: 0,
       totalTurmas: selectedTurmas.length,
-      conflitos: [],
-      horariosGerados: 0,
-    })
+    }));
 
-    let progress = 0
-    let turmasProcessadas = 0
-    const interval = setInterval(() => {
-      progress += Math.random() * 15
-      if (progress >= 100) {
-        progress = 100
-        turmasProcessadas = selectedTurmas.length
-        clearInterval(interval)
-        
-        const mockConflitos: ConflictItem[] = [
-          { id: "1", tipo: "professor", descricao: "Maria Silva tem sobreposicao de horario na Terca, 10:05", severidade: "alta" },
-          { id: "2", tipo: "sala", descricao: "Lab. Fisica com dupla ocupacao na Quarta, 14:00", severidade: "alta" },
-          { id: "3", tipo: "turma", descricao: "11A sem aula de Ed. Fisica por falta de disponibilidade", severidade: "media" },
-          { id: "4", tipo: "professor", descricao: "Joao Santos excede carga horaria maxima", severidade: "baixa" },
-        ]
-        
-        setResult({
-          status: "completed",
-          progress: 100,
-          turmasProcessadas: selectedTurmas.length,
-          totalTurmas: selectedTurmas.length,
-          conflitos: mockConflitos,
-          horariosGerados: selectedTurmas.length,
-        })
-      } else {
-        turmasProcessadas = Math.floor((progress / 100) * selectedTurmas.length)
-        setResult((prev) => ({
+    // Chamar a Server Action real (Opcional: tratar o retorno aqui)
+    try {
+      await gerarHorarios(selectedTurmas);
+    } catch (e) {
+      console.error("Erro na Action:", e);
+    }
+
+    intervalRef.current = setInterval(() => {
+      setResult((prev) => {
+        const newProgress = prev.progress + Math.random() * 15;
+
+        if (newProgress >= 100) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return {
+            ...prev,
+            status: "completed",
+            progress: 100,
+            turmasProcessadas: prev.totalTurmas,
+            conflitos: [
+              { id: "1", tipo: "professor", descricao: "Conflito simulado detetado", severidade: "alta" }
+            ],
+          };
+        }
+
+        return {
           ...prev,
-          progress,
-          turmasProcessadas,
-        }))
-      }
-    }, 200)
-  }
+          progress: newProgress,
+          turmasProcessadas: Math.floor((newProgress / 100) * prev.totalTurmas),
+        };
+      });
+    }, 300);
+  };
 
-  const resetGeneration = () => {
-    setResult({
-      status: "idle",
-      progress: 0,
-      turmasProcessadas: 0,
-      totalTurmas: 0,
-      conflitos: [],
-      horariosGerados: 0,
-    })
-  }
-
-  const severidadeColors = {
-    alta: "bg-destructive text-destructive-foreground",
-    media: "bg-accent text-accent-foreground",
-    baixa: "bg-muted text-muted-foreground",
-  }
-
-  const tipoIcons = {
-    professor: Users,
-    sala: DoorOpen,
-    turma: Clock,
-  }
+  // 4. Renderização Condicional de Erro
+  if (error) return <div className="p-4 text-red-500">Erro ao carregar turmas.</div>;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gerar Horarios</h1>
-          <p className="text-muted-foreground">
-            Geracao automatica de horarios com detecao de conflitos
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Gerar Horários</h1>
+        <p className="text-muted-foreground">Geração automática dos Horários</p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -158,39 +131,36 @@ export function GerarContent() {
           <Card>
             <CardHeader>
               <CardTitle>Selecionar Turmas</CardTitle>
-              <CardDescription>
-                Escolha as turmas para as quais deseja gerar horarios
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center gap-4">
-                <Button variant="outline" size="sm" onClick={selectAll}>
-                  Selecionar Todas
-                </Button>
-                <Button variant="outline" size="sm" onClick={deselectAll}>
-                  Desmarcar Todas
-                </Button>
-                <Badge variant="outline">
-                  {selectedTurmas.length} de {turmasDisponiveis.length} selecionadas
-                </Badge>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {turmasDisponiveis.map((turma) => (
-                  <div
-                    key={turma.id}
-                    className="flex items-center space-x-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
-                  >
-                    <Checkbox
-                      id={turma.id}
-                      checked={selectedTurmas.includes(turma.id)}
-                      onCheckedChange={() => toggleTurma(turma.id)}
-                    />
-                    <Label htmlFor={turma.id} className="cursor-pointer flex-1">
-                      {turma.nome}
-                    </Label>
+              {isLoading ? (
+                <div className="animate-pulse space-y-2">
+                  <div className="h-10 bg-muted rounded w-1/3"></div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {[1, 2, 3, 4].map(i => <div key={i} className="h-12 bg-muted rounded"></div>)}
                   </div>
-                ))}
-              </div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-4">
+                    <Button variant="outline" size="sm" onClick={selectAll}>Selecionar Todas</Button>
+                    <Button variant="outline" size="sm" onClick={deselectAll}>Limpar</Button>
+                    <Badge variant="secondary">{selectedTurmas.length} selecionadas</Badge>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {data?.turmas.map((turma) => (
+                      <div key={turma.id} className="flex items-center space-x-3 rounded-lg border p-3">
+                        <Checkbox
+                          id={turma.id}
+                          checked={selectedTurmas.includes(turma.id)}
+                          onCheckedChange={() => toggleTurma(turma.id)}
+                        />
+                        <Label htmlFor={turma.id} className="cursor-pointer flex-1">{turma.nome}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
@@ -198,65 +168,15 @@ export function GerarContent() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {result.status === "generating" && (
-                    <>
-                      <RefreshCcw className="h-5 w-5 animate-spin text-primary" />
-                      A Gerar Horarios...
-                    </>
-                  )}
-                  {result.status === "completed" && (
-                    <>
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                      Geracao Concluida
-                    </>
-                  )}
-                  {result.status === "error" && (
-                    <>
-                      <XCircle className="h-5 w-5 text-destructive" />
-                      Erro na Geracao
-                    </>
-                  )}
+                  {result.status === "generating" ? <RefreshCcw className="animate-spin" /> : <CheckCircle2 className="text-green-500" />}
+                  {result.status === "generating" ? "A processar..." : "Concluído"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Progresso</span>
-                    <span>{Math.round(result.progress)}%</span>
-                  </div>
-                  <Progress value={result.progress} />
-                  <p className="text-sm text-muted-foreground">
-                    {result.turmasProcessadas} de {result.totalTurmas} turmas processadas
-                  </p>
-                </div>
-
-                {result.status === "completed" && result.conflitos.length > 0 && (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-accent" />
-                      <h4 className="font-medium">Conflitos Detectados ({result.conflitos.length})</h4>
-                    </div>
-                    <div className="space-y-2">
-                      {result.conflitos.map((conflito) => {
-                        const Icon = tipoIcons[conflito.tipo]
-                        return (
-                          <div
-                            key={conflito.id}
-                            className="flex items-start gap-3 rounded-lg border border-border p-3"
-                          >
-                            <Icon className="h-5 w-5 text-muted-foreground mt-0.5" />
-                            <div className="flex-1">
-                              <p className="text-sm">{conflito.descricao}</p>
-                            </div>
-                            <Badge className={severidadeColors[conflito.severidade]}>
-                              {conflito.severidade.charAt(0).toUpperCase() + conflito.severidade.slice(1)}
-                            </Badge>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
+                <Progress value={result.progress} />
+                <p className="text-sm text-muted-foreground">
+                  Processadas {result.turmasProcessadas} de {result.totalTurmas} turmas.
+                </p>
               </CardContent>
             </Card>
           )}
@@ -265,92 +185,20 @@ export function GerarContent() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Opcoes de Geracao</CardTitle>
+              <CardTitle>Ações</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <Checkbox id="otimizar" defaultChecked />
-                <Label htmlFor="otimizar">Otimizar distribuicao</Label>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Checkbox id="evitar-furos" defaultChecked />
-                <Label htmlFor="evitar-furos">Evitar furos no horario</Label>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Checkbox id="preferencias" defaultChecked />
-                <Label htmlFor="preferencias">Respeitar preferencias dos professores</Label>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Checkbox id="balancear" />
-                <Label htmlFor="balancear">Balancear carga semanal</Label>
-              </div>
+            <CardContent>
+              <Button
+                className="w-full"
+                disabled={selectedTurmas.length === 0 || result.status === "generating"}
+                onClick={simulateGeneration}
+              >
+                <Play className="mr-2 h-4 w-4" /> Gerar Agora
+              </Button>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Acoes</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {result.status === "idle" && (
-                <Button
-                  className="w-full gap-2"
-                  onClick={simulateGeneration}
-                  disabled={selectedTurmas.length === 0}
-                >
-                  <Sparkles className="h-4 w-4" />
-                  Gerar Horarios
-                </Button>
-              )}
-              {result.status === "generating" && (
-                <Button className="w-full gap-2" disabled>
-                  <RefreshCcw className="h-4 w-4 animate-spin" />
-                  A Processar...
-                </Button>
-              )}
-              {result.status === "completed" && (
-                <>
-                  <Button className="w-full gap-2" variant="default">
-                    <CheckCircle2 className="h-4 w-4" />
-                    Aceitar Horarios
-                  </Button>
-                  <Button className="w-full gap-2 bg-transparent" variant="outline" onClick={simulateGeneration}>
-                    <RefreshCcw className="h-4 w-4" />
-                    Regenerar
-                  </Button>
-                  <Button className="w-full gap-2 bg-transparent" variant="outline" onClick={resetGeneration}>
-                    Cancelar
-                  </Button>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {result.status === "completed" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Resumo</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Horarios gerados</span>
-                  <span className="font-medium">{result.horariosGerados}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Conflitos</span>
-                  <Badge variant={result.conflitos.length > 0 ? "destructive" : "outline"}>
-                    {result.conflitos.length}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Status</span>
-                  <Badge className="bg-green-600 text-white">Pronto para revisao</Badge>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>
-  )
+  );
 }

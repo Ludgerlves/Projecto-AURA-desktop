@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { CursosContent } from "@/components/cursos-content"
-import { listarCursos } from "@/app/curso/curso"
+import { listarCursos } from "@/app/turmas/turma-action"
 
 export default async function CursosPage() {
   const cursos = await listarCursos()

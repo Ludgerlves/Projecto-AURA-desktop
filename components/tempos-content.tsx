@@ -35,20 +35,7 @@ interface Tempo {
   tipo: "aula" | "intervalo" | "almoco"
 }
 
-const initialTempos: Tempo[] = [
-  { id: "1", nome: "1o Tempo", inicio: "08:00", fim: "08:50", duracao: 50, tipo: "aula" },
-  { id: "2", nome: "2o Tempo", inicio: "08:55", fim: "09:45", duracao: 50, tipo: "aula" },
-  { id: "3", nome: "Intervalo Manha", inicio: "09:45", fim: "10:05", duracao: 20, tipo: "intervalo" },
-  { id: "4", nome: "3o Tempo", inicio: "10:05", fim: "10:55", duracao: 50, tipo: "aula" },
-  { id: "5", nome: "4o Tempo", inicio: "11:00", fim: "11:50", duracao: 50, tipo: "aula" },
-  { id: "6", nome: "5o Tempo", inicio: "11:55", fim: "12:45", duracao: 50, tipo: "aula" },
-  { id: "7", nome: "Almoco", inicio: "12:45", fim: "14:00", duracao: 75, tipo: "almoco" },
-  { id: "8", nome: "6o Tempo", inicio: "14:00", fim: "14:50", duracao: 50, tipo: "aula" },
-  { id: "9", nome: "7o Tempo", inicio: "14:55", fim: "15:45", duracao: 50, tipo: "aula" },
-  { id: "10", nome: "Intervalo Tarde", inicio: "15:45", fim: "16:00", duracao: 15, tipo: "intervalo" },
-  { id: "11", nome: "8o Tempo", inicio: "16:00", fim: "16:50", duracao: 50, tipo: "aula" },
-  { id: "12", nome: "9o Tempo", inicio: "16:55", fim: "17:45", duracao: 50, tipo: "aula" },
-]
+const initialTempos: Tempo[] = []
 
 const tipoColors = {
   aula: "bg-primary text-primary-foreground",

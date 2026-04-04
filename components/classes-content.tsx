@@ -15,12 +15,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DataTable } from "@/components/data-table"
 import { Plus, Layers } from "lucide-react"
-import { criarClasse, atualizarClasse, apagarClasse } from "@/app/classes/classe-action"
+import { criarClasse, atualizarClasse, apagarClasse } from "@/app/turmas/turma-action"
 import { useRouter } from "next/navigation"
 
 interface ClasseData {
-  idClasse: number
-  nome: string
+  id_classe:        number
+  descricao_classe: string
 }
 
 interface ClasseRow extends ClasseData {
@@ -41,12 +41,12 @@ export function ClassesContent({ classes }: ClassesContentProps) {
 
   const rows: ClasseRow[] = classes.map((c) => ({
     ...c,
-    id: c.idClasse,
+    id: c.id_classe,
   }))
 
   const columns = [
-    { key: "idClasse" as const, header: "ID" },
-    { key: "nome" as const, header: "Nome" },
+    { key: "id_classe" as const, header: "ID" },
+    { key: "descricao_classe" as const, header: "Descrição" },
   ]
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,11 +54,11 @@ export function ClassesContent({ classes }: ClassesContentProps) {
     setError(null)
 
     const fd = new FormData()
-    fd.append("nome", formData.nome)
+    fd.append("descricao_classe", formData.nome)
 
     startTransition(async () => {
       const result = editingClasse
-        ? await atualizarClasse(editingClasse.idClasse, fd)
+        ? await atualizarClasse(editingClasse.id_classe, fd)
         : await criarClasse(fd)
       if (result.success) {
         resetForm()
@@ -78,14 +78,14 @@ export function ClassesContent({ classes }: ClassesContentProps) {
 
   const handleEdit = (classe: ClasseRow) => {
     setEditingClasse(classe)
-    setFormData({ nome: classe.nome })
+    setFormData({ nome: classe.descricao_classe })
     setError(null)
     setIsOpen(true)
   }
 
   const handleDelete = (classe: ClasseRow) => {
     startTransition(async () => {
-      const result = await apagarClasse(classe.idClasse)
+      const result = await apagarClasse(classe.id_classe)
       if (result.success) {
         router.refresh()
       } else {
@@ -169,7 +169,7 @@ export function ClassesContent({ classes }: ClassesContentProps) {
       <DataTable
         data={rows}
         columns={columns}
-        searchKey="nome"
+        searchKey="descricao_classe"
         searchPlaceholder="Pesquisar classes..."
         onEdit={handleEdit}
         onDelete={handleDelete}
