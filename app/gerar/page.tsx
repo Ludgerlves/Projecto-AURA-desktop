@@ -1,10 +1,13 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { GerarContent } from "@/components/gerar-content"
+import { getTurmasParaGeracao } from "@/lib/actions/gerarHorario"
 
-export default function GerarPage() {
+export default async function GerarPage() {
+  const turmas = await getTurmasParaGeracao()
+
   return (
     <DashboardLayout>
-      <GerarContent />
+      <GerarContent turmas={turmas} />
     </DashboardLayout>
   )
 }

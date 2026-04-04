@@ -14,7 +14,7 @@ export type ActionResponse<T = any> = {
     message?: string;
 };
 
-function parseProfTurmaDisciplina(formData: FormData): { turmaId: number; disciplinaNome: string }[] {
+function parseProfTurmaDisciplina(formData: FormData): { id_turma: number; id_disciplina: number }[] {
     const raw = formData.get('profTurmaDisciplina') as string | null;
     if (!raw) return [];
     try {
@@ -24,7 +24,7 @@ function parseProfTurmaDisciplina(formData: FormData): { turmaId: number; discip
     }
 }
 
-function parseDisponibilidade(formData: FormData): { diaSemana: string; periodoId: string; ordem: number }[] {
+function parseDisponibilidade(formData: FormData): { diaSemana: string; periodo: string; ordem: number }[] {
     const raw = formData.get('disponibilidade') as string | null;
     if (!raw) return [];
     try {
@@ -45,7 +45,7 @@ export async function criarProfessor(
         const disponibilidade = parseDisponibilidade(formData);
 
         const professorData = {
-            nome,
+            nome_professor: nome,
             email,
             telefone,
             profTurmaDisciplina,
@@ -100,7 +100,7 @@ export async function atualizarProfessor(
         const disponibilidade = parseDisponibilidade(formData);
 
         const validateData = updateProfessorSchema.parse({
-            nome: nome || undefined,
+            nome_professor: nome || undefined,
             email: email || undefined,
             telefone: telefone || undefined,
             profTurmaDisciplina: profTurmaDisciplina.length > 0 ? profTurmaDisciplina : undefined,
@@ -150,9 +150,10 @@ export async function showProfessor(id: number) {
 }
 
 export async function listarDisciplinas() {
-    return await prisma.disciplina.findMany({
-        orderBy: { nome: 'asc' }
+    const discs = await prisma.disciplina.findMany({
+        orderBy: { descricao_disciplina: 'asc' }
     });
+    return discs.map(d => ({ id: d.id_disciplina, descricao: d.descricao_disciplina }));
 }
 
 export async function atualizarDisponibilidade(
@@ -175,15 +176,17 @@ export async function atualizarDisponibilidade(
 }
 
 export async function listarDiasSemana() {
-    return await prisma.diaSemana.findMany({
-        orderBy: { nome: 'asc' }
+    const dias = await prisma.diaSemana.findMany({
+        orderBy: { descricao_dia: 'asc' }
     });
+    return dias.map(d => ({ id: d.id_dia, nome: d.descricao_dia }));
 }
 
 export async function listarPeriodos() {
-    return await prisma.periodo.findMany({
-        orderBy: { periodo: 'asc' }
+    const periodos = await prisma.periodo.findMany({
+        orderBy: { descricao_periodo: 'asc' }
     });
+    return periodos.map(p => ({ id: p.id_periodo, descricao: p.descricao_periodo }));
 }
 
 export async function listProfTurmaDisciplina() {
@@ -191,10 +194,22 @@ export async function listProfTurmaDisciplina() {
 }
 
 export async function listarTurmas() {
-    return await prisma.turma.findMany({
-        orderBy: { nome: 'asc' },
+    const turmas = await prisma.turma.findMany({
+        orderBy: { descricao_turma: 'asc' },
         include: {
-            TurmaDisciplina: true,
+            profTurmaDisciplina: {
+                include: {
+                    disciplina: true,
+                },
+            },
         },
     });
+    return turmas.map(t => ({
+        id: t.id_turma,
+        nome: t.descricao_turma,
+        profTurmaDisciplinas: t.profTurmaDisciplina.map(ptd => ({
+            disciplinaId: ptd.id_disciplina,
+            disciplina: { id: ptd.disciplina.id_disciplina, descricao: ptd.disciplina.descricao_disciplina },
+        })),
+    }));
 }

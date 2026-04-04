@@ -1,16 +1,13 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { DisciplinasContent } from "@/components/disciplinas-content"
-import { listarTodas, listarTurmas } from "./disciplinas-action"
+import { listarTodas } from "./disciplinas-action"
 
 export default async function DisciplinasPage() {
-  const [disciplinas, turmas] = await Promise.all([
-    listarTodas(),
-    listarTurmas(),
-  ])
+  const disciplinas = await listarTodas()
 
   return (
     <DashboardLayout>
-      <DisciplinasContent disciplinas={disciplinas} turmas={turmas} />
+      <DisciplinasContent disciplinas={disciplinas} />
     </DashboardLayout>
   )
 }

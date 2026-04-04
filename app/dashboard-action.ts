@@ -5,14 +5,11 @@ import { listarTodos } from './professores/professores-action'
 import { listarTodasTurmas } from './turmas/turma-action'
 import { listarTodas } from './disciplinas/disciplinas-action'
 import { salaService } from '@/lib/Service/Sala'
-import { gerarTemposLectivos } from '@/lib/actions/horarios'
 
 
 // * Obtém estatísticas do dashboard
 
 export async function getDashboardStats() {
-    const retorno = await prisma.tempoLectivo.findMany();
-    console.log()
     const [professores, turmas, disciplinas, salas] = await Promise.all([
         listarTodos(),
         listarTodasTurmas(),
@@ -31,52 +28,50 @@ export async function getDashboardStats() {
 
 
 function getDiaSemanaHoje(): string {
-    const dias = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
+    const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
     const hoje = new Date().getDay()
     return dias[hoje]
 }
 
 
-// * Obtém as aulas de hoje (TempoLectivo do di
+// * Obtém as aulas de hoje (TempoLectivo do dia)
 
 export async function getAulasHoje() {
     const diaHoje = getDiaSemanaHoje()
 
-    // Buscar o dia da semana no banco
-    const diaSemana = await prisma.diaSemana.findUnique({
-        where: { nome: diaHoje },
+    const diaSemana = await prisma.diaSemana.findFirst({
+        where: { descricao_dia: diaHoje },
     })
 
     if (!diaSemana) {
         return []
     }
 
-    // Buscar TempoLectivo do dia de hoje com todas as relações
-    const aulas = await prisma.tempoLectivo.findMany({
+    const aulas = await prisma.tempo_Lectivo.findMany({
         where: {
-            diaSemana: diaSemana.nome,
+            id_dia: diaSemana.id_dia,
         },
         include: {
-            Disciplina: true,
-            Turma: true,
-            Sala: true,
-            Professor: true,
-            Periodo: true,
-            DiaSemana: true,
+            disciplina: true,
+            turma: true,
+            sala: true,
+            professor: true,
+            periodo: true,
+            dia: true,
         },
         orderBy: [
             { ordem: 'asc' },
-            { periodoId: 'asc' },
+            { id_periodo: 'asc' },
         ],
     })
 
     return aulas.map((aula) => ({
-        id: aula.idTempoLectivo,
-        time: aula.Periodo.periodo,
-        subject: aula.Disciplina.nome,
-        turma: aula.Turma.nome,
-        room: aula.Sala.nome,
-        professor: aula.Professor.nome,
+        id: aula.id_tempoLectivo,
+        time: aula.periodo.descricao_periodo,
+        subject: aula.disciplina.descricao_disciplina,
+        turma: aula.turma.descricao_turma,
+        room: aula.sala.descricao_sala,
+        professor: aula.professor.nome_professor,
         ordem: aula.ordem,
     }))
 }

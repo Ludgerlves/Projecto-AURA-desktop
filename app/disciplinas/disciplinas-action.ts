@@ -16,9 +16,10 @@ export async function criarDisciplina(
     formData: FormData
 ): Promise<ActionResponse> {
     try {
-        const nome = formData.get('nome') as string;
+        const descricao = formData.get('descricao') as string;
+        const tipo_sala = formData.get('tipo_sala') as string;
 
-        const validatedData = createDisciplinaSchema.parse({ nome });
+        const validatedData = createDisciplinaSchema.parse({ descricao_disciplina: descricao, tipo_sala });
         const disciplina = await disciplinaService.criar(validatedData);
 
         revalidatePath('/disciplinas');
@@ -58,12 +59,14 @@ export async function atualizarDisciplina(
     formData: FormData
 ): Promise<ActionResponse> {
     try {
-        const nome = formData.get('nome') as string;
+        const descricao = formData.get('descricao') as string;
+        const tipo_sala = formData.get('tipo_sala') as string;
 
         const validatedData = updateDisciplinaSchema.parse({
-            nome: nome || undefined,
+            descricao_disciplina: descricao || undefined,
+            tipo_sala: tipo_sala || undefined,
         });
-        const disciplina = await disciplinaService.atualizar(nome, validatedData);
+        const disciplina = await disciplinaService.atualizar(id, validatedData);
 
         revalidatePath('/disciplinas');
 
@@ -85,9 +88,9 @@ export async function atualizarDisciplina(
     }
 }
 
-export async function apagarDisciplina(nome: string): Promise<ActionResponse> {
+export async function apagarDisciplina(id: number): Promise<ActionResponse> {
     try {
-        const result = await disciplinaService.apagar(nome);
+        const result = await disciplinaService.apagar(id);
         revalidatePath('/disciplinas');
         return { success: true, data: result, message: 'Disciplina apagada com sucesso!' };
     } catch (error: any) {
@@ -97,43 +100,4 @@ export async function apagarDisciplina(nome: string): Promise<ActionResponse> {
 
 export async function listarTodas() {
     return await disciplinaService.listarTodas();
-}
-
-export async function listarTurmas() {
-    const { prisma } = await import("@/lib/prisma");
-    return await prisma.turma.findMany({
-        orderBy: { nome: 'asc' },
-        include: {
-            TurmaDisciplina: true,
-        },
-    });
-}
-
-export async function atualizarTurmasDaDisciplina(
-    disciplinaNome: string,
-    turmaIds: number[]
-): Promise<ActionResponse> {
-    try {
-        const { prisma } = await import("@/lib/prisma");
-
-        // Remove old associations
-        await prisma.turmaDisciplina.deleteMany({
-            where: { Disciplina: disciplinaNome },
-        });
-
-        // Create new associations
-        if (turmaIds.length > 0) {
-            await prisma.turmaDisciplina.createMany({
-                data: turmaIds.map((id) => ({
-                    id_Turma: id,
-                    Disciplina: disciplinaNome,
-                })),
-            });
-        }
-
-        revalidatePath('/disciplinas');
-        return { success: true, message: 'Turmas da disciplina atualizadas com sucesso!' };
-    } catch (error: any) {
-        return { success: false, message: error.message || 'Erro inesperado' };
-    }
 }

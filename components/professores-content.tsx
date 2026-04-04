@@ -75,42 +75,37 @@ type Periodo = (typeof PERIODOS)[number]
 
 const TOTAL_TEMPOS = 6
 
-interface Disciplina {
-  nome: string
-}
-
 interface TurmaData {
-  idTurma: number
+  id: number
   nome: string
-  classe: string
-  curso: string
-  TurmaDisciplina: { id_Turma: number; Disciplina: string }[]
+  profTurmaDisciplinas: { disciplinaId: number; disciplina: { id: number; descricao: string } }[]
 }
 
 interface DisponibilidadeData {
-  idDisponibilidade: number
-  diaSemana: string
-  periodo: string
+  id: number
+  diaSemanaId: number
+  periodoId: number
   ordem: number
-  DiaSemana: { nome: string }
-  Periodo: { periodo: string }
+  diaSemana: { nome: string }
+  periodo: { descricao: string }
 }
 
 interface ProfTurmaDisciplinaData {
-  idProfTurma: number
+  id: number
   turmaId: number
-  disciplinaNome: string
-  disciplina: { nome: string }
-  Turma: { idTurma: number; nome: string }
+  disciplinaId: number
+  cargaSemanal?: number
+  disciplina: { descricao: string }
+  turma: { id: number; nome: string }
 }
 
 interface ProfessorData {
-  id_professor: number
+  id: number
   nome: string
   email: string | null
   telefone: string | null
-  ProfTurmaDisciplina: ProfTurmaDisciplinaData[]
-  Disponibilidade: DisponibilidadeData[]
+  profTurmaDisciplinas: ProfTurmaDisciplinaData[]
+  disponibilidades: DisponibilidadeData[]
 }
 
 interface DisponibilidadeSlot {
@@ -121,7 +116,6 @@ interface DisponibilidadeSlot {
 
 interface ProfessorRow {
   id: number
-  id_professor: number
   nome: string
   email: string
   telefone: string
@@ -137,31 +131,30 @@ function mapProfessores(professores: ProfessorData[]): ProfessorRow[] {
     const byDay: Record<string, number[]> = {}
     let periodo = ""
 
-    for (const d of p.Disponibilidade) {
-      const day = d.DiaSemana.nome
+    for (const d of p.disponibilidades) {
+      const day = d.diaSemana.nome
       if (!byDay[day]) byDay[day] = []
       byDay[day].push(d.ordem)
-      if (!periodo) periodo = d.Periodo.periodo
+      if (!periodo) periodo = d.periodo.descricao
     }
     for (const day of Object.keys(byDay)) {
       byDay[day].sort((a, b) => a - b)
     }
 
     return {
-      id: p.id_professor,
-      id_professor: p.id_professor,
+      id: p.id,
       nome: p.nome,
       email: p.email || "",
       telefone: p.telefone || "",
-      disciplinas: p.ProfTurmaDisciplina.map((ptd) => ptd.disciplinaNome),
-      turmas: p.ProfTurmaDisciplina.map((ptd) => ({
-        turmaId: ptd.Turma.idTurma,
-        turmaNome: ptd.Turma.nome,
-        disciplinaNome: ptd.disciplinaNome,
+      disciplinas: p.profTurmaDisciplinas.map((ptd) => ptd.disciplina.descricao),
+      turmas: p.profTurmaDisciplinas.map((ptd) => ({
+        turmaId: ptd.turma.id,
+        turmaNome: ptd.turma.nome,
+        disciplinaNome: ptd.disciplina.descricao,
       })),
-      disponibilidade: p.Disponibilidade.map((d) => ({
-        diaSemana: d.diaSemana,
-        periodo: d.periodo,
+      disponibilidade: p.disponibilidades.map((d) => ({
+        diaSemana: d.diaSemana.nome,
+        periodo: d.periodo.descricao,
         ordem: d.ordem,
       })),
       periodo,
@@ -382,12 +375,18 @@ function MiniDisponibilidadeGrid({
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
+interface DisciplinaData {
+  id: number
+  descricao: string
+}
+
 interface ProfessoresContentProps {
   professores: ProfessorData[]
   turmas: TurmaData[]
+  disciplinas: DisciplinaData[]
 }
 
-export function ProfessoresContent({ professores, turmas }: ProfessoresContentProps) {
+export function ProfessoresContent({ professores, turmas, disciplinas }: ProfessoresContentProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
@@ -397,7 +396,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     nome: "",
     email: "",
     telefone: "",
-    disciplina: [] as string[],
+    disciplina: [] as { id: number; descricao: string }[],
     periodo: "Manhã" as Periodo,
     selectedTempos: {} as Record<string, number[]>,
   })
@@ -566,12 +565,12 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   ]
 
   // -- Dialog handlers --
-  const toggleDisciplina = (nome: string, checked: boolean) => {
+  const toggleDisciplina = (disc: { id: number; descricao: string }, checked: boolean) => {
   setFormData((prev) => ({
     ...prev,
     disciplina: checked
-      ? [...prev.disciplina, nome] 
-      : prev.disciplina.filter((d) => d !== nome), 
+      ? [...prev.disciplina, disc] 
+      : prev.disciplina.filter((d) => d.id !== disc.id), 
   }))
 }
 
@@ -583,9 +582,9 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
 
     // Build profTurmaDisciplina from selected turma + disciplines
     const profTurmaDisciplina = turmaSelecionada
-      ? formData.disciplina.map((nome) => ({
+      ? formData.disciplina.map((disc) => ({
         turmaId: turmaSelecionada,
-        disciplinaNome: nome,
+        disciplinaId: disc.id,
       }))
       : []
 
@@ -599,7 +598,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     startTransition(async () => {
       let result
       if (editingProfessor) {
-        result = await atualizarProfessor(editingProfessor.id_professor, fd)
+        result = await atualizarProfessor(editingProfessor.id, fd)
       } else {
         result = await criarProfessor(fd)
       }
@@ -644,7 +643,10 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
       nome: professor.nome,
       telefone: professor.telefone,
       email: professor.email,
-      disciplina: professor.disciplinas,
+      disciplina: professor.turmas.map((t) => ({
+        id: -1, // will be resolved from turma data
+        descricao: t.disciplinaNome,
+      })),
       periodo: (professor.periodo as Periodo) || "Manhã",
       selectedTempos,
     })
@@ -654,7 +656,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
 
   const handleDelete = (professor: ProfessorRow) => {
     startTransition(async () => {
-      const result = await apagarProfessor(professor.id_professor)
+      const result = await apagarProfessor(professor.id)
       if (result.success) {
         router.refresh()
       } else {
@@ -689,7 +691,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     const slots = buildDisponibilidade(sheetTempos, sheetPeriodo)
 
     startTransition(async () => {
-      const result = await atualizarDisponibilidade(sheetProfessor.id_professor, slots)
+      const result = await atualizarDisponibilidade(sheetProfessor.id, slots)
       if (result.success) {
         setSheetOpen(false)
         router.refresh()
@@ -766,13 +768,13 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                         <DropdownMenuTrigger asChild>
                           <Button variant="outline" className="w-full justify-between">
                             {turmaSelecionada
-                              ? turmas.find(t => t.idTurma === turmaSelecionada)?.nome ?? "Selecionar turma"
+                              ? turmas.find(t => t.id === turmaSelecionada)?.nome ?? "Selecionar turma"
                               : "Selecionar turma"}
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-56">
                           {turmas.map((t) => (
-                            <DropdownMenuItem key={t.idTurma} onClick={() => setTurmaSelecionada(t.idTurma)}>
+                            <DropdownMenuItem key={t.id} onClick={() => setTurmaSelecionada(t.id)}>
                               {t.nome}
                             </DropdownMenuItem>
                           ))}
@@ -811,43 +813,37 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                         <Label className="flex items-center gap-2">
                           Disciplinas
                           <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {turmas.find(t => t.idTurma === turmaSelecionada)?.nome}
+                            {turmas.find(t => t.id === turmaSelecionada)?.nome}
                           </Badge>
                         </Label>
-                        {(() => {
-                          const turmaDiscs = turmas.find(t => t.idTurma === turmaSelecionada)?.TurmaDisciplina || []
-                          if (turmaDiscs.length === 0) {
-                            return (
-                              <div className="rounded-md border border-dashed border-border p-4 text-center">
-                                <p className="text-sm text-muted-foreground">
-                                  Nenhuma disciplina associada a esta turma.
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                  Associe disciplinas na página de Disciplinas.
-                                </p>
+                        {disciplinas.length === 0 ? (
+                          <div className="rounded-md border border-dashed border-border p-4 text-center">
+                            <p className="text-sm text-muted-foreground">
+                              Nenhuma disciplina registada no sistema.
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Registe disciplinas na página de Disciplinas.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-md border p-3">
+                            {disciplinas.map((disc) => (
+                              <div key={disc.id} className="flex items-center gap-2">
+                                <Checkbox
+                                  id={`disc-${disc.id}`}
+                                  checked={formData.disciplina.some(d => d.id === disc.id)}
+                                  onCheckedChange={(checked) => toggleDisciplina(disc, checked === true)}
+                                />
+                                <Label
+                                  htmlFor={`disc-${disc.id}`}
+                                  className="text-sm font-normal cursor-pointer"
+                                >
+                                  {disc.descricao}
+                                </Label>
                               </div>
-                            )
-                          }
-                          return (
-                            <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto rounded-md border p-3">
-                              {turmaDiscs.map((td) => (
-                                <div key={td.Disciplina} className="flex items-center gap-2">
-                                  <Checkbox
-                                    id={`disc-${td.Disciplina}`}
-                                    checked={formData.disciplina.includes(td.Disciplina)}
-                                    onCheckedChange={(checked) => toggleDisciplina(td.Disciplina,checked==true )}
-                                  />
-                                  <Label
-                                    htmlFor={`disc-${td.Disciplina}`}
-                                    className="text-sm font-normal cursor-pointer"
-                                  >
-                                    {td.Disciplina}
-                                  </Label>
-                                </div>
-                              ))}
-                            </div>
-                          )
-                        })()}
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="grid gap-2">

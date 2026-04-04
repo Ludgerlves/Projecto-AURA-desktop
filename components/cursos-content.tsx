@@ -15,16 +15,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DataTable } from "@/components/data-table"
 import { Plus, BookMarked } from "lucide-react"
-import { criarCurso, atualizarCurso, apagarCurso } from "@/app/curso/curso"
+import { criarCurso, atualizarCurso, apagarCurso } from "@/app/turmas/turma-action"
 import { useRouter } from "next/navigation"
 
 interface CursoData {
-  idCurso: number
-  nome: string
+  id: number
+  descricao: string
 }
 
 interface CursoRow extends CursoData {
-  id: number
 }
 
 interface CursosContentProps {
@@ -36,17 +35,15 @@ export function CursosContent({ cursos }: CursosContentProps) {
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
   const [editingCurso, setEditingCurso] = useState<CursoRow | null>(null)
-  const [formData, setFormData] = useState({ nome: "" })
+  const [formData, setFormData] = useState({ descricao: "" })
   const [error, setError] = useState<string | null>(null)
 
   const rows: CursoRow[] = cursos.map((c) => ({
     ...c,
-    id: c.idCurso,
   }))
 
   const columns = [
-    { key: "idCurso" as const, header: "ID" },
-    { key: "nome" as const, header: "Nome" },
+    { key: "descricao" as const, header: "Nome" },
   ]
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,11 +51,11 @@ export function CursosContent({ cursos }: CursosContentProps) {
     setError(null)
 
     const fd = new FormData()
-    fd.append("nome", formData.nome)
+    fd.append("descricao", formData.descricao)
 
     startTransition(async () => {
       const result = editingCurso
-        ? await atualizarCurso(editingCurso.idCurso, fd)
+        ? await atualizarCurso(editingCurso.id, fd)
         : await criarCurso(fd)
       if (result.success) {
         resetForm()
@@ -70,7 +67,7 @@ export function CursosContent({ cursos }: CursosContentProps) {
   }
 
   const resetForm = () => {
-    setFormData({ nome: "" })
+    setFormData({ descricao: "" })
     setEditingCurso(null)
     setError(null)
     setIsOpen(false)
@@ -78,14 +75,14 @@ export function CursosContent({ cursos }: CursosContentProps) {
 
   const handleEdit = (curso: CursoRow) => {
     setEditingCurso(curso)
-    setFormData({ nome: curso.nome })
+    setFormData({ descricao: curso.descricao })
     setError(null)
     setIsOpen(true)
   }
 
   const handleDelete = (curso: CursoRow) => {
     startTransition(async () => {
-      const result = await apagarCurso(curso.idCurso)
+      const result = await apagarCurso(curso.id)
       if (result.success) {
         router.refresh()
       } else {
@@ -124,11 +121,11 @@ export function CursosContent({ cursos }: CursosContentProps) {
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="curso-nome">Nome</Label>
+                  <Label htmlFor="curso-descricao">Nome</Label>
                   <Input
-                    id="curso-nome"
-                    value={formData.nome}
-                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                    id="curso-descricao"
+                    value={formData.descricao}
+                    onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
                     placeholder="Ex: Informática"
                     required
                   />
@@ -169,7 +166,7 @@ export function CursosContent({ cursos }: CursosContentProps) {
       <DataTable
         data={rows}
         columns={columns}
-        searchKey="nome"
+        searchKey="descricao"
         searchPlaceholder="Pesquisar cursos..."
         onEdit={handleEdit}
         onDelete={handleDelete}

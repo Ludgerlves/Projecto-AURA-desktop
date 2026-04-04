@@ -28,18 +28,20 @@ import { useRouter } from "next/navigation"
 // ==================== Types ====================
 
 interface ClasseData {
-  nome: string
+  id: number
+  descricao: string
 }
 
 interface CursoData {
-  nome: string
+  id: number
+  descricao: string
 }
 
 interface TurmaData {
-  idTurma: number
+  id: number
   nome: string
-  classe: string
-  curso: string
+  classeId: number
+  cursoId: number
 }
 
 interface TurmasContentProps {
@@ -51,17 +53,14 @@ interface TurmasContentProps {
 // ==================== Row types with id for DataTable ====================
 
 interface TurmaRow extends TurmaData {
-  id: number
   classeNome: string
   cursoNome: string
 }
 
 interface ClasseRow extends ClasseData {
-  id: string
 }
 
 interface CursoRow extends CursoData {
-  id: string
 }
 
 // ==================== Component ====================
@@ -75,39 +74,40 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   // --- Turma state ---
   const [turmaOpen, setTurmaOpen] = useState(false)
   const [editingTurma, setEditingTurma] = useState<TurmaRow | null>(null)
-  const [turmaForm, setTurmaForm] = useState({ nome: "", classe: "", curso: "" })
+  const [turmaForm, setTurmaForm] = useState({ nome: "", classeId: 0, cursoId: 0 })
 
   // --- Classe state ---
   const [classeOpen, setClasseOpen] = useState(false)
   const [editingClasse, setEditingClasse] = useState<ClasseRow | null>(null)
-  const [classeForm, setClasseForm] = useState({ nome: "" })
+  const [classeForm, setClasseForm] = useState({ descricao: "" })
 
   // --- Curso state ---
   const [cursoOpen, setCursoOpen] = useState(false)
   const [editingCurso, setEditingCurso] = useState<CursoRow | null>(null)
-  const [cursoForm, setCursoForm] = useState({ nome: "" })
+  const [cursoForm, setCursoForm] = useState({ descricao: "" })
 
   // ==================== Mapped rows ====================
 
-  const classeMap = new Map(classes.map((c) => [c.nome, c.nome]))
-  const cursoMap = new Map(cursos.map((c) => [c.nome, c.nome]))
+  const classeMap = new Map(classes.map((c) => [c.id, c.descricao]))
+  const cursoMap = new Map(cursos.map((c) => [c.id, c.descricao]))
 
   const turmaRows: TurmaRow[] = turmas.map((t) => ({
     ...t,
-    id: t.idTurma,
-    classeNome: classeMap.get(t.classe) || "—",
-    cursoNome: cursoMap.get(t.curso) || "—",
+    classeNome: classeMap.get(t.classeId) || "—",
+    cursoNome: cursoMap.get(t.cursoId) || "—",
   }))
 
-  const classeRows: ClasseRow[] = classes.map((c) => ({ ...c, id: c.nome }))
-  const cursoRows: CursoRow[] = cursos.map((c) => ({ ...c, id: c.nome }))
+  const classeRows: ClasseRow[] = classes.map((c) => ({ ...c }))
+  const cursoRows: CursoRow[] = cursos.map((c) => ({ ...c }))
 
   // ==================== Turma helpers ====================
 
-  const gerarNomeTurma = (classe: string, curso: string) => {
-    if (classe && curso) return `${classe} - ${curso}`
-    if (classe) return classe
-    if (curso) return curso
+  const gerarNomeTurma = (classeId: number, cursoId: number) => {
+    const classeNome = classeMap.get(classeId) || ""
+    const cursoNome = cursoMap.get(cursoId) || ""
+    if (classeNome && cursoNome) return `${classeNome} - ${cursoNome}`
+    if (classeNome) return classeNome
+    if (cursoNome) return cursoNome
     return ""
   }
 
@@ -122,12 +122,12 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
     setError(null)
     const fd = new FormData()
     fd.append("nome", turmaForm.nome)
-    fd.append("classe", turmaForm.classe)
-    fd.append("curso", turmaForm.curso)
+    fd.append("classeId", String(turmaForm.classeId))
+    fd.append("cursoId", String(turmaForm.cursoId))
 
     startTransition(async () => {
       const result = editingTurma
-        ? await atualizarTurma(editingTurma.idTurma, fd)
+        ? await atualizarTurma(editingTurma.id, fd)
         : await criarTurma(fd)
       if (result.success) {
         resetTurmaForm()
@@ -139,7 +139,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   }
 
   const resetTurmaForm = () => {
-    setTurmaForm({ nome: "", classe: "", curso: "" })
+    setTurmaForm({ nome: "", classeId: 0, cursoId: 0 })
     setEditingTurma(null)
     setError(null)
     setTurmaOpen(false)
@@ -149,8 +149,8 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
     setEditingTurma(turma)
     setTurmaForm({
       nome: turma.nome,
-      classe: String(turma.classe),
-      curso: String(turma.curso),
+      classeId: turma.classeId,
+      cursoId: turma.cursoId,
     })
     setError(null)
     setTurmaOpen(true)
@@ -158,7 +158,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
 
   const handleTurmaDelete = (turma: TurmaRow) => {
     startTransition(async () => {
-      const result = await apagarTurma(turma.idTurma)
+      const result = await apagarTurma(turma.id)
       if (result.success) router.refresh()
       else setError(result.message || "Erro ao apagar turma")
     })
@@ -167,18 +167,18 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   // ==================== Classe handlers ====================
 
   const classeColumns = [
-    { key: "nome" as const, header: "Nome" },
+    { key: "descricao" as const, header: "Nome" },
   ]
 
   const handleClasseSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     const fd = new FormData()
-    fd.append("nome", classeForm.nome)
+    fd.append("descricao", classeForm.descricao)
 
     startTransition(async () => {
       const result = editingClasse
-        ? await atualizarClasse(editingClasse.nome, fd)
+        ? await atualizarClasse(editingClasse.id, fd)
         : await criarClasse(fd)
       if (result.success) {
         resetClasseForm()
@@ -190,7 +190,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   }
 
   const resetClasseForm = () => {
-    setClasseForm({ nome: "" })
+    setClasseForm({ descricao: "" })
     setEditingClasse(null)
     setError(null)
     setClasseOpen(false)
@@ -198,14 +198,14 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
 
   const handleClasseEdit = (classe: ClasseRow) => {
     setEditingClasse(classe)
-    setClasseForm({ nome: classe.nome })
+    setClasseForm({ descricao: classe.descricao })
     setError(null)
     setClasseOpen(true)
   }
 
   const handleClasseDelete = (classe: ClasseRow) => {
     startTransition(async () => {
-      const result = await apagarClasse(classe.nome)
+      const result = await apagarClasse(classe.id)
       if (result.success) router.refresh()
       else setError(result.message || "Erro ao apagar classe")
     })
@@ -214,18 +214,18 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   // ==================== Curso handlers ====================
 
   const cursoColumns = [
-    { key: "nome" as const, header: "Nome" },
+    { key: "descricao" as const, header: "Nome" },
   ]
 
   const handleCursoSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     const fd = new FormData()
-    fd.append("nome", cursoForm.nome)
+    fd.append("descricao", cursoForm.descricao)
 
     startTransition(async () => {
       const result = editingCurso
-        ? await atualizarCurso(editingCurso.nome, fd)
+        ? await atualizarCurso(editingCurso.id, fd)
         : await criarCurso(fd)
       if (result.success) {
         resetCursoForm()
@@ -237,7 +237,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
   }
 
   const resetCursoForm = () => {
-    setCursoForm({ nome: "" })
+    setCursoForm({ descricao: "" })
     setEditingCurso(null)
     setError(null)
     setCursoOpen(false)
@@ -245,14 +245,14 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
 
   const handleCursoEdit = (curso: CursoRow) => {
     setEditingCurso(curso)
-    setCursoForm({ nome: curso.nome })
+    setCursoForm({ descricao: curso.descricao })
     setError(null)
     setCursoOpen(true)
   }
 
   const handleCursoDelete = (curso: CursoRow) => {
     startTransition(async () => {
-      const result = await apagarCurso(curso.nome)
+      const result = await apagarCurso(curso.id)
       if (result.success) router.refresh()
       else setError(result.message || "Erro ao apagar curso")
     })
@@ -393,24 +393,24 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                           ) : (
                             classes.map((c) => (
                               <label
-                                key={c.nome}
+                                key={c.id}
                                 className={`flex items-center gap-3 cursor-pointer p-2 rounded-md transition-colors ${
-                                  turmaForm.classe === c.nome
+                                  turmaForm.classeId === c.id
                                     ? "bg-primary/10 border border-primary/20"
                                     : "hover:bg-muted/50"
                                 }`}
                               >
                                 <Checkbox
-                                  checked={turmaForm.classe === c.nome}
+                                  checked={turmaForm.classeId === c.id}
                                   onCheckedChange={(checked) => {
                                     if (checked) {
-                                      const newForm = { ...turmaForm, classe: c.nome }
-                                      newForm.nome = gerarNomeTurma(newForm.classe, turmaForm.curso)
+                                      const newForm = { ...turmaForm, classeId: c.id }
+                                      newForm.nome = gerarNomeTurma(newForm.classeId, turmaForm.cursoId)
                                       setTurmaForm(newForm)
                                     }
                                   }}
                                 />
-                                <span className="text-sm font-medium flex-1">{c.nome}</span>
+                                <span className="text-sm font-medium flex-1">{c.descricao}</span>
                               </label>
                             ))
                           )}
@@ -432,24 +432,24 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                           ) : (
                             cursos.map((c) => (
                               <label
-                                key={c.nome}
+                                key={c.id}
                                 className={`flex items-center gap-3 cursor-pointer p-2 rounded-md transition-colors ${
-                                  turmaForm.curso === c.nome
+                                  turmaForm.cursoId === c.id
                                     ? "bg-primary/10 border border-primary/20"
                                     : "hover:bg-muted/50"
                                 }`}
                               >
                                 <Checkbox
-                                  checked={turmaForm.curso === c.nome}
+                                  checked={turmaForm.cursoId === c.id}
                                   onCheckedChange={(checked) => {
                                     if (checked) {
-                                      const newForm = { ...turmaForm, curso: c.nome }
-                                      newForm.nome = gerarNomeTurma(turmaForm.classe, newForm.curso)
+                                      const newForm = { ...turmaForm, cursoId: c.id }
+                                      newForm.nome = gerarNomeTurma(turmaForm.classeId, newForm.cursoId)
                                       setTurmaForm(newForm)
                                     }
                                   }}
                                 />
-                                <span className="text-sm font-medium flex-1">{c.nome}</span>
+                                <span className="text-sm font-medium flex-1">{c.descricao}</span>
                               </label>
                             ))
                           )}
@@ -462,7 +462,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                         <p className="text-lg font-semibold text-primary">{turmaForm.nome}</p>
                       </div>
                     )}
-                    {(!turmaForm.classe || !turmaForm.curso) && (
+                    {(!turmaForm.classeId || !turmaForm.cursoId) && (
                       <div className="rounded-md border border-amber-200 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-900 p-3">
                         <p className="text-xs text-amber-700 dark:text-amber-300">
                           ⚠️ Selecione uma classe e um curso para gerar o nome da turma
@@ -525,11 +525,11 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                 <form onSubmit={handleClasseSubmit}>
                   <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="classe-nome">Nome</Label>
+                      <Label htmlFor="classe-descricao">Nome</Label>
                       <Input
-                        id="classe-nome"
-                        value={classeForm.nome}
-                        onChange={(e) => setClasseForm({ nome: e.target.value })}
+                        id="classe-descricao"
+                        value={classeForm.descricao}
+                        onChange={(e) => setClasseForm({ descricao: e.target.value })}
                         placeholder="Ex: 10ª Classe"
                         required
                       />
@@ -551,7 +551,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
           <DataTable
             data={classeRows}
             columns={classeColumns}
-            searchKey="nome"
+            searchKey="descricao"
             searchPlaceholder="Pesquisar classes..."
             onEdit={handleClasseEdit}
             onDelete={handleClasseDelete}
@@ -590,11 +590,11 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                 <form onSubmit={handleCursoSubmit}>
                   <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="curso-nome">Nome</Label>
+                      <Label htmlFor="curso-descricao">Nome</Label>
                       <Input
-                        id="curso-nome"
-                        value={cursoForm.nome}
-                        onChange={(e) => setCursoForm({ nome: e.target.value })}
+                        id="curso-descricao"
+                        value={cursoForm.descricao}
+                        onChange={(e) => setCursoForm({ descricao: e.target.value })}
                         placeholder="Ex: Ciências"
                         required
                       />
@@ -616,7 +616,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
           <DataTable
             data={cursoRows}
             columns={cursoColumns}
-            searchKey="nome"
+            searchKey="descricao"
             searchPlaceholder="Pesquisar cursos..."
             onEdit={handleCursoEdit}
             onDelete={handleCursoDelete}

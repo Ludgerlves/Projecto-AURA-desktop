@@ -24,10 +24,16 @@ export async function criarTurma(
 ): Promise<ActionResponse> {
     try {
         const nome = formData.get('nome') as string
-        const classe = formData.get('classe') as string
-        const curso = formData.get('curso') as string
+        const classeId = formData.get('classeId') as string
+        const cursoId = formData.get('cursoId') as string
+        const quantidade_alunos = formData.get('quantidade_alunos') as string
 
-        const validatedData = createTurmaSchema.parse({ nome, classe, curso })
+        const validatedData = createTurmaSchema.parse({
+            descricao_turma: nome,
+            id_classe: classeId,
+            id_curso: cursoId,
+            quantidade_alunos: quantidade_alunos || "0",
+        })
         const turma = await turmaService.criarTurma(validatedData)
 
         revalidatePath('/turmas')
@@ -40,7 +46,7 @@ export async function criarTurma(
                 message: 'Erro de validação',
             }
         }
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 
@@ -50,13 +56,15 @@ export async function atualizarTurma(
 ): Promise<ActionResponse> {
     try {
         const nome = formData.get('nome') as string | null
-        const classeRaw = formData.get('classe') as string | null
-        const cursoRaw = formData.get('curso') as string | null
+        const classeId = formData.get('classeId') as string | null
+        const cursoId = formData.get('cursoId') as string | null
+        const quantidade_alunos = formData.get('quantidade_alunos') as string | null
 
         const validatedData = updateTurmaSchema.parse({
-            nome: nome || undefined,
-            classe: classeRaw || undefined,
-            curso: cursoRaw || undefined,
+            descricao_turma: nome || undefined,
+            id_classe: classeId || undefined,
+            id_curso: cursoId || undefined,
+            quantidade_alunos: quantidade_alunos || undefined,
         })
         const turma = await turmaService.atualizarTurma(id, validatedData)
 
@@ -70,7 +78,7 @@ export async function atualizarTurma(
                 message: 'Erro de validação',
             }
         }
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 
@@ -80,7 +88,7 @@ export async function apagarTurma(id: number): Promise<ActionResponse> {
         revalidatePath('/turmas')
         return { success: true, data: result, message: 'Turma apagada com sucesso!' }
     } catch (error: any) {
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 
@@ -94,9 +102,9 @@ export async function criarClasse(
     formData: FormData
 ): Promise<ActionResponse> {
     try {
-        const nome = formData.get('nome') as string
-        const validatedData = createClasseSchema.parse({ nome })
-        const classe = await classeService.criarTurma(validatedData)
+        const descricao = formData.get('descricao') as string
+        const validatedData = createClasseSchema.parse({ descricao_classe: descricao })
+        const classe = await classeService.criarClasse(validatedData)
 
         revalidatePath('/turmas')
         return { success: true, data: classe, message: 'Classe criada com sucesso!' }
@@ -108,18 +116,18 @@ export async function criarClasse(
                 message: 'Erro de validação',
             }
         }
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 
 export async function atualizarClasse(
-    nomeClasse: string,
+    id: number,
     formData: FormData
 ): Promise<ActionResponse> {
     try {
-        const nome = formData.get('nome') as string
-        const validatedData = updateClasseSchema.parse({ nome: nome || undefined })
-        const classe = await classeService.atualizarTurma(nomeClasse, validatedData)
+        const descricao = formData.get('descricao') as string
+        const validatedData = updateClasseSchema.parse({ descricao_classe: descricao || undefined })
+        const classe = await classeService.atualizarClasse(id, validatedData)
 
         revalidatePath('/turmas')
         return { success: true, data: classe, message: 'Classe atualizada com sucesso!' }
@@ -131,32 +139,32 @@ export async function atualizarClasse(
                 message: 'Erro de validação',
             }
         }
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 
-export async function apagarClasse(nomeClasse: string): Promise<ActionResponse> {
+export async function apagarClasse(id: number): Promise<ActionResponse> {
     try {
-        const result = await classeService.apagarTurma(nomeClasse)
+        const result = await classeService.apagarClasse(id)
         revalidatePath('/turmas')
         return { success: true, data: result, message: 'Classe apagada com sucesso!' }
     } catch (error: any) {
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 
 export async function listarClasses() {
-    return await classeService.listarTodasTurmas()
+    return await classeService.listarTodas()
 }
 
-//CURSO 
+//CURSO
 
 export async function criarCurso(
     formData: FormData
 ): Promise<ActionResponse> {
     try {
-        const nome = formData.get('nome') as string
-        const validatedData = createCursoSchema.parse({ nome })
+        const descricao = formData.get('descricao') as string
+        const validatedData = createCursoSchema.parse({ descricao_curso: descricao })
         const curso = await cursoService.criarCurso(validatedData)
 
         revalidatePath('/turmas')
@@ -169,18 +177,18 @@ export async function criarCurso(
                 message: 'Erro de validação',
             }
         }
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 
 export async function atualizarCurso(
-    nomeCurso: string,
+    id: number,
     formData: FormData
 ): Promise<ActionResponse> {
     try {
-        const nome = formData.get('nome') as string
-        const validatedData = updateCursoSchema.parse({ nome: nome || undefined })
-        const curso = await cursoService.atualizarCurso(nomeCurso, validatedData)
+        const descricao = formData.get('descricao') as string
+        const validatedData = updateCursoSchema.parse({ descricao_curso: descricao || undefined })
+        const curso = await cursoService.atualizarCurso(id, validatedData)
 
         revalidatePath('/turmas')
         return { success: true, data: curso, message: 'Curso atualizado com sucesso!' }
@@ -192,17 +200,17 @@ export async function atualizarCurso(
                 message: 'Erro de validação',
             }
         }
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 
-export async function apagarCurso(nomeCurso: string): Promise<ActionResponse> {
+export async function apagarCurso(id: number): Promise<ActionResponse> {
     try {
-        const result = await cursoService.apagarCurso(nomeCurso)
+        const result = await cursoService.apagarCurso(id)
         revalidatePath('/turmas')
         return { success: true, data: result, message: 'Curso apagado com sucesso!' }
     } catch (error: any) {
-        return { success: false, message: error.message || 'Erro inesperado' }
+        return { success: false, message: getActionErrorMessage(error) }
     }
 }
 

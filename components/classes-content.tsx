@@ -15,15 +15,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DataTable } from "@/components/data-table"
 import { Plus, Layers } from "lucide-react"
-import { criarClasse, atualizarClasse, apagarClasse } from "@/app/classes/classe-action"
+import { criarClasse, atualizarClasse, apagarClasse } from "@/app/turmas/turma-action"
 import { useRouter } from "next/navigation"
 
 interface ClasseData {
-  idClasse: number
-  nome: string
+  id?: number
+  idClasse?: number
+  nome?: string
+  descricao?: string
 }
 
-interface ClasseRow extends ClasseData {
+interface ClasseRow {
+  idClasse: number
+  nome: string
   id: number
 }
 
@@ -40,8 +44,9 @@ export function ClassesContent({ classes }: ClassesContentProps) {
   const [error, setError] = useState<string | null>(null)
 
   const rows: ClasseRow[] = classes.map((c) => ({
-    ...c,
-    id: c.idClasse,
+    idClasse: c.idClasse ?? c.id ?? 0,
+    nome: c.nome ?? c.descricao ?? "",
+    id: c.idClasse ?? c.id ?? 0,
   }))
 
   const columns = [
@@ -54,7 +59,7 @@ export function ClassesContent({ classes }: ClassesContentProps) {
     setError(null)
 
     const fd = new FormData()
-    fd.append("nome", formData.nome)
+    fd.append("descricao", formData.nome)
 
     startTransition(async () => {
       const result = editingClasse

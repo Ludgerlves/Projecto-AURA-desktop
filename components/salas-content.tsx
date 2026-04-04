@@ -1,10 +1,7 @@
 "use client"
 
-import React from "react"
-
-import { useState } from "react"
+import React, { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   Dialog,
   DialogContent,
@@ -16,166 +13,91 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { DataTable } from "@/components/data-table"
 import { Plus, DoorOpen } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { criarSala, atualizarSala, apagarSala } from "@/app/salas/salas-action"
 
-interface Sala {
-  id: string
-  nome: string
-  bloco: string
+interface SalaData {
+  id: number
+  descricao: string
   capacidade: number
-  tipo: "normal" | "laboratorio" | "informatica" | "ginasio" | "auditorio"
-  equipamentos: string[]
-  status: "disponivel" | "ocupada" | "manutencao"
+  tipo_sala: string
 }
 
-const initialSalas: Sala[] = [
-  { id: "1", nome: "Sala 101", bloco: "A", capacidade: 30, tipo: "normal", equipamentos: ["Projetor", "Quadro interativo"], status: "disponivel" },
-  { id: "2", nome: "Sala 102", bloco: "A", capacidade: 30, tipo: "normal", equipamentos: ["Projetor"], status: "disponivel" },
-  { id: "3", nome: "Sala 201", bloco: "A", capacidade: 28, tipo: "normal", equipamentos: ["Projetor", "Ar condicionado"], status: "ocupada" },
-  { id: "4", nome: "Sala 202", bloco: "A", capacidade: 28, tipo: "normal", equipamentos: ["Projetor"], status: "disponivel" },
-  { id: "5", nome: "Lab. Fisica", bloco: "B", capacidade: 24, tipo: "laboratorio", equipamentos: ["Bancadas", "Equipamento cientifico"], status: "disponivel" },
-  { id: "6", nome: "Lab. Quimica", bloco: "B", capacidade: 24, tipo: "laboratorio", equipamentos: ["Bancadas", "Exaustor", "Equipamento cientifico"], status: "manutencao" },
-  { id: "7", nome: "Lab. Informatica 1", bloco: "C", capacidade: 25, tipo: "informatica", equipamentos: ["Computadores", "Projetor"], status: "disponivel" },
-  { id: "8", nome: "Lab. Informatica 2", bloco: "C", capacidade: 25, tipo: "informatica", equipamentos: ["Computadores", "Projetor"], status: "disponivel" },
-  { id: "9", nome: "Ginasio", bloco: "D", capacidade: 60, tipo: "ginasio", equipamentos: ["Equipamento desportivo"], status: "disponivel" },
-  { id: "10", nome: "Auditorio", bloco: "E", capacidade: 150, tipo: "auditorio", equipamentos: ["Sistema de som", "Projetor", "Palco"], status: "manutencao" },
-]
-
-const tipoColors = {
-  normal: "bg-blue-600 text-white",
-  laboratorio: "bg-green-600 text-white",
-  informatica: "bg-indigo-600 text-white",
-  ginasio: "bg-orange-600 text-white",
-  auditorio: "bg-purple-600 text-white",
+interface SalaRow extends SalaData {
 }
 
-const statusColors = {
-  disponivel: "bg-green-600 text-white",
-  ocupada: "bg-accent text-accent-foreground",
-  manutencao: "bg-destructive text-destructive-foreground",
+interface SalasContentProps {
+  salas: SalaData[]
 }
 
-export function SalasContent() {
-  const [salas, setSalas] = useState<Sala[]>(initialSalas)
+export function SalasContent({ salas }: SalasContentProps) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
-  const [editingSala, setEditingSala] = useState<Sala | null>(null)
-  const [formData, setFormData] = useState({
-    nome: "",
-    bloco: "",
-    capacidade: "",
-    tipo: "",
-    equipamentos: "",
-    status: "disponivel",
-  })
+  const [editingSala, setEditingSala] = useState<SalaRow | null>(null)
+  const [formData, setFormData] = useState({ descricao: "", capacidade: "", tipo_sala: "" })
+  const [error, setError] = useState<string | null>(null)
+
+  const rows: SalaRow[] = salas.map((s) => ({ ...s }))
 
   const columns = [
-    { key: "nome" as const, header: "Sala" },
-    { key: "bloco" as const, header: "Bloco" },
-    {
-      key: "capacidade" as const,
-      header: "Capacidade",
-      render: (sala: Sala) => `${sala.capacidade} lugares`,
-    },
-    {
-      key: "tipo",
-      header: "Tipo",
-      render: (sala: Sala) => (
-        <Badge className={tipoColors[sala.tipo]}>
-          {sala.tipo.charAt(0).toUpperCase() + sala.tipo.slice(1)}
-        </Badge>
-      ),
-    },
-    {
-      key: "equipamentos",
-      header: "Equipamentos",
-      render: (sala: Sala) => (
-        <div className="flex flex-wrap gap-1">
-          {sala.equipamentos.slice(0, 2).map((e) => (
-            <Badge key={e} variant="outline" className="text-xs">
-              {e}
-            </Badge>
-          ))}
-          {sala.equipamentos.length > 2 && (
-            <Badge variant="outline" className="text-xs">
-              +{sala.equipamentos.length - 2}
-            </Badge>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      render: (sala: Sala) => (
-        <Badge className={statusColors[sala.status]}>
-          {sala.status.charAt(0).toUpperCase() + sala.status.slice(1)}
-        </Badge>
-      ),
-    },
+    { key: "descricao" as const, header: "Sala" },
+    { key: "capacidade" as const, header: "Capacidade" },
+    { key: "tipo_sala" as const, header: "Tipo" },
   ]
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (editingSala) {
-      setSalas((prev) =>
-        prev.map((s) =>
-          s.id === editingSala.id
-            ? {
-                ...s,
-                nome: formData.nome,
-                bloco: formData.bloco,
-                capacidade: parseInt(formData.capacidade) || 0,
-                tipo: formData.tipo as Sala["tipo"],
-                equipamentos: formData.equipamentos.split(",").map((e) => e.trim()),
-                status: formData.status as Sala["status"],
-              }
-            : s
-        )
-      )
-    } else {
-      const newSala: Sala = {
-        id: String(Date.now()),
-        nome: formData.nome,
-        bloco: formData.bloco,
-        capacidade: parseInt(formData.capacidade) || 0,
-        tipo: formData.tipo as Sala["tipo"],
-        equipamentos: formData.equipamentos.split(",").map((e) => e.trim()),
-        status: formData.status as Sala["status"],
+    setError(null)
+
+    const fd = new FormData()
+    fd.append("descricao", formData.descricao)
+    fd.append("capacidade", formData.capacidade)
+    fd.append("tipo_sala", formData.tipo_sala)
+
+    startTransition(async () => {
+      const result = editingSala
+        ? await atualizarSala(editingSala.id, fd)
+        : await criarSala(fd)
+
+      if (result.success) {
+        resetForm()
+        router.refresh()
+      } else {
+        setError(result.message || "Erro inesperado")
       }
-      setSalas((prev) => [...prev, newSala])
-    }
-    resetForm()
+    })
   }
 
   const resetForm = () => {
-    setFormData({ nome: "", bloco: "", capacidade: "", tipo: "", equipamentos: "", status: "disponivel" })
+    setFormData({ descricao: "", capacidade: "", tipo_sala: "" })
     setEditingSala(null)
+    setError(null)
     setIsOpen(false)
   }
 
-  const handleEdit = (sala: Sala) => {
+  const handleEdit = (sala: SalaRow) => {
     setEditingSala(sala)
     setFormData({
-      nome: sala.nome,
-      bloco: sala.bloco,
+      descricao: sala.descricao,
       capacidade: String(sala.capacidade),
-      tipo: sala.tipo,
-      equipamentos: sala.equipamentos.join(", "),
-      status: sala.status,
+      tipo_sala: sala.tipo_sala,
     })
+    setError(null)
     setIsOpen(true)
   }
 
-  const handleDelete = (sala: Sala) => {
-    setSalas((prev) => prev.filter((s) => s.id !== sala.id))
+  const handleDelete = (sala: SalaRow) => {
+    startTransition(async () => {
+      const result = await apagarSala(sala.id)
+      if (result.success) {
+        router.refresh()
+      } else {
+        setError(result.message || "Erro ao apagar sala")
+      }
+    })
   }
 
   return (
@@ -207,35 +129,15 @@ export function SalasContent() {
             </DialogHeader>
             <form onSubmit={handleSubmit}>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="nome">Nome da Sala</Label>
-                    <Input
-                      id="nome"
-                      value={formData.nome}
-                      onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                      placeholder="Ex: Sala 101"
-                      required
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="bloco">Bloco</Label>
-                    <Select
-                      value={formData.bloco}
-                      onValueChange={(value) => setFormData({ ...formData, bloco: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecionar" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["A", "B", "C", "D", "E"].map((bloco) => (
-                          <SelectItem key={bloco} value={bloco}>
-                            Bloco {bloco}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="descricao">Nome da Sala</Label>
+                  <Input
+                    id="descricao"
+                    value={formData.descricao}
+                    onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+                    placeholder="Ex: Sala 101"
+                    required
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="grid gap-2">
@@ -245,59 +147,28 @@ export function SalasContent() {
                       type="number"
                       value={formData.capacidade}
                       onChange={(e) => setFormData({ ...formData, capacidade: e.target.value })}
+                      placeholder="Ex: 30"
                       required
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="tipo">Tipo</Label>
-                    <Select
-                      value={formData.tipo}
-                      onValueChange={(value) => setFormData({ ...formData, tipo: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecionar" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="laboratorio">Laboratorio</SelectItem>
-                        <SelectItem value="informatica">Informatica</SelectItem>
-                        <SelectItem value="ginasio">Ginasio</SelectItem>
-                        <SelectItem value="auditorio">Auditorio</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="tipo_sala">Tipo de Sala</Label>
+                    <Input
+                      id="tipo_sala"
+                      value={formData.tipo_sala}
+                      onChange={(e) => setFormData({ ...formData, tipo_sala: e.target.value })}
+                      placeholder="Ex: Normal, Laboratório"
+                      required
+                    />
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="equipamentos">Equipamentos (separados por virgula)</Label>
-                  <Input
-                    id="equipamentos"
-                    value={formData.equipamentos}
-                    onChange={(e) => setFormData({ ...formData, equipamentos: e.target.value })}
-                    placeholder="Projetor, Quadro interativo"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="status">Status</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value) => setFormData({ ...formData, status: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecionar" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="disponivel">Disponivel</SelectItem>
-                      <SelectItem value="ocupada">Ocupada</SelectItem>
-                      <SelectItem value="manutencao">Manutencao</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {error && <p className="text-sm text-destructive">{error}</p>}
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={resetForm}>
                   Cancelar
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={isPending}>
                   {editingSala ? "Guardar" : "Adicionar"}
                 </Button>
               </DialogFooter>
@@ -311,17 +182,17 @@ export function SalasContent() {
           <DoorOpen className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <p className="text-2xl font-bold">{salas.length}</p>
+          <p className="text-2xl font-bold">{rows.length}</p>
           <p className="text-sm text-muted-foreground">
-            Salas registadas ({salas.filter((s) => s.status === "disponivel").length} disponiveis)
+            Salas registadas
           </p>
         </div>
       </div>
 
       <DataTable
-        data={salas}
+        data={rows}
         columns={columns}
-        searchKey="nome"
+        searchKey="descricao"
         searchPlaceholder="Pesquisar salas..."
         onEdit={handleEdit}
         onDelete={handleDelete}

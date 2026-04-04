@@ -1,103 +1,147 @@
-'use server'
-import { prisma } from "../prisma"
+// lib/actions/horarios.ts
+"use server";
 
-const ORDEM_DIAS = [
-  "Segunda-feira",
-  "Terça-feira",
-  "Quarta-feira",
-  "Quinta-feira",
-  "Sexta-feira",
-];
+import { prisma } from "@/lib/prisma";
 
-const TEMPOS_POR_DIA = 6;
-const TAMANHO_BLOCO = 2;
+// ─── CRUD: Ler Horários ──────────────────────────────────
 
-/**
- * Gera tempos lectivos para uma turma durante a semana.
- * Cada disciplina recebe TEMPOS_POR_DIA (6) tempos por semana,
- * distribuídos em blocos de 2 por dia.
- * Ignora todos os conflitos externos.
- */
-export async function gerarTemposLectivos(
-  turmaId: number,
-  periodo: string,
-  salaId: number
+export async function getHorariosByTurma(
+  idTurma: number,
+  anoLectivo: number,
 ) {
-  const profturma = await prisma.profTurmaDisciplina.findMany({
-    where: { turmaId },
-    include: { Professor: true },
-  });
-
-  if (profturma.length === 0) return;
-
-  // Controla slots já atribuídos para evitar sobreposição interna
-  const slotsOcupados = new Set<string>();
-
-  const novosTempos: {
-    diaSemana: string;
-    periodoId: string;
-    ordem: number;
-    professorId: number;
-    disciplina: string;
-    salaId: number;
-    turmaId: number;
-  }[] = [];
-
-  for (const ptd of profturma) {
-    let temposRestantes = TEMPOS_POR_DIA;
-
-    for (const dia of ORDEM_DIAS) {
-      if (temposRestantes <= 0) break;
-
-      const bloco = encontrarBlocoLivre(dia, slotsOcupados);
-      if (!bloco) continue;
-
-      for (const ordem of bloco) {
-        slotsOcupados.add(`${dia}-${ordem}`);
-        novosTempos.push({
-          diaSemana: dia,
-          periodoId: periodo,
-          ordem,
-          professorId: ptd.professorId,
-          disciplina: ptd.disciplinaNome,
-          salaId,
-          turmaId,
-        });
-      }
-
-      temposRestantes -= bloco.length;
-    }
-  }
-
-  console.log(JSON.stringify(novosTempos, null, 2));
-
-  return await prisma.tempoLectivo.createMany({
-    data: novosTempos,
+  return prisma.tempo_Lectivo.findMany({
+    where: { id_turma: idTurma, ano_lectivo: anoLectivo },
+    include: {
+      disciplina: { select: { descricao_disciplina: true } },
+      professor: { select: { nome_professor: true } },
+      sala: { select: { descricao_sala: true, capacidade: true } },
+      dia: { select: { descricao_dia: true } },
+      periodo: { select: { descricao_periodo: true } },
+    },
+    orderBy: [{ id_dia: "asc" }, { id_periodo: "asc" }, { ordem: "asc" }],
   });
 }
 
-gerarTemposLectivos(1, "Tarde", 1).then((res) =>
-  console.log("Resultado createMany:", JSON.stringify(res, null, 2))
-);
+export async function getHorariosByProfessor(
+  idProfessor: number,
+  anoLectivo: number,
+) {
+  return prisma.tempo_Lectivo.findMany({
+    where: { id_professor: idProfessor, ano_lectivo: anoLectivo },
+    include: {
+      disciplina: { select: { descricao_disciplina: true } },
+      turma: { select: { descricao_turma: true } },
+      sala: { select: { descricao_sala: true, capacidade: true } },
+      dia: { select: { descricao_dia: true } },
+      periodo: { select: { descricao_periodo: true } },
+    },
+    orderBy: [{ id_dia: "asc" }, { id_periodo: "asc" }, { ordem: "asc" }],
+  });
+}
 
-/** Encontra o primeiro bloco consecutivo livre num dado dia. */
-function encontrarBlocoLivre(
-  dia: string,
-  ocupados: Set<string>
-): number[] | null {
-  for (let ordem = 1; ordem <= TEMPOS_POR_DIA - TAMANHO_BLOCO + 1; ordem++) {
-    const bloco: number[] = [];
-    let livre = true;
+export async function getHorariosBySala(
+  idSala: number,
+  anoLectivo: number,
+) {
+  return prisma.tempo_Lectivo.findMany({
+    where: { id_sala: idSala, ano_lectivo: anoLectivo },
+    include: {
+      disciplina: { select: { descricao_disciplina: true } },
+      professor: { select: { nome_professor: true } },
+      turma: { select: { descricao_turma: true } },
+      dia: { select: { descricao_dia: true } },
+      periodo: { select: { descricao_periodo: true } },
+    },
+    orderBy: [{ id_dia: "asc" }, { id_periodo: "asc" }, { ordem: "asc" }],
+  });
+}
 
-    for (let j = 0; j < TAMANHO_BLOCO; j++) {
-      if (ocupados.has(`${dia}-${ordem + j}`)) {
-        livre = false;
-        break;
-      }
-      bloco.push(ordem + j);
-    }
+export async function getAllHorarios(
+  anoLectivo: number,
+) {
+  return prisma.tempo_Lectivo.findMany({
+    where: { ano_lectivo: anoLectivo },
+    include: {
+      disciplina: { select: { descricao_disciplina: true } },
+      professor: { select: { nome_professor: true } },
+      turma: { select: { descricao_turma: true } },
+      sala: { select: { descricao_sala: true, capacidade: true } },
+      dia: { select: { descricao_dia: true } },
+      periodo: { select: { descricao_periodo: true } },
+    },
+    orderBy: [
+      { id_turma: "asc" },
+      { id_dia: "asc" },
+      { id_periodo: "asc" },
+      { ordem: "asc" },
+    ],
+  });
+}
 
-    if (livre) return bloco;
+// ─── CRUD: Apagar Horários ───────────────────────────────
+
+export async function deleteHorario(idTempoLectivo: number) {
+  const existente = await prisma.tempo_Lectivo.findUnique({
+    where: { id_tempoLectivo: idTempoLectivo },
+  });
+
+  if (!existente) {
+    throw new Error("Tempo lectivo não encontrado");
   }
-  return null;
+
+  await prisma.tempo_Lectivo.delete({
+    where: { id_tempoLectivo: idTempoLectivo },
+  });
+
+  return { message: "Tempo lectivo eliminado com sucesso" };
+}
+
+export async function deleteAllHorarios(anoLectivo: number) {
+  const result = await prisma.tempo_Lectivo.deleteMany({
+    where: { ano_lectivo: anoLectivo },
+  });
+
+  return {
+    message: `${result.count} horário(s) eliminado(s)`,
+    count: result.count,
+  };
+}
+
+export async function deleteHorariosByTurma(
+  idTurma: number,
+  anoLectivo: number,
+) {
+  const result = await prisma.tempo_Lectivo.deleteMany({
+    where: { id_turma: idTurma, ano_lectivo: anoLectivo },
+  });
+
+  return {
+    message: `${result.count} horário(s) da turma eliminado(s)`,
+    count: result.count,
+  };
+}
+
+// ─── Estatísticas ─────────────────────────────────────────
+
+export async function getHorarioStats(anoLectivo: number) {
+  const [total, porTurma, porProfessor, porSala] = await Promise.all([
+    prisma.tempo_Lectivo.count({ where: { ano_lectivo: anoLectivo } }),
+    prisma.tempo_Lectivo.groupBy({
+      by: ["id_turma"],
+      where: { ano_lectivo: anoLectivo },
+      _count: true,
+    }),
+    prisma.tempo_Lectivo.groupBy({
+      by: ["id_professor"],
+      where: { ano_lectivo: anoLectivo },
+      _count: true,
+    }),
+    prisma.tempo_Lectivo.groupBy({
+      by: ["id_sala"],
+      where: { ano_lectivo: anoLectivo },
+      _count: true,
+    }),
+  ]);
+
+  return { total, porTurma, porProfessor, porSala };
 }
