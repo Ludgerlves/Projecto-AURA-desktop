@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell, Menu, Search, User } from "lucide-react"
+import { Bell, Search, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -11,68 +11,49 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
 
-type AppHeaderProps = {
-  headerCollapsed?: boolean
-  onMenuClick?: () => void
-}
-
-export function AppHeader({ headerCollapsed = false, onMenuClick }: AppHeaderProps) {
+export function AppHeader() {
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-20 flex shrink-0 items-center justify-between gap-3 overflow-hidden border-b border-border/80 bg-card/85 px-4 py-0 backdrop-blur-md transition-all duration-300 ease-out sm:px-6",
-        headerCollapsed
-          ? "max-h-0 min-h-0 border-transparent py-0 opacity-0 [pointer-events:none]"
-          : "max-h-16 min-h-16 opacity-100 py-2"
-      )}
-    >
-      <div className="flex min-w-0 flex-1 items-center gap-3">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="shrink-0 md:hidden"
-          onClick={onMenuClick}
-          aria-label="Abrir menu"
-        >
-          <Menu className="size-5 text-foreground" />
-        </Button>
-        <div className="relative min-w-0 max-w-md flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+    <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
+      <div className="flex items-center gap-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Pesquisar..."
-            className="h-10 rounded-xl border-border/80 bg-muted/50 pl-10 shadow-inner shadow-slate-900/[0.02] placeholder:text-muted-foreground/70"
+            className="w-80 bg-muted pl-10"
           />
         </div>
       </div>
-
-      <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-        <Button variant="ghost" size="icon" className="relative rounded-xl text-muted-foreground hover:text-foreground">
-          <Bell className="size-5" />
+      
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell className="h-5 w-5" />
+          {/*<span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-medium text-primary-foreground">
+          </span> */}
         </Button>
-
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="gap-2 rounded-xl px-2 sm:px-3">
-              <div className="flex size-9 items-center justify-center rounded-full bg-primary/10 ring-1 ring-primary/20">
-                <User className="size-4 text-primary" />
+            <Button variant="ghost" className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+                <User className="h-4 w-4 text-primary-foreground" />
               </div>
               <div className="hidden text-left md:block">
-                <p className="text-sm font-medium leading-tight text-foreground">Admin</p>
+                <p className="text-sm font-medium">Admin</p>
                 <p className="text-xs text-muted-foreground">Administrador</p>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 rounded-xl border-border/80 shadow-lg">
+          <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Perfil</DropdownMenuItem>
             <DropdownMenuItem>Configuracoes</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive focus:text-destructive">Sair</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive">
+              Sair
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
