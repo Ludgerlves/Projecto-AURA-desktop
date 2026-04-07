@@ -106,9 +106,13 @@ export function HorariosContent() {
         const novoHorario: HorarioData = {}
 
         const mapaDias: Record<string, string> = {
-          "SEGUNDA": "2ª FEIRA", "TERCA": "3ª FEIRA", "QUARTA": "4ª FEIRA", 
+          "SEGUNDA-FEIRA": "2ª FEIRA", "TERCA-FEIRA": "3ª FEIRA", "QUARTA-FEIRA": "4ª FEIRA",
+          "QUINTA-FEIRA": "5ª FEIRA", "SEXTA-FEIRA": "6ª FEIRA",
+          "Segunda-Feira": "2ª FEIRA", "Terça-Feira": "3ª FEIRA", "Quarta-Feira": "4ª FEIRA",
+          "Quinta-Feira": "5ª FEIRA", "Sexta-Feira": "6ª FEIRA",
+          "SEGUNDA": "2ª FEIRA", "TERCA": "3ª FEIRA", "QUARTA": "4ª FEIRA",
           "QUINTA": "5ª FEIRA", "SEXTA": "6ª FEIRA",
-          "Segunda": "2ª FEIRA", "Terça": "3ª FEIRA", "Quarta": "4ª FEIRA", 
+          "Segunda": "2ª FEIRA", "Terça": "3ª FEIRA", "Quarta": "4ª FEIRA",
           "Quinta": "5ª FEIRA", "Sexta": "6ª FEIRA"
         }
         const mapaPeriodos: Record<string, string> = { 
@@ -117,6 +121,10 @@ export function HorariosContent() {
         }
 
         console.log("Dados recebidos para o horário:", dados)
+        if (dados.length > 0) {
+          console.log("Primeiro dia:", dados[0]?.dia?.descricao_dia)
+          console.log("Primeiro periodo:", dados[0]?.periodo?.descricao_periodo)
+        }
 
         dados.forEach((aula: any) => {
           const dia = mapaDias[aula.dia?.descricao_dia || ""]

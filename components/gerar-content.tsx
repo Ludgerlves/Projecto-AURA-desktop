@@ -17,6 +17,7 @@ import {
   DoorOpen,
 } from "lucide-react"
 import gerarHorarios from "@/lib/actions/horarios"
+//import {LimparDados} from "@/lib/actions/horarios"
 import useSWR from "swr"
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());

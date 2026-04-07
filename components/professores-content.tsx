@@ -76,6 +76,16 @@ type Periodo = (typeof PERIODOS)[number]
 const TOTAL_TEMPOS = 6
 
 const MAPA_DIAS_DB_PARA_UI: Record<string, string> = {
+  "SEGUNDA-FEIRA": "Segunda-feira",
+  "TERCA-FEIRA": "Terça-feira",
+  "QUARTA-FEIRA": "Quarta-feira",
+  "QUINTA-FEIRA": "Quinta-feira",
+  "SEXTA-FEIRA": "Sexta-feira",
+  "Segunda-Feira": "Segunda-feira",
+  "Terça-Feira": "Terça-feira",
+  "Quarta-Feira": "Quarta-feira",
+  "Quinta-Feira": "Quinta-feira",
+  "Sexta-Feira": "Sexta-feira",
   "SEGUNDA": "Segunda-feira",
   "TERCA": "Terça-feira",
   "QUARTA": "Quarta-feira",
@@ -89,11 +99,11 @@ const MAPA_DIAS_DB_PARA_UI: Record<string, string> = {
 }
 
 const MAPA_UI_PARA_DIAS_DB: Record<string, string> = {
-  "Segunda-feira": "Segunda",
-  "Terça-feira": "Terça",
-  "Quarta-feira": "Quarta",
-  "Quinta-feira": "Quinta",
-  "Sexta-feira": "Sexta",
+  "Segunda-feira": "Segunda-Feira",
+  "Terça-feira": "Terça-Feira",
+  "Quarta-feira": "Quarta-Feira",
+  "Quinta-feira": "Quinta-Feira",
+  "Sexta-feira": "Sexta-Feira",
 }
 
 const MAPA_PERIODO_DB_PARA_UI: Record<string, string> = {
