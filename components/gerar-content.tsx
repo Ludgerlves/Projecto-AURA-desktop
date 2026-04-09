@@ -16,8 +16,8 @@ import {
   Users,
   DoorOpen,
 } from "lucide-react"
-import gerarHorarios from "@/lib/actions/horarios"
-//import {LimparDados} from "@/lib/actions/horarios"
+import gerarHorarios, { LimparDados } from "@/lib/actions/horarios"
+
 import useSWR from "swr"
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -86,7 +86,7 @@ export function GerarContent() {
 
     // Chamar a Server Action real (Opcional: tratar o retorno aqui)
     try {
-      await gerarHorarios(selectedTurmas);
+      await gerarHorarios(selectedTurmas)
     } catch (e) {
       console.error("Erro na Action:", e);
     }

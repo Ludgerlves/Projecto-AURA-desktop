@@ -1,7 +1,6 @@
 'use server'
 
 import { prisma } from "@/lib/prisma";
-import { any, string } from "zod";
 import {backtrack, ProfInput} from '@/lib/utils/backtracking'
 
 export default async function  gerarHorarios(turmas : any[]){
@@ -38,24 +37,37 @@ export default async function  gerarHorarios(turmas : any[]){
     console.log("Nenhum professor encontrados para essa turma")
   }
   console.log("Disponibilidades do prof 1:", profs[0]?.professor?.disponibilidades)
+  
 
   
-  const profsFormatados:ProfInput[] = profs.map(prof => ({
-    ano_lectivo : 2526,
-    id_atribuicao : prof.id_atribuicao,
-    id_dia : [...new Set(prof.professor.disponibilidades.map(disp => disp.id_dia))],
-    id_disciplina : prof.id_disciplina,
-    //id_periodo : prof.professor.disponibilidades.map(disp=> disp.id_periodo),
-    id_professor : prof.id_professor,
-    id_sala : prof.turma.id_sala ?? salaPadrao.id_sala,
-    id_turma : prof.id_turma,
-    aulas_por_disciplina: prof.disciplina.turmaDisciplina.map(td => td.aulas_por_semana)[0],
-    slots: prof.professor.disponibilidades.map(disp=>({
-      id_dia: disp.id_dia,
-      id_periodo: disp.id_periodo,
-      ordem: disp.ordem,
-    })),
-  }));
+  const profsFormatados:ProfInput[] = profs.map(prof => {
+    const turmaDisciplinaAtual = prof.disciplina.turmaDisciplina.find(
+      td => td.id_turma === prof.id_turma
+    )
+
+    if (!turmaDisciplinaAtual) {
+      throw new Error(
+        `TurmaDisciplina não encontrada para turma ${prof.id_turma} e disciplina ${prof.id_disciplina}`
+      )
+    }
+
+    return {
+      ano_lectivo : 2526,
+      id_atribuicao : prof.id_atribuicao,
+      id_dia : [...new Set(prof.professor.disponibilidades.map(disp => disp.id_dia))],
+      id_disciplina : prof.id_disciplina,
+      //id_periodo : prof.professor.disponibilidades.map(disp=> disp.id_periodo),
+      id_professor : prof.id_professor,
+      id_sala : prof.turma.id_sala ?? salaPadrao.id_sala,
+      id_turma : prof.id_turma,
+      aulas_por_disciplina: turmaDisciplinaAtual.aulas_por_semana,
+      slots: prof.professor.disponibilidades.map(disp=>({
+        id_dia: disp.id_dia,
+        id_periodo: disp.id_periodo,
+        ordem: disp.ordem,
+      })),
+    }
+  });
   for(const prof of profsFormatados){
     console.log(`Professores ${prof.id_professor}: -${prof.slots.length} slots, ${prof.aulas_por_disciplina} aulas`)
   }
@@ -98,7 +110,7 @@ export default async function  gerarHorarios(turmas : any[]){
 
 
   export async function LimparDados(){
-     await prisma.tempo_Lectivo.deleteMany()
+  await prisma.tempo_Lectivo.deleteMany()
   await prisma.profTurmaDisciplina.deleteMany()
   await prisma.turmaDisciplina.deleteMany()
   await prisma.disponibilidade.deleteMany()
@@ -110,6 +122,8 @@ export default async function  gerarHorarios(turmas : any[]){
   await prisma.classe.deleteMany()
   await prisma.diaSemana.deleteMany()
   await prisma.periodo.deleteMany()
+  
+  
 }
 
   // preenche os tempos de segunda-feira:
