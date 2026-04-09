@@ -23,10 +23,10 @@ interface DashboardStats {
 
 interface AulaHoje {
   id: number
-  time: string
-  subject: string
+  periodo: string
+  disciplina: string
   turma: string
-  room: string
+  sala: string
   professor: string
   ordem: number
 }
@@ -74,13 +74,13 @@ export function DashboardContent({ stats, aulasHoje }: DashboardContentProps) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Visao geral do sistema de geracao de horarios
+            Visão geral do sistema de geração de horários
           </p>
         </div>
         <Link href="/gerar">
           <Button className="gap-2">
             <Sparkles className="h-4 w-4" />
-            Gerar Horarios
+            Gerar Horários
           </Button>
         </Link>
       </div>
@@ -111,7 +111,7 @@ export function DashboardContent({ stats, aulasHoje }: DashboardContentProps) {
             <CardTitle>Aulas de Hoje</CardTitle>
             <Link href="/horarios">
               <Button variant="ghost" size="sm" className="gap-1">
-                Ver horario completo
+                Ver horário completo
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -129,15 +129,15 @@ export function DashboardContent({ stats, aulasHoje }: DashboardContentProps) {
                     className="flex items-center gap-4 rounded-lg border border-border p-4"
                   >
                     <div className="flex h-12 w-16 flex-col items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                      <span className="text-lg font-bold">{classItem.time}</span>
+                      <span className="text-lg font-bold">{classItem.periodo}</span>
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium">{classItem.subject}</p>
+                        <p className="font-medium">{classItem.disciplina}</p>
                         <Badge variant="outline">{classItem.turma}</Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {classItem.room} - {classItem.professor}
+                        {classItem.sala} - {classItem.professor}
                       </p>
                     </div>
                     <Calendar className="h-5 w-5 text-muted-foreground" />
@@ -151,7 +151,7 @@ export function DashboardContent({ stats, aulasHoje }: DashboardContentProps) {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle>Acoes Rapidas</CardTitle>
+          <CardTitle>Acções Rápidas</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -170,13 +170,13 @@ export function DashboardContent({ stats, aulasHoje }: DashboardContentProps) {
             <Link href="/gerar">
               <Button variant="outline" className="h-auto w-full flex-col gap-2 py-4 bg-transparent">
                 <Sparkles className="h-6 w-6" />
-                <span>Gerar Horarios</span>
+                <span>Gerar Horários</span>
               </Button>
             </Link>
             <Link href="/horarios">
               <Button variant="outline" className="h-auto w-full flex-col gap-2 py-4 bg-transparent">
                 <Calendar className="h-6 w-6" />
-                <span>Ver Horarios</span>
+                <span>Ver Horários</span>
               </Button>
             </Link>
           </div>

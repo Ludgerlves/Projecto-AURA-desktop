@@ -81,11 +81,6 @@ export default async function  gerarHorarios(turmas : any[]){
 
   // preenche os tempos de segunda-feira:
   
-
-
-
-
-
   //const prof_segunda_feira = profsFormatados.filter(prof => prof.disponibilidade.map(disp => disp.dia === 91));
 
   //console.log("Segunda-feira:", profs_segunda_feira);

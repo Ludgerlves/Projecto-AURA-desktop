@@ -121,7 +121,7 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
     },
   ]
 
-  // CORREÇÃO: Lógica para alternar objetos em vez de apenas IDs
+  // CORRECÇÃO: Lógica para alternar objectos em vez de apenas IDs
   const toggleTurma = (turmaId: number) => {
     setFormData((prev) => {
       const existe = prev.turmaConfigs.find((t) => t.id_turma === turmaId)
@@ -162,7 +162,7 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
       if (editingDisciplina) {
         result = await atualizarDisciplina(editingDisciplina.id, fd)
         if (result.success) {
-          // CORREÇÃO: Passando o array de objetos correto
+          // CORRECÇÃO: Passando o array de objectos correcto
           await atualizarTurmasDaDisciplina(editingDisciplina.id, formData.turmaConfigs)
         }
       } else {
@@ -193,7 +193,7 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
   }
 
   const handleEdit = (disciplina: DisciplinaRow) => {
-    // CORREÇÃO: Mapear para o formato de objeto esperado ao carregar para edição
+    // CORRECÇÃO: Mapear para o formato de objecto esperado ao carregar para edição
     const associatedConfigs = turmas
       .filter((t) => t.turmaDisciplinas.some((td) => td.disciplina.descricao_disciplina === disciplina.nome))
       .map((t) => ({ id_turma: t.id_turma, aulas_por_semana: 2 })) // Ajuste conforme a lógica de aulas do seu DB
@@ -303,7 +303,7 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
                     </Label>
                     {formData.turmaConfigs.length > 0 && (
                       <Badge variant="secondary" className="text-xs">
-                        {formData.turmaConfigs.length} selecionada{formData.turmaConfigs.length !== 1 ? "s" : ""}
+                        {formData.turmaConfigs.length} seleccionada{formData.turmaConfigs.length !== 1 ? "s" : ""}
                       </Badge>
                     )}
                   </div>
