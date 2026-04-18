@@ -109,30 +109,22 @@ export default async function  gerarHorarios(turmas : any[]){
   }
 
 
-  export async function LimparDados(){
-  await prisma.tempo_Lectivo.deleteMany()
-  await prisma.profTurmaDisciplina.deleteMany()
-  await prisma.turmaDisciplina.deleteMany()
-  await prisma.disponibilidade.deleteMany()
-  await prisma.turma.deleteMany()
-  await prisma.professor.deleteMany()
-  await prisma.disciplina.deleteMany()
-  await prisma.sala.deleteMany()
-  await prisma.curso.deleteMany()
-  await prisma.classe.deleteMany()
-  await prisma.diaSemana.deleteMany()
-  await prisma.periodo.deleteMany()
-  
+  export async function apagarTemposLectivos(turmas: Array<string|number>){
+  const turma = turmas.map((id)=> Number(id));
+  if(turma.length ===0){
+    return {apagados: 0}
+  } 
+  try {
+    const resultado = await prisma.tempo_Lectivo.deleteMany({
+      where:{
+        id_turma: { in: turma}
+      }
+    })
+     return { apagados: resultado.count };
+  } catch (error) {
+    
+  }
   
 }
 
-  // preenche os tempos de segunda-feira:
-  
-
-
-
-
-
-  //const prof_segunda_feira = profsFormatados.filter(prof => prof.disponibilidade.map(disp => disp.dia === 91));
-
-  //console.log("Segunda-feira:", profs_segunda_feira);
+ 
