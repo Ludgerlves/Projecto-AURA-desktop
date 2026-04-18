@@ -1,18 +1,16 @@
 'use server'
 
 import { prisma } from "@/lib/prisma";
-import { any, string } from "zod";
-
-const diasSemana = {
-  "9": "Segunda-feira",
-  "10": "Terça-feira",
-  "11": "Quarta-feira",
-  "12": "Quinta-feira",
-  "13": "Sexta-feira",
-}
+import {backtrack, ProfInput} from '@/lib/utils/backtracking'
 
 export default async function  gerarHorarios(turmas : any[]){
   console.log("Gerando horários... das turmas:", turmas);
+
+  const salaPadrao = await prisma.sala.findFirst()
+  if(!salaPadrao){
+    console.log("nenhuma sala")
+    return
+  }
 
   // retornar os profs que passam nas turmas.
   const profs = await prisma.profTurmaDisciplina.findMany({
@@ -34,54 +32,99 @@ export default async function  gerarHorarios(turmas : any[]){
       //disponibilidade: true,
     }
   });
+  console.log("Professores encontrados:", profs.length)
+  if(profs.length===0){
+    console.log("Nenhum professor encontrados para essa turma")
+  }
+  console.log("Disponibilidades do prof 1:", profs[0]?.professor?.disponibilidades)
+  
 
-  const profsFormatados = profs.map(prof => ({
-    ano_lectivo : 2526,
-    id_atribuicao : prof.id_atribuicao,
-    id_dia : [...new Set(prof.professor.disponibilidades.map(disp => disp.id_dia))],
-    id_disciplina : prof.id_disciplina,
-    id_periodo : 2,
-    id_professor : prof.id_professor,
-    id_sala : 19,
-    id_turma : prof.id_turma,
-    aulas_por_disciplina: prof.disciplina.turmaDisciplina.map(td => td.aulas_por_semana)[0],
-    ordem: 1,
-  }));
+  
+  const profsFormatados:ProfInput[] = profs.map(prof => {
+    const turmaDisciplinaAtual = prof.disciplina.turmaDisciplina.find(
+      td => td.id_turma === prof.id_turma
+    )
 
-  const gerarID = (min : any, max : any) => Math.floor(Math.random() * (max - min + 1)) + min;
+    if (!turmaDisciplinaAtual) {
+      throw new Error(
+        `TurmaDisciplina não encontrada para turma ${prof.id_turma} e disciplina ${prof.id_disciplina}`
+      )
+    }
 
-  const operacoes = profsFormatados.flatMap(prof => {
-    return prof.id_dia.map(dia => {
-      return prisma.tempo_Lectivo.create({
-        data: {
-          ano_lectivo: prof.ano_lectivo,
+    return {
+      ano_lectivo : 2526,
+      id_atribuicao : prof.id_atribuicao,
+      id_dia : [...new Set(prof.professor.disponibilidades.map(disp => disp.id_dia))],
+      id_disciplina : prof.id_disciplina,
+      //id_periodo : prof.professor.disponibilidades.map(disp=> disp.id_periodo),
+      id_professor : prof.id_professor,
+      id_sala : prof.turma.id_sala ?? salaPadrao.id_sala,
+      id_turma : prof.id_turma,
+      aulas_por_disciplina: turmaDisciplinaAtual.aulas_por_semana,
+      slots: prof.professor.disponibilidades.map(disp=>({
+        id_dia: disp.id_dia,
+        id_periodo: disp.id_periodo,
+        ordem: disp.ordem,
+      })),
+    }
+  });
+  for(const prof of profsFormatados){
+    console.log(`Professores ${prof.id_professor}: -${prof.slots.length} slots, ${prof.aulas_por_disciplina} aulas`)
+  }
+
+  const solucoes = backtrack(profsFormatados)
+
+  if(solucoes.length === 0){
+    console.log("Nenhuma solucao vâlida")
+    return
+  }
+  console.log(`Solucoes encontradas ${solucoes.length}`)
+  const solucaoEscolhida = solucoes[0]
+
+  const operacoes = solucaoEscolhida.map(slot => {
+    const prof = profsFormatados.find(p => p.id_professor === slot.id_professor)!
+    return {
+       ano_lectivo: prof.ano_lectivo,
           id_atribuicao: prof.id_atribuicao,
-          id_dia: dia,
+          id_dia: slot.id_dia,
           id_disciplina: prof.id_disciplina,
-          id_periodo: prof.id_periodo,
+          id_periodo: slot.id_periodo,
           id_professor: prof.id_professor,
           id_sala: prof.id_sala,
           id_turma: prof.id_turma,
-          ordem: gerarID(1, 6), // Ordem baseada na posição do dia na lista de dias do professor
-        }
+          ordem: slot.ordem
+    }
+
       });
-    });
-  })
+     
+      console.log("Operações a executar:", operacoes.length);
+    
+      
+      try {
+        const resultado = await prisma.tempo_Lectivo.createMany({data:operacoes});
+        console.log("Tempos lectivos criados com sucesso:", resultado);
+      } catch (error) {
+        console.error("Erro ao criar tempos lectivos:", error);
+      }
+  }
 
-  console.log("Operações a executar:", operacoes.length);
 
-  
+  export async function apagarTemposLectivos(turmas: Array<string|number>){
+  const turma = turmas.map((id)=> Number(id));
+  if(turma.length ===0){
+    return {apagados: 0}
+  } 
   try {
-    const resultado = await prisma.$transaction(operacoes);
-    console.log("Tempos lectivos criados com sucesso:", resultado);
+    const resultado = await prisma.tempo_Lectivo.deleteMany({
+      where:{
+        id_turma: { in: turma}
+      }
+    })
+     return { apagados: resultado.count };
   } catch (error) {
-    console.error("Erro ao criar tempos lectivos:", error);
+    
   }
   
-
-  // preenche os tempos de segunda-feira:
-  
-  //const prof_segunda_feira = profsFormatados.filter(prof => prof.disponibilidade.map(disp => disp.dia === 91));
-
-  //console.log("Segunda-feira:", profs_segunda_feira);
 }
+
+ 

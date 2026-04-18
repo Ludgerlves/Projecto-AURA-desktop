@@ -439,12 +439,16 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   const [isPending, startTransition] = useTransition()
   const [isOpen, setIsOpen] = useState(false)
   const [editingProfessor, setEditingProfessor] = useState<ProfessorRow | null>(null)
+  const emptyTemposByPeriodo = (): Record<Periodo, Record<string, number[]>> => ({
+    "Manhã": {},
+    "Tarde": {},
+  })
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
     telefone: "",
     periodo: "Manhã" as Periodo,
-    selectedTempos: {} as Record<string, number[]>,
+    selectedTempos: emptyTemposByPeriodo(),
   })
   const [error, setError] = useState<string | null>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
@@ -458,27 +462,32 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   const [sheetOpen, setSheetOpen] = useState(false)
   const [sheetProfessor, setSheetProfessor] = useState<ProfessorRow | null>(null)
   const [sheetPeriodo, setSheetPeriodo] = useState<Periodo>("Manhã")
-  const [sheetTempos, setSheetTempos] = useState<Record<string, number[]>>({})
+  const [sheetTempos, setSheetTempos] = useState<Record<Periodo, Record<string, number[]>>>(emptyTemposByPeriodo())
   const [sheetError, setSheetError] = useState<string | null>(null)
 
   const rows = mapProfessores(professores)
   const tempoNumbers = Array.from({ length: TOTAL_TEMPOS }, (_, i) => i + 1)
 
-  // -- Grid toggle helpers (shared logic) --
+  // -- Grid toggle helpers (shared logic, period-aware) --
   const toggleTempo = useCallback(
     (
-      setter: React.Dispatch<React.SetStateAction<Record<string, number[]>>>,
+      setter: React.Dispatch<React.SetStateAction<Record<Periodo, Record<string, number[]>>>>,
+      periodo: Periodo,
       dia: string,
       tempo: number
     ) => {
       setter((prev) => {
-        const dayTempos = prev[dia] || []
+        const periodoTempos = prev[periodo] || {}
+        const dayTempos = periodoTempos[dia] || []
         const exists = dayTempos.includes(tempo)
         return {
           ...prev,
-          [dia]: exists
-            ? dayTempos.filter((t) => t !== tempo)
-            : [...dayTempos, tempo].sort((a, b) => a - b),
+          [periodo]: {
+            ...periodoTempos,
+            [dia]: exists
+              ? dayTempos.filter((t) => t !== tempo)
+              : [...dayTempos, tempo].sort((a, b) => a - b),
+          },
         }
       })
     },
@@ -486,13 +495,21 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   )
 
   const toggleRow = useCallback(
-    (setter: React.Dispatch<React.SetStateAction<Record<string, number[]>>>, dia: string) => {
+    (
+      setter: React.Dispatch<React.SetStateAction<Record<Periodo, Record<string, number[]>>>>,
+      periodo: Periodo,
+      dia: string
+    ) => {
       setter((prev) => {
-        const dayTempos = prev[dia] || []
+        const periodoTempos = prev[periodo] || {}
+        const dayTempos = periodoTempos[dia] || []
         const isFull = tempoNumbers.every((t) => dayTempos.includes(t))
         return {
           ...prev,
-          [dia]: isFull ? [] : [...tempoNumbers],
+          [periodo]: {
+            ...periodoTempos,
+            [dia]: isFull ? [] : [...tempoNumbers],
+          },
         }
       })
     },
@@ -500,10 +517,15 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   )
 
   const toggleColumn = useCallback(
-    (setter: React.Dispatch<React.SetStateAction<Record<string, number[]>>>, tempo: number) => {
+    (
+      setter: React.Dispatch<React.SetStateAction<Record<Periodo, Record<string, number[]>>>>,
+      periodo: Periodo,
+      tempo: number
+    ) => {
       setter((prev) => {
-        const isFull = DIAS_SEMANA.every((d) => (prev[d] || []).includes(tempo))
-        const next = { ...prev }
+        const periodoTempos = prev[periodo] || {}
+        const isFull = DIAS_SEMANA.every((d) => (periodoTempos[d] || []).includes(tempo))
+        const next = { ...periodoTempos }
         for (const dia of DIAS_SEMANA) {
           const dayTempos = next[dia] || []
           if (isFull) {
@@ -514,24 +536,28 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
             }
           }
         }
-        return next
+        return { ...prev, [periodo]: next }
       })
     },
     []
   )
 
-  // -- Form grid handlers --
+  // -- Form grid handlers (period-aware) --
   const handleFormToggle = (dia: string, tempo: number) => {
     setFormData((prev) => {
-      const dayTempos = prev.selectedTempos[dia] || []
+      const periodoTempos = prev.selectedTempos[prev.periodo] || {}
+      const dayTempos = periodoTempos[dia] || []
       const exists = dayTempos.includes(tempo)
       return {
         ...prev,
         selectedTempos: {
           ...prev.selectedTempos,
-          [dia]: exists
-            ? dayTempos.filter((t) => t !== tempo)
-            : [...dayTempos, tempo].sort((a, b) => a - b),
+          [prev.periodo]: {
+            ...periodoTempos,
+            [dia]: exists
+              ? dayTempos.filter((t) => t !== tempo)
+              : [...dayTempos, tempo].sort((a, b) => a - b),
+          },
         },
       }
     })
@@ -539,13 +565,17 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
 
   const handleFormToggleRow = (dia: string) => {
     setFormData((prev) => {
-      const dayTempos = prev.selectedTempos[dia] || []
+      const periodoTempos = prev.selectedTempos[prev.periodo] || {}
+      const dayTempos = periodoTempos[dia] || []
       const isFull = tempoNumbers.every((t) => dayTempos.includes(t))
       return {
         ...prev,
         selectedTempos: {
           ...prev.selectedTempos,
-          [dia]: isFull ? [] : [...tempoNumbers],
+          [prev.periodo]: {
+            ...periodoTempos,
+            [dia]: isFull ? [] : [...tempoNumbers],
+          },
         },
       }
     })
@@ -553,10 +583,11 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
 
   const handleFormToggleColumn = (tempo: number) => {
     setFormData((prev) => {
+      const periodoTempos = prev.selectedTempos[prev.periodo] || {}
       const isFull = DIAS_SEMANA.every((d) =>
-        (prev.selectedTempos[d] || []).includes(tempo)
+        (periodoTempos[d] || []).includes(tempo)
       )
-      const next = { ...prev.selectedTempos }
+      const next = { ...periodoTempos }
       for (const dia of DIAS_SEMANA) {
         const dayTempos = next[dia] || []
         if (isFull) {
@@ -567,23 +598,28 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
           }
         }
       }
-      return { ...prev, selectedTempos: next }
+      return {
+        ...prev,
+        selectedTempos: { ...prev.selectedTempos, [prev.periodo]: next },
+      }
     })
   }
 
-  // -- Build disponibilidade slots --
-  const buildDisponibilidade = (
-    tempos: Record<string, number[]>,
-    Periodo: string
+  // -- Build disponibilidade slots from per-period state --
+  const buildDisponibilidadeFromAll = (
+    temposByPeriodo: Record<Periodo, Record<string, number[]>>
   ): DisponibilidadeSlot[] => {
     const slots: DisponibilidadeSlot[] = []
-    for (const [dia, ordens] of Object.entries(tempos)) {
-      for (const ordem of ordens) {
-        slots.push({ 
-          diaSemana: MAPA_UI_PARA_DIAS_DB[dia] || dia, 
-          periodo: MAPA_UI_PARA_PERIODO_DB[Periodo] || Periodo, 
-          ordem 
-        })
+    for (const periodo of PERIODOS) {
+      const tempos = temposByPeriodo[periodo] || {}
+      for (const [dia, ordens] of Object.entries(tempos)) {
+        for (const ordem of ordens) {
+          slots.push({
+            diaSemana: MAPA_UI_PARA_DIAS_DB[dia] || dia,
+            periodo: MAPA_UI_PARA_PERIODO_DB[periodo] || periodo,
+            ordem,
+          })
+        }
       }
     }
     return slots
@@ -656,7 +692,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     e.preventDefault()
     setError(null)
 
-    const disponibilidade = buildDisponibilidade(formData.selectedTempos, formData.periodo)
+    const disponibilidade = buildDisponibilidadeFromAll(formData.selectedTempos)
 
     // Build profTurmaDisciplina from atribuicoes (only in edit mode)
     const profTurmaDisciplina = editingProfessor
@@ -699,7 +735,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
       email: "",
       telefone: "",
       periodo: "Manhã",
-      selectedTempos: {},
+      selectedTempos: emptyTemposByPeriodo(),
     })
     setAtribuicoes([])
     setAddTurmaId(null)
@@ -713,13 +749,17 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   const handleEdit = (professor: ProfessorRow) => {
     setEditingProfessor(professor)
 
-    const selectedTempos: Record<string, number[]> = {}
+    const selectedTempos = emptyTemposByPeriodo()
     for (const d of professor.disponibilidade) {
-      if (!selectedTempos[d.diaSemana]) selectedTempos[d.diaSemana] = []
-      selectedTempos[d.diaSemana].push(d.ordem)
+      const periodo = (d.periodo as Periodo) || "Manhã"
+      if (!selectedTempos[periodo]) selectedTempos[periodo] = {}
+      if (!selectedTempos[periodo][d.diaSemana]) selectedTempos[periodo][d.diaSemana] = []
+      selectedTempos[periodo][d.diaSemana].push(d.ordem)
     }
-    for (const day of Object.keys(selectedTempos)) {
-      selectedTempos[day].sort((a, b) => a - b)
+    for (const periodo of PERIODOS) {
+      for (const day of Object.keys(selectedTempos[periodo])) {
+        selectedTempos[periodo][day].sort((a, b) => a - b)
+      }
     }
 
     setFormData({
@@ -752,13 +792,17 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
   const openDisponibilidadeSheet = (professor: ProfessorRow) => {
     setSheetProfessor(professor)
 
-    const tempos: Record<string, number[]> = {}
+    const tempos = emptyTemposByPeriodo()
     for (const d of professor.disponibilidade) {
-      if (!tempos[d.diaSemana]) tempos[d.diaSemana] = []
-      tempos[d.diaSemana].push(d.ordem)
+      const periodo = (d.periodo as Periodo) || "Manhã"
+      if (!tempos[periodo]) tempos[periodo] = {}
+      if (!tempos[periodo][d.diaSemana]) tempos[periodo][d.diaSemana] = []
+      tempos[periodo][d.diaSemana].push(d.ordem)
     }
-    for (const day of Object.keys(tempos)) {
-      tempos[day].sort((a, b) => a - b)
+    for (const periodo of PERIODOS) {
+      for (const day of Object.keys(tempos[periodo])) {
+        tempos[periodo][day].sort((a, b) => a - b)
+      }
     }
 
     setSheetTempos(tempos)
@@ -771,7 +815,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     if (!sheetProfessor) return
     setSheetError(null)
 
-    const slots = buildDisponibilidade(sheetTempos, sheetPeriodo)
+    const slots = buildDisponibilidadeFromAll(sheetTempos)
 
     startTransition(async () => {
       const result = await atualizarDisponibilidade(sheetProfessor.id_professor, slots)
@@ -784,8 +828,9 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     })
   }
 
-  // Count availability summary
-  const filledSlots = Object.values(formData.selectedTempos).reduce(
+  // Count availability summary for the current period
+  const currentFormTempos = formData.selectedTempos[formData.periodo] || {}
+  const filledSlots = Object.values(currentFormTempos).reduce(
     (sum, arr) => sum + arr.length,
     0
   )
@@ -1058,7 +1103,7 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                     </div>
 
                     <DisponibilidadeGrid
-                      selectedTempos={formData.selectedTempos}
+                      selectedTempos={currentFormTempos}
                       onToggle={handleFormToggle}
                       onToggleRow={handleFormToggleRow}
                       onToggleColumn={handleFormToggleColumn}
@@ -1075,7 +1120,13 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                           size="sm"
                           className="text-xs h-7"
                           onClick={() =>
-                            setFormData({ ...formData, selectedTempos: {} })
+                            setFormData({
+                              ...formData,
+                              selectedTempos: {
+                                ...formData.selectedTempos,
+                                [formData.periodo]: {},
+                              },
+                            })
                           }
                         >
                           Limpar tudo
@@ -1179,23 +1230,23 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
               </div>
 
               <DisponibilidadeGrid
-                selectedTempos={sheetTempos}
+                selectedTempos={sheetTempos[sheetPeriodo] || {}}
                 onToggle={(dia, tempo) =>
-                  toggleTempo(setSheetTempos, dia, tempo)
+                  toggleTempo(setSheetTempos, sheetPeriodo, dia, tempo)
                 }
-                onToggleRow={(dia) => toggleRow(setSheetTempos, dia)}
-                onToggleColumn={(tempo) => toggleColumn(setSheetTempos, tempo)}
+                onToggleRow={(dia) => toggleRow(setSheetTempos, sheetPeriodo, dia)}
+                onToggleColumn={(tempo) => toggleColumn(setSheetTempos, sheetPeriodo, tempo)}
               />
 
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>
-                  {Object.values(sheetTempos).reduce(
+                  {Object.values(sheetTempos[sheetPeriodo] || {}).reduce(
                     (sum, arr) => sum + arr.length,
                     0
                   )}{" "}
                   de {totalSlots} tempos selecionados
                 </span>
-                {Object.values(sheetTempos).reduce(
+                {Object.values(sheetTempos[sheetPeriodo] || {}).reduce(
                   (sum, arr) => sum + arr.length,
                   0
                 ) > 0 && (
@@ -1204,7 +1255,10 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
                       variant="ghost"
                       size="sm"
                       className="text-xs h-7"
-                      onClick={() => setSheetTempos({})}
+                      onClick={() => setSheetTempos((prev) => ({
+                        ...prev,
+                        [sheetPeriodo]: {},
+                      }))}
                     >
                       Limpar tudo
                     </Button>
