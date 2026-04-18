@@ -35,7 +35,6 @@ interface Disciplinas {
 
 interface Disponibilidades {
   id_disponibilidade: number;
-
 }
 
 async function main() {
@@ -138,6 +137,7 @@ async function main() {
 
   // 4. Criar Turmas
   const turmas = [];
+  let i = 0
   for (const classe of classes) {
     for (const curso of cursos) {
       if ((classe.descricao_classe !== "13ª Classe") || (curso.descricao_curso !== "Ciências Físicas e Biológicas" && curso.descricao_curso !== "Ciências Económicas e Jurídicas")) {
@@ -149,11 +149,13 @@ async function main() {
             descricao_turma: desc_turma,
             id_classe: classe.id_classe,
             id_curso: curso.id_curso,
+            id_sala: salas[i].id_sala,
             quantidade_alunos: 30
           },
         });
         turmas.push(turma);
       }
+      i++;
     }
   }
   console.log(`✅ ${turmas.length} turmas criadas/verificadas`);
@@ -167,6 +169,11 @@ async function main() {
   const turma12INF = turmas[12];
   const turma13INF = turmas[18];
 
+  const turma10CTG = turmas[1];
+  const turma11CTG = turmas[7];
+  const turma12CTG = turmas[13];
+  const turma13CTG = turmas[18];
+
   // 5. Criar Disciplinas
   // Índices:
   //  0=Língua Inglesa, 1=Física, 2=Língua Portuguesa, 3=Electrotecnia
@@ -174,6 +181,7 @@ async function main() {
   //  9=Educação Física, 10=TREI, 11=Química, 12=FAI
   //  13=Projecto Tecnológico, 14=OGI, 15=Empreendedorismo
   const disciplinasData = [
+    // Disciplinas INF
     { nome: "Língua Inglesa",       tipo_sala: "Normal" },                   // 0
     { nome: "Física",               tipo_sala: "Normal" },                   // 1
     { nome: "Língua Portuguesa",    tipo_sala: "Normal" },                   // 2
@@ -190,6 +198,24 @@ async function main() {
     { nome: "Projecto Tecnológico", tipo_sala: "Normal" },                   // 13
     { nome: "OGI",                  tipo_sala: "Normal" },                   // 14
     { nome: "Empreendedorismo",     tipo_sala: "Normal" },                   // 15
+
+    // Disciplinas Contabilidade
+    { nome: "OGE",                              tipo_sala: "Normal"},
+    { nome: "Noções de Direito",                tipo_sala: "Normal"},
+    { nome: "Contabilidade Financeira",         tipo_sala: "Normal"},
+    { nome: "Int. Economia",                    tipo_sala: "Normal"},
+    { nome: "Informática Aplicada a CG",        tipo_sala: "Normal"},
+    { nome: "TCE",                              tipo_sala: "Normal"},
+    { nome: "DLC",                              tipo_sala: "Normal"},
+    { nome: "Análise Económica e Financeira",   tipo_sala: "Normal"},
+    { nome: "Contabilidade Analítica",          tipo_sala: "Normal"},
+    { nome: "Sociologia",                       tipo_sala: "Normal"},
+    { nome: "DLF",                              tipo_sala: "Normal"},
+    { nome: "Fiscalidade CAI",                  tipo_sala: "Normal"},
+    { nome: "História Ec.Soc",                  tipo_sala: "Normal"},
+
+    // Disciplinas OCC
+    
   ];
 
   const disciplinas: Disciplinas[] = [];
@@ -473,7 +499,7 @@ async function main() {
         id_dia:        dias[diaIdx].id_dia,
         id_periodo:    periodos[perIdx].id_periodo,
         ordem:         ord,
-        ano_lectivo:   2024
+        ano_lectivo:   2026
       }
     });
   }
@@ -485,14 +511,14 @@ async function main() {
   // 0=Genildo/Inglesa, 1=Daniel/Física, 2=Eduardo/PT, 3=Cariongo/Electrotecnia
   // 4=Sapalalo/Matemática, 5=Vicente/TIC, 6=Cardino/SEAC, 6=Cardino/TLP
   // 7=Magalhães/Desenho, 8=Mário/EdFísica
-  const at10_0  = await criarAtribuicao(0, 0,  0, 4, turma10INF);  // Genildo  Inglesa      4x
-  const at10_1  = await criarAtribuicao(1, 1,  0, 4, turma10INF);  // Daniel   Física        4x
-  const at10_2  = await criarAtribuicao(2, 2,  0, 4, turma10INF);  // Eduardo  L.Portuguesa  4x
-  const at10_3  = await criarAtribuicao(3, 3,  0, 4, turma10INF);  // Cariongo Electrotecnia 4x
-  const at10_4  = await criarAtribuicao(4, 4,  0, 4, turma10INF);  // Sapalalo Matemática   4x
+  const at10_0  = await criarAtribuicao(0, 0,  0, 3, turma10INF);  // Genildo  Inglesa      3x
+  const at10_1  = await criarAtribuicao(1, 1,  0, 3, turma10INF);  // Daniel   Física        3x
+  const at10_2  = await criarAtribuicao(2, 2,  0, 3, turma10INF);  // Eduardo  L.Portuguesa  3x
+  const at10_3  = await criarAtribuicao(3, 3,  0, 2, turma10INF);  // Cariongo Electrotecnia 2x
+  const at10_4  = await criarAtribuicao(4, 4,  0, 5, turma10INF);  // Sapalalo Matemática   5x
   const at10_5  = await criarAtribuicao(5, 5,  0, 4, turma10INF);  // Vicente  TIC           4x
   const at10_6  = await criarAtribuicao(6, 6,  0, 3, turma10INF);  // Cardino  SEAC          3x
-  const at10_7  = await criarAtribuicao(6, 7,  0, 3, turma10INF);  // Cardino  TLP           3x
+  const at10_7  = await criarAtribuicao(6, 7,  0, 4, turma10INF);  // Cardino  TLP           4x
   const at10_8  = await criarAtribuicao(7, 8,  0, 3, turma10INF);  // Magalhães Desenho      3x
   const at10_9  = await criarAtribuicao(8, 9,  0, 2, turma10INF);  // Mário   Ed.Física      2x
 
@@ -544,13 +570,13 @@ async function main() {
   //              Cardino/Nunes(6)=TLP, Olívia(13)=FAI, Mário(8)=Ed.Física
   console.log("A criar horário 11ª INF...");
 
-  const at11_0  = await criarAtribuicao(1,  1,  0, 4, turma11INF);  // Daniel    Física        4x
-  const at11_1  = await criarAtribuicao(9,  0,  0, 4, turma11INF);  // Salopa    Inglesa       4x
-  const at11_2  = await criarAtribuicao(10, 11, 0, 4, turma11INF);  // Alexandre Química       4x
-  const at11_3  = await criarAtribuicao(11, 2,  0, 4, turma11INF);  // Abílio    L.Portuguesa  4x
+  const at11_0  = await criarAtribuicao(1,  1,  0, 3, turma11INF);  // Daniel    Física        3x
+  const at11_1  = await criarAtribuicao(9,  0,  0, 3, turma11INF);  // Salopa    Inglesa       3x
+  const at11_2  = await criarAtribuicao(10, 11, 0, 3, turma11INF);  // Alexandre Química       3x
+  const at11_3  = await criarAtribuicao(11, 2,  0, 3, turma11INF);  // Abílio    L.Portuguesa  3x
   const at11_4  = await criarAtribuicao(12, 4,  0, 4, turma11INF);  // Alberto   Matemática    4x
-  const at11_5  = await criarAtribuicao(5,  6,  0, 4, turma11INF);  // Vicente   SEAC          4x
-  const at11_6  = await criarAtribuicao(6,  7,  0, 4, turma11INF);  // Nunes     TLP           4x (Terça T1, Quarta T1-T3)
+  const at11_5  = await criarAtribuicao(5,  6,  0, 5, turma11INF);  // Vicente   SEAC          5x
+  const at11_6  = await criarAtribuicao(6,  7,  0, 5, turma11INF);  // Nunes     TLP           5x (Terça T1, Quarta T1-T3)
   const at11_7  = await criarAtribuicao(3,  3,  0, 2, turma11INF);  // Cariongo  Electrotecnia 2x
   const at11_8  = await criarAtribuicao(13, 12, 0, 2, turma11INF);  // Olívia    FAI           2x
   const at11_9  = await criarAtribuicao(8,  9,  0, 2, turma11INF);  // Mário     Ed.Física     2x
@@ -576,7 +602,7 @@ async function main() {
   // Quarta Tarde: TLP T1-T3 (Lab INF 2), Inglesa T4, Matemática T5-T6
   await criarTL(at11_6, 6,  turma11INF, 7,  23, 2, 1, 1);
   await criarTL(at11_6, 6,  turma11INF, 7,  23, 2, 1, 2);
-  await criarTL(at11_6, 6,  turma11INF, 7,  23, 2, 1, 3);
+  await criarTL(at11_6, 6,  turma11INF, 7,  22, 2, 1, 3);
   await criarTL(at11_1, 9,  turma11INF, 0,  12, 2, 1, 4);
   await criarTL(at11_4, 12, turma11INF, 4,  12, 2, 1, 5);
   await criarTL(at11_4, 12, turma11INF, 4,  12, 2, 1, 6);
@@ -607,8 +633,8 @@ async function main() {
   const at12_1  = await criarAtribuicao(15, 7,  0, 5, turma12INF);  // Cena       TLP           5x (manhã+tarde)
   const at12_2  = await criarAtribuicao(6,  6,  0, 4, turma12INF);  // Nunes      SEAC          4x
   const at12_3  = await criarAtribuicao(16, 13, 0, 2, turma12INF);  // Catarina   Proj.Tec.     2x
-  const at12_4  = await criarAtribuicao(17, 4,  0, 4, turma12INF);  // Tito       Matemática    4x
-  const at12_5  = await criarAtribuicao(10, 11, 0, 4, turma12INF);  // Alexandre  Química       4x
+  const at12_4  = await criarAtribuicao(17, 4,  0, 5, turma12INF);  // Tito       Matemática    5x
+  const at12_5  = await criarAtribuicao(10, 11, 0, 3, turma12INF);  // Alexandre  Química       3x
   const at12_6  = await criarAtribuicao(18, 14, 0, 2, turma12INF);  // Alfredo    OGI           2x
   const at12_7  = await criarAtribuicao(20, 15, 0, 2, turma12INF);  // Garcia     Empreend.     2x
   const at12_8  = await criarAtribuicao(19, 12, 0, 2, turma12INF);  // Maura      FAI           2x

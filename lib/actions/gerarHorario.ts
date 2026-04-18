@@ -84,7 +84,7 @@ export default async function gerarHorarios(turmas: any[]) {
     for (let c = 0; c < dados_profs.length; c++) {
         const aulas_por_semana = dados_profs[c].disciplina.turmaDisciplina.find(td => td.id_turma === dados_profs[c].id_turma)?.aulas_por_semana ?? 0;
 
-        /*console.log(`Aulas por semana número ${c}, do professor: ${dados_profs[c].id_professor} e disciplina: ${dados_profs[c].id_disciplina} é: ${aulas_por_semana}`)*/
+        console.log(`Aulas por semana número ${c}, do professor: ${dados_profs[c].id_professor} e disciplina: ${dados_profs[c].id_disciplina} é: ${aulas_por_semana}`)
 
         const dominio: Slot[] = dados_profs[c].professor.disponibilidades.map(disp => {
             return {
@@ -115,8 +115,6 @@ export default async function gerarHorarios(turmas: any[]) {
         console.log(`  [${i}] Prof: ${aula.id_professor}, Disciplina: ${aula.id_disciplina}, Domínio: ${aula.dominio.length} slots`)
     })
 
-    //console.log("Aulas: ", JSON.stringify(aulas_nao_alocadas, null, 2))
-
     // Função que retorna true se todas as restrições fomra cumpridas nos dados introduzidos e false se alguma não foi
     function analisarRestricoes(
         aula_livre: Aula_livre, //Aula que estamos a tentar alocar
@@ -125,7 +123,7 @@ export default async function gerarHorarios(turmas: any[]) {
         slotProibidosSalas: Map<string, boolean>, //Mapa de slots proibidos para salas (Baseado nos tempos lectivos já alocados)
         AulasCriadas: Aula_alocada[]): boolean {
 
-        const id_Tempo = `dia_${slot.dia}_per_${slot.periodo}_ordem_${slot.ordem}` // Cria um  uma chave que representa o dia, período e ordem
+        const id_Tempo = `dia_${slot.dia}_per_${slot.periodo}_ordem_${slot.ordem}` // Cria uma chave que representa o dia, período e ordem
 
        // Se existerem slots com o mesmo professor dentro do horários já guardados no tempo_lectivo no mesmo espaço de tempo retorna false
         if (slotProibidosProfessores.has(`prof_${aula_livre.id_professor}_${id_Tempo }`)) {
@@ -259,11 +257,12 @@ export default async function gerarHorarios(turmas: any[]) {
 
             // Perguntamos: este slot cria algum conflito?
             if (!analisarRestricoes(aulaActual, slot, slotsProibidosProfessor, slotsProibidosSala, aulas_atribuidas)) {
+                console.log(`Conflito identicado no slot ${indiceAtual}, com o professor ${aulaActual.id_professor}`)
                 continue; // sim, há conflito → salta este slot e tenta o próximo
             }
 
             // Chegamos aqui: o slot é válido.
-            // Criamos a atribuição e adicionamos à lista.
+            // Criamos a atribuição e adicionamos à lista
             const novaAtribuicao: Aula_alocada = {
                 Slot: slot,
                 Aula: aulaActual,
