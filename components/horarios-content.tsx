@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,6 +12,7 @@ import { listarAulasPorTurma, listarAulasPorProfessor } from "@/lib/actions/temp
 import { listarTodasTurmas } from "@/app/turmas/turma-action"
 import { listarTodos as listarTodosProfessores } from "@/app/professores/professores-action"
 import { useRouter } from "next/navigation"
+import { HorarioPDF } from "@/components/horario-pdf"
 
 // ── DADOS FIXOS ───────────────────────────────────────────────
 const diasSemana = ["2ª FEIRA", "3ª FEIRA", "4ª FEIRA", "5ª FEIRA", "6ª FEIRA"]
@@ -67,6 +68,7 @@ export function HorariosContent() {
   const [viewType, setViewType] = useState("turma")
   const [horario, setHorario] = useState<HorarioData>({})
   const [isLoading, setIsLoading] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
 
   const router = useRouter() // Se precisares de refrescar a página
 
@@ -106,9 +108,13 @@ export function HorariosContent() {
         const novoHorario: HorarioData = {}
 
         const mapaDias: Record<string, string> = {
-          "SEGUNDA": "2ª FEIRA", "TERCA": "3ª FEIRA", "QUARTA": "4ª FEIRA", 
+          "SEGUNDA-FEIRA": "2ª FEIRA", "TERCA-FEIRA": "3ª FEIRA", "QUARTA-FEIRA": "4ª FEIRA",
+          "QUINTA-FEIRA": "5ª FEIRA", "SEXTA-FEIRA": "6ª FEIRA",
+          "Segunda-Feira": "2ª FEIRA", "Terça-Feira": "3ª FEIRA", "Quarta-Feira": "4ª FEIRA",
+          "Quinta-Feira": "5ª FEIRA", "Sexta-Feira": "6ª FEIRA",
+          "SEGUNDA": "2ª FEIRA", "TERCA": "3ª FEIRA", "QUARTA": "4ª FEIRA",
           "QUINTA": "5ª FEIRA", "SEXTA": "6ª FEIRA",
-          "Segunda": "2ª FEIRA", "Terça": "3ª FEIRA", "Quarta": "4ª FEIRA", 
+          "Segunda": "2ª FEIRA", "Terça": "3ª FEIRA", "Quarta": "4ª FEIRA",
           "Quinta": "5ª FEIRA", "Sexta": "6ª FEIRA"
         }
         const mapaPeriodos: Record<string, string> = { 
@@ -117,6 +123,10 @@ export function HorariosContent() {
         }
 
         console.log("Dados recebidos para o horário:", dados)
+        if (dados.length > 0) {
+          console.log("Primeiro dia:", dados[0]?.dia?.descricao_dia)
+          console.log("Primeiro periodo:", dados[0]?.periodo?.descricao_periodo)
+        }
 
         dados.forEach((aula: any) => {
           const dia = mapaDias[aula.dia?.descricao_dia || ""]
@@ -168,6 +178,30 @@ export function HorariosContent() {
   const getAula = (key: string, periodo: string, dia: string, ordem: number): Aula | null => {
     return horario[key]?.[periodo]?.[dia]?.[ordem] ?? null
   }
+
+  const handleExportPDF = useCallback(async () => {
+    const isProf = viewType === "professor"
+    const targetKey = isProf ? selectedProfessor : selectedTurma
+    if (!targetKey) return
+
+    setIsExporting(true)
+    try {
+      const { pdf } = await import("@react-pdf/renderer")
+      const blob = await pdf(
+        <HorarioPDF horario={horario} targetKey={targetKey} isProf={isProf} />
+      ).toBlob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `horario-${targetKey.replace(/\s+/g, "_")}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.error("Erro ao gerar PDF:", err)
+    } finally {
+      setIsExporting(false)
+    }
+  }, [viewType, selectedProfessor, selectedTurma, horario])
 
   // ── CÉLULA DE AULA ──────────────────────────────────────────
   const CelulaAula = ({ aula, isProf }: { aula: Aula | null, isProf?: boolean }) => {
@@ -248,8 +282,9 @@ export function HorariosContent() {
           <p className="text-muted-foreground">Visualização do calendário escolar por turma ou docente</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Download className="h-4 w-4" /> Exportar PDF
+          <Button variant="outline" size="sm" className="gap-2" onClick={handleExportPDF} disabled={isExporting}>
+            {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            {isExporting ? "A gerar..." : "Exportar PDF"}
           </Button>
           <Button variant="outline" size="sm" className="gap-2">
             <Printer className="h-4 w-4" /> Imprimir
