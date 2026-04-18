@@ -141,7 +141,7 @@ export function SalasContent({ salas }: SalasContentProps) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Salas</h1>
           <p className="text-muted-foreground">
-            Gerir salas e espacos disponiveis
+            Gerir salas e espaços disponíveis
           </p>
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>

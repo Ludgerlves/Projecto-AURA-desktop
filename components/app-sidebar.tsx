@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -23,9 +24,9 @@ const navigation = [
   { name: "Disciplinas", href: "/disciplinas", icon: BookOpen },
   { name: "Salas", href: "/salas", icon: DoorOpen },
   { name: "Tempos", href: "/tempos", icon: Clock },
-  { name: "Horarios", href: "/horarios", icon: Calendar },
-  { name: "Gerar Horarios", href: "/gerar", icon: Sparkles },
-  { name: "Requisicoes", href: "/requisicoes", icon: FileText },
+  { name: "Horários", href: "/horarios", icon: Calendar },
+  { name: "Gerar Horários", href: "/gerar", icon: Sparkles },
+  { name: "Requisições", href: "/requisicoes", icon: FileText },
 ]
 
 export function AppSidebar() {
@@ -34,10 +35,16 @@ export function AppSidebar() {
   return (
     <aside className="flex h-screen w-64 flex-col border-r border-border bg-sidebar">
       <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-          <Calendar className="h-4 w-4 text-primary-foreground" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
+          <Image 
+            src="/Logo-AURA.png" 
+            alt="Logo AURA" 
+            width={32} 
+            height={32}
+            className="h-full w-full object-contain"
+          />
         </div>
-        <span className="text-lg font-semibold text-sidebar-foreground"> AURA </span>
+        <span className="text-lg font-semibold text-sidebar-foreground"> Aura </span>
       </div>
       
       <nav className="flex-1 space-y-1 p-4">
@@ -67,7 +74,7 @@ export function AppSidebar() {
         
         <div className="mb-4 mt-6">
           <p className="px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Gestao de Dados
+            Gestão de Dados
           </p>
         </div>
         {navigation.slice(1, 6).map((item) => {
@@ -91,7 +98,7 @@ export function AppSidebar() {
         
         <div className="mb-4 mt-6">
           <p className="px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Horarios
+            Horários
           </p>
         </div>
         {navigation.slice(6).map((item) => {
@@ -120,7 +127,7 @@ export function AppSidebar() {
           className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
           <Settings className="h-5 w-5" />
-          Configuracoes
+          Configurações
         </Link>
       </div>
     </aside>

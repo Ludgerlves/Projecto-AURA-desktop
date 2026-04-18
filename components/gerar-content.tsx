@@ -158,7 +158,7 @@ export function GerarContent() {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Selecionar Turmas</CardTitle>
+              <CardTitle>Seleccionar Turmas</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {isLoading ? (
@@ -171,9 +171,9 @@ export function GerarContent() {
               ) : (
                 <>
                   <div className="flex items-center gap-4">
-                    <Button variant="outline" size="sm" onClick={selectAll}>Selecionar Todas</Button>
+                    <Button variant="outline" size="sm" onClick={selectAll}>Seleccionar Todas</Button>
                     <Button variant="outline" size="sm" onClick={deselectAll}>Limpar</Button>
-                    <Badge variant="secondary">{selectedTurmas.length} selecionadas</Badge>
+                    <Badge variant="secondary">{selectedTurmas.length} seleccionadas</Badge>
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {data?.turmas.map((turma) => (
@@ -213,7 +213,7 @@ export function GerarContent() {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Ações</CardTitle>
+              <CardTitle>Acções</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button

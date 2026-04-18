@@ -149,7 +149,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
     setError(null)
     
     if (!turmaForm.id_classe || !turmaForm.id_curso) {
-      setError("É necessário selecionar uma classe e um curso.")
+      setError("É necessário seleccionar uma classe e um curso.")
       return
     }
 
@@ -431,7 +431,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                     {editingTurma ? "Editar Turma" : "Nova Turma"}
                   </DialogTitle>
                   <DialogDescription>
-                    Selecione a classe e o curso. A descrição será gerada automaticamente.
+                    Seleccione a classe e o curso. A descrição será gerada automaticamente.
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -443,7 +443,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                         {error}
                       </div>
                     )}
-                    {/* Seleção de Classe */}
+                    {/* Selecção de Classe */}
                     <div className="grid gap-3">
                       <Label className="text-base font-semibold">Classe *</Label>
                       <RadioGroup
@@ -476,7 +476,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
                       </RadioGroup>
                     </div>
 
-                    {/* Seleção de Curso */}
+                    {/* Selecção de Curso */}
                     <div className="grid gap-3">
                       <Label className="text-base font-semibold">Curso *</Label>
                       <RadioGroup

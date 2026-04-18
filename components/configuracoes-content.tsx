@@ -19,9 +19,9 @@ export function ConfiguracoesContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Configuracoes</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
         <p className="text-muted-foreground">
-          Gerir configuracoes do sistema de horarios
+          Gerir configurações do sistema de horários
         </p>
       </div>
 
@@ -30,10 +30,10 @@ export function ConfiguracoesContent() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
-              <CardTitle>Configuracoes de Horario</CardTitle>
+              <CardTitle>Configurações de Horário</CardTitle>
             </div>
             <CardDescription>
-              Defina os parametros para geracao de horarios
+              Defina os parâmetros para geração de horários
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -42,7 +42,7 @@ export function ConfiguracoesContent() {
                 <Label htmlFor="anoLetivo">Ano Letivo</Label>
                 <Select defaultValue="2025-2026">
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecionar ano" />
+                    <SelectValue placeholder="Seleccionar ano" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="2024-2025">2024/2025</SelectItem>
@@ -52,10 +52,10 @@ export function ConfiguracoesContent() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="semestre">Semestre/Periodo</Label>
+                <Label htmlFor="semestre">Semestre/Período</Label>
                 <Select defaultValue="1">
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecionar" />
+                    <SelectValue placeholder="Seleccionar" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">1o Semestre</SelectItem>
@@ -69,7 +69,7 @@ export function ConfiguracoesContent() {
             <div className="space-y-4">
               <h4 className="text-sm font-medium">Dias de Aula</h4>
               <div className="grid gap-4 sm:grid-cols-5">
-                {["Segunda", "Terca", "Quarta", "Quinta", "Sexta"].map((dia) => (
+                {["Segunda", "Terça", "Quarta", "Quinta", "Sexta"].map((dia) => (
                   <div key={dia} className="flex items-center space-x-2">
                     <Switch id={dia} defaultChecked />
                     <Label htmlFor={dia}>{dia}</Label>
@@ -80,11 +80,11 @@ export function ConfiguracoesContent() {
             <Separator />
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="maxAulasDia">Maximo de aulas/dia por professor</Label>
+                <Label htmlFor="maxAulasDia">Máximo de aulas/dia por professor</Label>
                 <Input id="maxAulasDia" type="number" defaultValue="6" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="maxAulasSeguidas">Maximo de aulas seguidas</Label>
+                <Label htmlFor="maxAulasSeguidas">Máximo de aulas seguidas</Label>
                 <Input id="maxAulasSeguidas" type="number" defaultValue="3" />
               </div>
             </div>
@@ -95,18 +95,18 @@ export function ConfiguracoesContent() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Settings className="h-5 w-5 text-primary" />
-              <CardTitle>Preferencias de Geracao</CardTitle>
+              <CardTitle>Preferências de Geração</CardTitle>
             </div>
             <CardDescription>
-              Configure como os horarios sao gerados automaticamente
+              Configure como os horários são gerados automaticamente
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Evitar furos no horario</Label>
+                <Label>Evitar furos no horário</Label>
                 <p className="text-sm text-muted-foreground">
-                  Minimizar periodos livres entre aulas
+                  Minimizar períodos livres entre aulas
                 </p>
               </div>
               <Switch defaultChecked />
@@ -114,9 +114,9 @@ export function ConfiguracoesContent() {
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Respeitar preferencias dos professores</Label>
+                <Label>Respeitar preferências dos professores</Label>
                 <p className="text-sm text-muted-foreground">
-                  Considerar horarios preferenciais definidos pelos professores
+                  Considerar horários preferenciais definidos pelos professores
                 </p>
               </div>
               <Switch defaultChecked />
@@ -136,7 +136,7 @@ export function ConfiguracoesContent() {
               <div className="space-y-0.5">
                 <Label>Agrupar aulas da mesma disciplina</Label>
                 <p className="text-sm text-muted-foreground">
-                  Colocar blocos de aulas seguidos quando possivel
+                  Colocar blocos de aulas seguidos quando possível
                 </p>
               </div>
               <Switch defaultChecked />
@@ -148,18 +148,18 @@ export function ConfiguracoesContent() {
           <CardHeader>
             <div className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-primary" />
-              <CardTitle>Notificacoes</CardTitle>
+              <CardTitle>Notificações</CardTitle>
             </div>
             <CardDescription>
-              Gerencie como recebe notificacoes do sistema
+              Gerir como recebe notificações do sistema
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Novas requisicoes</Label>
+                <Label>Novas requisições</Label>
                 <p className="text-sm text-muted-foreground">
-                  Receber alerta quando professores submeterem requisicoes
+                  Receber alerta quando professores submeterem requisições
                 </p>
               </div>
               <Switch defaultChecked />
@@ -169,7 +169,7 @@ export function ConfiguracoesContent() {
               <div className="space-y-0.5">
                 <Label>Conflitos detectados</Label>
                 <p className="text-sm text-muted-foreground">
-                  Alerta quando conflitos forem encontrados nos horarios
+                  Alerta quando conflitos forem encontrados nos horários
                 </p>
               </div>
               <Switch defaultChecked />
@@ -177,9 +177,9 @@ export function ConfiguracoesContent() {
             <Separator />
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Notificacoes por email</Label>
+                <Label>Notificações por email</Label>
                 <p className="text-sm text-muted-foreground">
-                  Enviar notificacoes importantes por email
+                  Enviar notificações importantes por email
                 </p>
               </div>
               <Switch />
@@ -200,9 +200,9 @@ export function ConfiguracoesContent() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Exportar todos os horarios</Label>
+                <Label>Exportar todos os horários</Label>
                 <p className="text-sm text-muted-foreground">
-                  Descarregar horarios em formato PDF ou Excel
+                  Descarregar horários em formato PDF ou Excel
                 </p>
               </div>
               <Button variant="outline" size="sm">
@@ -239,7 +239,7 @@ export function ConfiguracoesContent() {
         <div className="flex justify-end">
           <Button className="gap-2">
             <Save className="h-4 w-4" />
-            Guardar Alteracoes
+            Guardar Alterações
           </Button>
         </div>
       </div>
