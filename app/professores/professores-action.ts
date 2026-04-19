@@ -30,21 +30,66 @@ interface ProfTurmaDisciplinaInput {
 }
 
 // ══════════════════════════════════════════════════════════
+// MAPEAMENTOS UI ↔ DB
+// ══════════════════════════════════════════════════════════
+
+const MAPA_DIA_UI_PARA_DB: Record<string, string> = {
+  "Segunda-feira": "Segunda-Feira",
+  "Terça-feira": "Terça-Feira",
+  "Quarta-feira": "Quarta-Feira",
+  "Quinta-feira": "Quinta-Feira",
+  "Sexta-feira": "Sexta-Feira",
+  "Segunda": "Segunda-Feira",
+  "Terça": "Terça-Feira",
+  "Quarta": "Quarta-Feira",
+  "Quinta": "Quinta-Feira",
+  "Sexta": "Sexta-Feira",
+}
+
+const MAPA_PERIODO_UI_PARA_DB: Record<string, string> = {
+  "Manhã": "Manhã",
+  "Tarde": "Tarde",
+  "MANHA": "Manhã",
+  "TARDE": "Tarde",
+}
+
+// ══════════════════════════════════════════════════════════
 // HELPER: CONVERTER NOME DO DIA PARA ID
 // ══════════════════════════════════════════════════════════
 
 async function getDiaId(nomeDia: string): Promise<number | null> {
+    const nomeDB = MAPA_DIA_UI_PARA_DB[nomeDia] || nomeDia
+
     const dia = await prisma.diaSemana.findFirst({
-        where: { descricao_dia: nomeDia }
+        where: { descricao_dia: nomeDB }
     })
-    return dia?.id_dia || null
+    if (dia) return dia.id_dia
+
+    const diaFallback = await prisma.diaSemana.findFirst({
+        where: { descricao_dia: { contains: nomeDia.split('-')[0], mode: 'insensitive' } }
+    })
+    if (diaFallback) return diaFallback.id_dia
+
+    const todosDias = await prisma.diaSemana.findMany()
+    console.warn(`Dia "${nomeDB}" não encontrado. Dias na DB:`, todosDias.map(d => d.descricao_dia))
+    return null
 }
 
 async function getPeriodoId(nomePeriodo: string): Promise<number | null> {
+    const nomeDB = MAPA_PERIODO_UI_PARA_DB[nomePeriodo] || nomePeriodo
     const periodo = await prisma.periodo.findFirst({
-        where: { descricao_periodo: nomePeriodo }
+        where: { descricao_periodo: nomeDB }
     })
-    return periodo?.id_periodo || null
+    if (periodo) return periodo.id_periodo
+
+    const periodoFallback = await prisma.periodo.findFirst({
+        where: { descricao_periodo: { contains: nomePeriodo.split('-')[0], mode: 'insensitive' } }
+    })
+    if (periodoFallback) return periodoFallback.id_periodo
+
+    const todosPeriodos = await prisma.periodo.findMany()
+    console.warn(`Período "${nomeDB}" não encontrado. Períodos na DB:`, todosPeriodos.map(p => p.descricao_periodo))
+    return null
 }
 
 async function getDisciplinaId(nomeDisciplina: string): Promise<number | null> {
@@ -256,6 +301,8 @@ export async function atualizarDisponibilidade(
     disponibilidadeSlots: DisponibilidadeSlot[]
 ): Promise<ActionResponse> {
     try {
+        console.log(`Atualizando disponibilidade para Prof ${id_professor}: ${disponibilidadeSlots.length} slots`)
+
         // 1. Deletar disponibilidades antigas
         await prisma.disponibilidade.deleteMany({
             where: { id_professor }
@@ -270,7 +317,7 @@ export async function atualizarDisponibilidade(
                 const periodoId = await getPeriodoId(slot.periodo)
                 
                 if (!diaId || !periodoId) {
-                    console.warn(`Dia/Período não encontrado: ${slot.diaSemana} - ${slot.periodo}`)
+                    console.warn(`Dia/Período não encontrado: ${slot.diaSemana} (${slot.diaSemana}) - ${slot.periodo} → diaId=${diaId}, periodoId=${periodoId}`)
                     continue
                 }
 
@@ -286,12 +333,16 @@ export async function atualizarDisponibilidade(
                 await prisma.disponibilidade.createMany({
                     data: disponibilidadesData
                 })
+                console.log(`Disponibilidade criada: ${disponibilidadesData.length} registos`)
+            } else {
+                console.warn("Nenhuma disponibilidade válida para criar")
             }
         }
 
         revalidatePath('/professores')
         return { success: true, message: 'Disponibilidade atualizada com sucesso!' }
     } catch (error: any) {
+        console.error("Erro ao atualizar disponibilidade:", error)
         return { success: false, message: error.message || 'Erro ao atualizar disponibilidade' }
     }
 }
