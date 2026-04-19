@@ -1,6 +1,7 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { DashboardContent } from "@/components/dashboard-content"
 import { getDashboardStats, getAulasHoje } from "./dashboard-action"
+import gerarHorarios from "@/lib/actions/gerarHorario"
 
 export default async function DashboardPage() {
   const [stats, aulasHoje] = await Promise.all([

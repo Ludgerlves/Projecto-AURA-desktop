@@ -26,7 +26,7 @@ export const metadata: Metadata = {
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: '/logo-AURA.png',
   },
 }
 
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-pt">
       <body className={`font-sans antialiased`}>
         {children}
         <Analytics />

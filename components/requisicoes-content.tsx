@@ -61,7 +61,7 @@ const statusIcons = {
 }
 
 const tipoLabels = {
-  alteracao_horario: "Alteracao de Horario",
+  alteracao_horario: "Alteração de Horário",
   troca_sala: "Troca de Sala",
   permuta: "Permuta",
 }
@@ -112,9 +112,9 @@ export function RequisicoesContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Requisicoes</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Requisições</h1>
           <p className="text-muted-foreground">
-            Gerir pedidos de alteracao dos professores
+            Gerir pedidos de alteração dos professores
           </p>
         </div>
       </div>
@@ -179,7 +179,7 @@ export function RequisicoesContent() {
             {filteredRequisicoes.length === 0 ? (
               <Card>
                 <CardContent className="flex h-32 items-center justify-center">
-                  <p className="text-muted-foreground">Nenhuma requisicao encontrada</p>
+                  <p className="text-muted-foreground">Nenhuma requisição encontrada</p>
                 </CardContent>
               </Card>
             ) : (
@@ -303,12 +303,12 @@ export function RequisicoesContent() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {actionType === "aprovar" ? "Aprovar Requisicao" : "Rejeitar Requisicao"}
+              {actionType === "aprovar" ? "Aprovar Requisição" : "Rejeitar Requisição"}
             </DialogTitle>
             <DialogDescription>
               {actionType === "aprovar"
-                ? "Confirme a aprovacao e adicione uma mensagem opcional"
-                : "Indique o motivo da rejeicao"}
+                ? "Confirme a aprovação e adicione uma mensagem opcional"
+                : "Indique o motivo da rejeição"}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -318,14 +318,14 @@ export function RequisicoesContent() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="resposta">
-                Resposta {actionType === "rejeitar" && "(obrigatoria)"}
+                Resposta {actionType === "rejeitar" && "(obrigatória)"}
               </Label>
               <Textarea
                 id="resposta"
                 placeholder={
                   actionType === "aprovar"
-                    ? "Adicione informacoes adicionais..."
-                    : "Explique o motivo da rejeicao..."
+                    ? "Adicione informações adicionais..."
+                    : "Explique o motivo da rejeição..."
                 }
                 value={resposta}
                 onChange={(e) => setResposta(e.target.value)}
@@ -342,7 +342,7 @@ export function RequisicoesContent() {
               disabled={actionType === "rejeitar" && !resposta}
               className={actionType === "rejeitar" ? "bg-destructive hover:bg-destructive/90" : ""}
             >
-              {actionType === "aprovar" ? "Confirmar Aprovacao" : "Confirmar Rejeicao"}
+              {actionType === "aprovar" ? "Confirmar Aprovação" : "Confirmar Rejeição"}
             </Button>
           </DialogFooter>
         </DialogContent>
