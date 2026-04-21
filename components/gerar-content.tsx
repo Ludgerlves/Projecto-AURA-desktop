@@ -28,7 +28,8 @@ import {
   DoorOpen,
   Trash2,
 } from "lucide-react"
-import gerarHorarios, { apagarTemposLectivos } from "@/lib/actions/horarios"
+import { apagarTemposLectivos } from "@/lib/actions/horarios";
+import gerarHorarios from "@/lib/actions/gerarHorario";
 
 import useSWR from "swr"
 
@@ -91,7 +92,7 @@ export function GerarContent() {
 
   const simulateGeneration = async () => {
     setResult(prev => ({
-      ...prev,
+      ...prev, 
       status: "generating",
       progress: 0,
       totalTurmas: selectedTurmas.length,
