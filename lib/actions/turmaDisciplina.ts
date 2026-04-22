@@ -1,7 +1,7 @@
 'use server'
 
 import { turmaDisciplinaService } from "@/lib/Service/TurmaDisciplina"
-import { createTurmaDisciplinaSchema } from "@/lib/Validation/Disciplina"
+import { createTurmaDisciplinaSchema } from "@/lib/Validation/TurmaDisciplina"
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
 
@@ -15,23 +15,23 @@ export type ActionResponse<T = any> = {
 // Schema para validar o array de turmas que vem do componente
 const turmasArraySchema = z.array(
     z.object({
-        nome_turma:       z.string().min(1, "Turma obrigatória"),
+        id_turma:       z.number().int().min(1, "Turma obrigatória"),
         aulas_por_semana: z.number().int().min(1, "Mínimo 1 aula por semana"),
     })
 )
 
 export async function atualizarTurmasDaDisciplina(
-    nome_disciplina: string,
-    turmas: { nome_turma: string; aulas_por_semana: number }[]
+    id_turma: number,
+    turmas: { id_turma: number; aulas_por_semana: number }[]
 ): Promise<ActionResponse> {
     try {
         // Valida o nome da disciplina
-        z.string().min(1).parse(nome_disciplina)
+        z.string().min(1).parse(id_turma)
 
         // Valida o array de turmas
         const turmasValidadas = turmasArraySchema.parse(turmas)
 
-        await turmaDisciplinaService.recriarAssociacoes(nome_disciplina, turmasValidadas)
+        await turmaDisciplinaService.recriarAssociacoes(id_turma, turmasValidadas)
 
         revalidatePath('/disciplinas')
         return { success: true, message: 'Turmas da disciplina atualizadas com sucesso!' }
@@ -43,6 +43,6 @@ export async function atualizarTurmasDaDisciplina(
     }
 }
 
-export async function listarTurmasDaDisciplina(nome_disciplina: string) {
-    return await turmaDisciplinaService.listarPorDisciplina(nome_disciplina)
+export async function listarTurmasDaDisciplina(id_turma: number) {
+    return await turmaDisciplinaService.listarPorDisciplina(id_turma)
 }

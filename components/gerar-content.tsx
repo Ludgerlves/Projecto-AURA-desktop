@@ -8,6 +8,17 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
   CheckCircle2,
   Play,
   RefreshCcw,
@@ -15,8 +26,10 @@ import {
   Clock,
   Users,
   DoorOpen,
+  Trash2,
 } from "lucide-react"
-import gerarHorarios from "@/lib/actions/gerarHorario"
+import gerarHorarios, { apagarTemposLectivos } from "@/lib/actions/horarios"
+
 import useSWR from "swr"
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -51,6 +64,7 @@ export function GerarContent() {
     status: "idle", progress: 0, turmasProcessadas: 0, totalTurmas: 0, conflitos: [], horariosGerados: 0,
   });
 
+  const [isDeleting, setIsDeleting] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // 2. Sincronizar o estado inicial quando os dados da API chegarem
@@ -85,7 +99,7 @@ export function GerarContent() {
 
     // Chamar a Server Action real (Opcional: tratar o retorno aqui)
     try {
-      await gerarHorarios(selectedTurmas);
+      await gerarHorarios(selectedTurmas)
     } catch (e) {
       console.error("Erro na Action:", e);
     }
@@ -114,6 +128,20 @@ export function GerarContent() {
         };
       });
     }, 300);
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await apagarTemposLectivos(selectedTurmas);
+      setResult({
+        status: "idle", progress: 0, turmasProcessadas: 0, totalTurmas: 0, conflitos: [], horariosGerados: 0,
+      });
+    } catch (e) {
+      console.error("Erro ao apagar horários:", e);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // 4. Renderização Condicional de Erro
@@ -187,7 +215,7 @@ export function GerarContent() {
             <CardHeader>
               <CardTitle>Acções</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
               <Button
                 className="w-full"
                 disabled={selectedTurmas.length === 0 || result.status === "generating"}
@@ -195,6 +223,34 @@ export function GerarContent() {
               >
                 <Play className="mr-2 h-4 w-4" /> Gerar Agora
               </Button>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    disabled={selectedTurmas.length === 0 || result.status === "generating" || isDeleting}
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    {isDeleting ? "A apagar..." : "Apagar Horários"}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Apagar Horários</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tem a certeza que deseja apagar os horários das {selectedTurmas.length} turma(s) selecionada(s)?
+                      Esta ação não pode ser revertida.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Apagar
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
         </div>

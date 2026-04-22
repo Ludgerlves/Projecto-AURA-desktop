@@ -1,44 +1,37 @@
-'use server'
+import { prisma } from "@/lib/prisma";
 
-import { prisma } from '@/lib/prisma';
-
-// Interface que representa cada espaço onde podemos alocar uma aula
 interface Slot {
     dia: number;
     periodo: number;
     ordem: number;
 }
 
-// Interface que define cada aula que ainda precisa ser alocada
-interface Aula_livre { //tempo solto
+interface Aula {
     id_professor: number;
-    id_disciplina: number;
     id_turma: number;
+    id_disciplina: number;
     id_atribuicao: number;
-    sala_preferencial: number;
-    dominio: Slot[]; // Conjunto de espaços (Baseado na disponibilidade do professor) onde a aula pode ser alocada
+    tipo_sala: string;
+    id_sala_preferencial: number;
+    dominio: Slot[];
 }
 
-// Interface que define a aula depois de alocada
-interface Aula_alocada { //tempo preso
-    Slot: Slot;
-    Aula: Aula_livre;
+interface Horario {
+    aula: Aula;
+    slot: Slot;
     id_sala: number;
 }
 
-export default async function gerarHorarios(turmas: any[]) {
-    // Buscar os dados dos professores relacionados às turmas selecionadas
-    const dados_profs = await prisma.profTurmaDisciplina.findMany({
-        where: { 
-            id_turma: { in: turmas }
-        },
+async function carregarDados() {
+    const profs = await prisma.profTurmaDisciplina.findMany({
         include: {
-            disciplina: {
-                include: {
-                    turmaDisciplina: true,
-                }
-            },
             professor: {
+                include: {
+                    disponibilidades: true,
+                },
+            },
+            turma: true,
+            disciplina: {
                 include: {
                     disponibilidades: true
                 }
