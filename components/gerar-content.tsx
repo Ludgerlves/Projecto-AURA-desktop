@@ -23,13 +23,14 @@ import {
   Play,
   RefreshCcw,
   XCircle,
+  AlertTriangle,  // NOVO — ícone para avisos
   Clock,
   Users,
   DoorOpen,
   Trash2,
 } from "lucide-react"
 import { apagarTemposLectivos } from "@/lib/actions/horarios";
-import gerarHorarios from "@/lib/actions/gerarHorario";
+import gerarHorarios, { type ResultadoGeracao, type LogItem } from "@/lib/actions/gerarHorario";
 
 import useSWR from "swr"
 
@@ -56,6 +57,31 @@ interface GenerationResult {
   horariosGerados: number
 }
 
+// NOVO — componente que renderiza um único item de log com cor e ícone
+function LogEntry({ item }: { item: LogItem }) {
+  const config = {
+    sucesso: {
+      icon: <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />,
+      className: "bg-green-500/10 border-green-500/20 text-green-400",
+    },
+    aviso: {
+      icon: <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />,
+      className: "bg-yellow-500/10 border-yellow-500/20 text-yellow-400",
+    },
+    erro: {
+      icon: <XCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />,
+      className: "bg-red-500/10 border-red-500/20 text-red-400",
+    },
+  }[item.tipo]
+
+  return (
+    <div className={`flex items-start gap-2 rounded-md border px-3 py-2 text-sm ${config.className}`}>
+      {config.icon}
+      <span>{item.mensagem}</span>
+    </div>
+  )
+}
+
 export function GerarContent() {
   // 1. Hooks de dados no TOPO (Sempre executados na mesma ordem)
   const { data, error, isLoading } = useSWR<{ turmas: Turma[] }>('/api/turmas', fetcher);
@@ -64,6 +90,9 @@ export function GerarContent() {
   const [result, setResult] = useState<GenerationResult>({
     status: "idle", progress: 0, turmasProcessadas: 0, totalTurmas: 0, conflitos: [], horariosGerados: 0,
   });
+
+  // NOVO — estado para guardar o resultado com logs devolvido pelo algoritmo
+  const [resultado, setResultado] = useState<ResultadoGeracao | null>(null)
 
   const [isDeleting, setIsDeleting] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -98,11 +127,23 @@ export function GerarContent() {
       totalTurmas: selectedTurmas.length,
     }));
 
+    // NOVO — limpa logs anteriores antes de nova geração
+    setResultado(null)
+
     // Chamar a Server Action real (Opcional: tratar o retorno aqui)
     try {
-      await gerarHorarios(selectedTurmas)
-    } catch (e) {
+      // NOVO — guarda o resultado com logs devolvido pelo algoritmo
+      const res = await gerarHorarios(selectedTurmas)
+      setResultado(res)
+    } 
+    catch (e) {
       console.error("Erro na Action:", e);
+      // NOVO — log de erro inesperado de comunicação
+      setResultado({
+        sucesso: false,
+        totalGeradas: 0,
+        logs: [{ tipo: "erro", mensagem: "Erro inesperado ao comunicar com o servidor." }]
+      })
     }
 
     intervalRef.current = setInterval(() => {
@@ -138,6 +179,8 @@ export function GerarContent() {
       setResult({
         status: "idle", progress: 0, turmasProcessadas: 0, totalTurmas: 0, conflitos: [], horariosGerados: 0,
       });
+      // NOVO — limpa logs ao apagar horários
+      setResultado(null)
     } catch (e) {
       console.error("Erro ao apagar horários:", e);
     } finally {
@@ -206,6 +249,18 @@ export function GerarContent() {
                 <p className="text-sm text-muted-foreground">
                   Processadas {result.turmasProcessadas} de {result.totalTurmas} turmas.
                 </p>
+
+                {/* NOVO — painel de logs aparece aqui, dentro do card existente, só quando há logs */}
+                {resultado && resultado.logs.length > 0 && (
+                  <div className="space-y-2 pt-2 border-t border-border">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                      Relatório de geração
+                    </p>
+                    {resultado.logs.map((log, i) => (
+                      <LogEntry key={i} item={log} />
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
@@ -252,6 +307,26 @@ export function GerarContent() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+
+              {/* NOVO — resumo numérico de logs no painel lateral, só quando há resultado */}
+              {resultado && (
+                <div className="rounded-md border p-3 space-y-1 text-sm">
+                  <p className="font-medium text-foreground">Resumo</p>
+                  <p className="text-muted-foreground">
+                    Aulas geradas: <span className="text-foreground font-medium">{resultado.totalGeradas}</span>
+                  </p>
+                  <p className="text-muted-foreground">
+                    Erros: <span className="text-red-400 font-medium">
+                      {resultado.logs.filter(l => l.tipo === "erro").length}
+                    </span>
+                  </p>
+                  <p className="text-muted-foreground">
+                    Avisos: <span className="text-yellow-400 font-medium">
+                      {resultado.logs.filter(l => l.tipo === "aviso").length}
+                    </span>
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
