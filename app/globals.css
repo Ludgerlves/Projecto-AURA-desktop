@@ -9,7 +9,7 @@
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #00B4B6; /* Azul-ciano Aura */
+  --primary: #0a7274; /* Azul-ciano Aura */
   --primary-foreground: #ffffff;
   --secondary: #202A35; /* Escuro Aura */
   --secondary-foreground: #ffffff;
@@ -21,7 +21,7 @@
   --destructive-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #00B4B6;
+  --ring: #0a7274;
   --radius: 0.625rem;
 }
 
@@ -33,7 +33,7 @@
     --card-foreground: #f8fafc;
     --popover: #202A35;
     --popover-foreground: #f8fafc;
-    --primary: #00B4B6;
+    --primary: #0a7274;
     --primary-foreground: #ffffff;
     --secondary: #334155;
     --secondary-foreground: #f8fafc;
@@ -43,7 +43,7 @@
     --accent-foreground: #f8fafc;
     --border: #334155;
     --input: #334155;
-    --ring: #00B4B6;
+    --ring: #0a7274;
   }
 }
 
