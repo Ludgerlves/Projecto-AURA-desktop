@@ -141,9 +141,9 @@ model Tempo_Lectivo {
   periodo    Periodo    @relation(fields: [id_periodo], references: [id_periodo], onDelete: Restrict)
 
   // SEGURANÇA: Impede conflitos de Professor, Sala e Turma no mesmo horário
-  @@unique([id_professor, id_dia, id_periodo, ordem], name: "no_professor_conflict")
-  @@unique([id_sala, id_dia, id_periodo, ordem], name: "no_sala_conflict")
-  @@unique([id_turma, id_dia, id_periodo, ordem], name: "no_turma_conflict") 
+  @@unique([id_professor, id_dia, id_periodo,ordem], name: "no_professor_conflict")
+  @@unique([id_sala, id_dia, id_periodo,ordem], name: "no_sala_conflict")
+  @@unique([id_turma, id_dia, id_periodo,ordem], name: "no_turma_conflict") 
 
   @@map("tempo_lectivo")
 } 
