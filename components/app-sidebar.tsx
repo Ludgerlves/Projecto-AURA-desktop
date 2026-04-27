@@ -8,10 +8,7 @@ import {
   GraduationCap,
   BookOpen,
   DoorOpen,
-  Clock,
   Calendar,
-  FileText,
-  Settings,
   Sparkles,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -23,10 +20,8 @@ const navigation = [
   { name: "Turmas", href: "/turmas", icon: GraduationCap },
   { name: "Disciplinas", href: "/disciplinas", icon: BookOpen },
   { name: "Salas", href: "/salas", icon: DoorOpen },
-  { name: "Tempos", href: "/tempos", icon: Clock },
   { name: "Horários", href: "/horarios", icon: Calendar },
   { name: "Gerar Horários", href: "/gerar", icon: Sparkles },
-  { name: "Requisições", href: "/requisicoes", icon: FileText },
 ]
 
 export function AppSidebar() {
@@ -77,7 +72,7 @@ export function AppSidebar() {
             Gestão de Dados
           </p>
         </div>
-        {navigation.slice(1, 6).map((item) => {
+        {navigation.slice(1, 5).map((item) => {
           const isActive = pathname === item.href
           return (
             <Link
@@ -101,7 +96,7 @@ export function AppSidebar() {
             Horários
           </p>
         </div>
-        {navigation.slice(6).map((item) => {
+        {navigation.slice(5).map((item) => {
           const isActive = pathname === item.href
           return (
             <Link
@@ -121,15 +116,6 @@ export function AppSidebar() {
         })}
       </nav>
       
-      <div className="border-t border-sidebar-border p-4">
-        <Link
-          href="/configuracoes"
-          className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-        >
-          <Settings className="h-5 w-5" />
-          Configurações
-        </Link>
-      </div>
     </aside>
   )
 }

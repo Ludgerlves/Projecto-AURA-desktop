@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { DataTable } from "@/components/data-table"
@@ -43,6 +50,7 @@ interface CursoData {
 interface SalaData {
   id_sala: number
   descricao_sala: string
+  tipo_sala?: string
 }
 
 interface TurmaData {
@@ -61,6 +69,7 @@ interface TurmasContentProps {
   turmas: TurmaData[]
   classes: ClasseData[]
   cursos: CursoData[]
+  salas: SalaData[]
 }
 
 interface TurmaRow extends TurmaData {
@@ -79,7 +88,7 @@ interface CursoRow extends CursoData {
 // COMPONENTE PRINCIPAL
 // ══════════════════════════════════════════════════════════
 
-export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
+export function TurmasContent({ turmas, classes, cursos, salas }: TurmasContentProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -94,6 +103,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
     descricao_turma: "",
     id_classe: 0,
     id_curso: 0,
+    id_sala: 0,
     quantidade_alunos: 0,
   })
 
@@ -153,6 +163,11 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
       return
     }
 
+    if (!turmaForm.id_sala) {
+      setError("É necessário seleccionar uma sala.")
+      return
+    }
+
     if (!turmaForm.quantidade_alunos || turmaForm.quantidade_alunos <= 0) {
       setError("Quantidade de alunos deve ser maior que zero.")
       return
@@ -162,6 +177,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
     fd.append("descricao_turma", turmaForm.descricao_turma)
     fd.append("id_classe", turmaForm.id_classe.toString())
     fd.append("id_curso", turmaForm.id_curso.toString())
+    fd.append("id_sala", turmaForm.id_sala.toString())
     fd.append("quantidade_alunos", turmaForm.quantidade_alunos.toString())
 
     startTransition(async () => {
@@ -183,6 +199,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
       descricao_turma: "",
       id_classe: 0,
       id_curso: 0,
+      id_sala: 0,
       quantidade_alunos: 0,
     })
     setEditingTurma(null)
@@ -196,6 +213,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
       descricao_turma: turma.descricao_turma,
       id_classe: turma.id_classe,
       id_curso: turma.id_curso,
+      id_sala: turma.id_sala ?? 0,
       quantidade_alunos: turma.quantidade_alunos,
     })
     setError(null)
@@ -511,6 +529,32 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
 
                     {/* Quantidade de Alunos */}
                     <div className="grid gap-2">
+                      <Label htmlFor="sala">Sala *</Label>
+                      <Select
+                        value={turmaForm.id_sala ? turmaForm.id_sala.toString() : ""}
+                        onValueChange={(value) =>
+                          setTurmaForm({
+                            ...turmaForm,
+                            id_sala: Number(value),
+                          })
+                        }
+                      >
+                        <SelectTrigger id="sala">
+                          <SelectValue placeholder="Seleccionar sala..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {salas.map((sala) => (
+                            <SelectItem key={sala.id_sala} value={sala.id_sala.toString()}>
+                              {sala.descricao_sala}
+                              {sala.tipo_sala ? ` - ${sala.tipo_sala}` : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Quantidade de Alunos */}
+                    <div className="grid gap-2">
                       <Label htmlFor="quantidade">Quantidade de Alunos *</Label>
                       <Input
                         id="quantidade"
@@ -559,6 +603,7 @@ export function TurmasContent({ turmas, classes, cursos }: TurmasContentProps) {
               { key: "descricao_turma", header: "Turma" },
               { key: "classe", header: "Classe", render: (row: TurmaRow) => row.classe?.descricao_classe },
               { key: "curso", header: "Curso", render: (row: TurmaRow) => row.curso?.descricao_curso },
+              { key: "sala_preferencial", header: "Sala", render: (row: TurmaRow) => row.sala_preferencial?.descricao_sala ?? "Sem sala" },
               { key: "quantidade_alunos", header: "Capacidade" },
             ]}
             searchKey="descricao_turma"
