@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -95,7 +95,6 @@ export function GerarContent() {
   const [resultado, setResultado] = useState<ResultadoGeracao | null>(null)
 
   const [isDeleting, setIsDeleting] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // 2. Sincronizar o estado inicial quando os dados da API chegarem
   useEffect(() => {
@@ -103,11 +102,6 @@ export function GerarContent() {
       setSelectedTurmas(data.turmas.map((t) => t.id));
     }
   }, [data]);
-
-  // Limpeza de intervalos ao desmontar o componente
-  useEffect(() => {
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, []);
 
   // 3. Handlers
   const toggleTurma = (id: string) => {
@@ -120,57 +114,43 @@ export function GerarContent() {
   const deselectAll = () => setSelectedTurmas([]);
 
   const simulateGeneration = async () => {
+    // Marca como "a gerar" — barra aparece em modo indeterminado
     setResult(prev => ({
-      ...prev, 
-      status: "generating",
-      progress: 0,
-      totalTurmas: selectedTurmas.length,
-    }));
+        ...prev,
+        status: "generating",
+        progress: 0,
+        totalTurmas: selectedTurmas.length,
+    }))
 
-    // NOVO — limpa logs anteriores antes de nova geração
     setResultado(null)
 
-    // Chamar a Server Action real (Opcional: tratar o retorno aqui)
     try {
-      // NOVO — guarda o resultado com logs devolvido pelo algoritmo
-      const res = await gerarHorarios(selectedTurmas)
-      setResultado(res)
-    } 
-    catch (e) {
-      console.error("Erro na Action:", e);
-      // NOVO — log de erro inesperado de comunicação
-      setResultado({
-        sucesso: false,
-        totalGeradas: 0,
-        logs: [{ tipo: "erro", mensagem: "Erro inesperado ao comunicar com o servidor." }]
-      })
-    }
+        const res = await gerarHorarios(selectedTurmas)
+        setResultado(res)
 
-    intervalRef.current = setInterval(() => {
-      setResult((prev) => {
-        const newProgress = prev.progress + Math.random() * 15;
-
-        if (newProgress >= 100) {
-          if (intervalRef.current) clearInterval(intervalRef.current);
-          return {
+        // Algoritmo terminou — actualiza o estado com base no resultado real
+        setResult(prev => ({
             ...prev,
             status: "completed",
             progress: 100,
             turmasProcessadas: prev.totalTurmas,
-            conflitos: [
-              { id: "1", tipo: "professor", descricao: "Conflito simulado detetado", severidade: "alta" }
-            ],
-          };
-        }
+        }))
+    } catch (e) {
+        console.error("Erro na Action:", e)
+        setResultado({
+            sucesso: false,
+            totalGeradas: 0,
+            logs: [{ tipo: "erro", mensagem: "Erro inesperado ao comunicar com o servidor." }]
+        })
 
-        return {
-          ...prev,
-          progress: newProgress,
-          turmasProcessadas: Math.floor((newProgress / 100) * prev.totalTurmas),
-        };
-      });
-    }, 300);
-  };
+        // Erro — marca como erro em vez de "completed"
+        setResult(prev => ({
+            ...prev,
+            status: "error",
+            progress: 0,
+        }))
+    }
+}
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -239,16 +219,37 @@ export function GerarContent() {
           {result.status !== "idle" && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {result.status === "generating" ? <RefreshCcw className="animate-spin" /> : <CheckCircle2 className="text-green-500" />}
-                  {result.status === "generating" ? "A processar..." : "Concluído"}
-                </CardTitle>
+                  <CardTitle className="flex items-center gap-2">
+                      {result.status === "generating" && <RefreshCcw className="animate-spin" />}
+                      {result.status === "completed" && (
+                          resultado?.sucesso
+                              ? <CheckCircle2 className="text-green-500" />
+                              : <XCircle className="text-red-500" />
+                      )}
+                      {result.status === "error" && <XCircle className="text-red-500" />}
+
+                      {result.status === "generating" && "A processar..."}
+                      {result.status === "completed" && (resultado?.sucesso ? "Concluído com sucesso" : "Concluído com erros")}
+                      {result.status === "error" && "Erro de comunicação"}
+                  </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <Progress value={result.progress} />
-                <p className="text-sm text-muted-foreground">
-                  Processadas {result.turmasProcessadas} de {result.totalTurmas} turmas.
-                </p>
+                  {/* Barra indeterminada enquanto processa, barra a 100% quando termina */}
+                  {result.status === "generating" ? (
+                      <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                          <div className="h-full bg-primary rounded-full animate-[progress_1.5s_ease-in-out_infinite]"
+                              style={{ width: "40%" }} />
+                      </div>
+                  ) : (
+                      <Progress value={result.progress} />
+                  )}
+
+                  <p className="text-sm text-muted-foreground">
+                      {result.status === "generating"
+                          ? "A gerar horários, por favor aguarde..."
+                          : `${resultado?.totalGeradas ?? 0} aulas alocadas para ${result.totalTurmas} turma(s).`
+                      }
+                  </p>
 
                 {/* NOVO — painel de logs aparece aqui, dentro do card existente, só quando há logs */}
                 {resultado && resultado.logs.length > 0 && (

@@ -64,7 +64,31 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
             turma: true,
         }
     })
+    
+    // Buscar os nomes de todas as turmas seleccionadas para usar nos logs
+    const dadosTurmas = await prisma.turma.findMany({
+        where: { id_turma: { in: turmas } },
+        select: { id_turma: true, descricao_turma: true }
+    })
 
+    // Verificar quais das turmas seleccionadas não têm nenhuma atribuição registada
+    for (const id_turma of turmas) {
+        const temDados = dados_profs.some(p => p.id_turma === id_turma)
+
+        if (!temDados) {
+            const nome = dadosTurmas.find(t => t.id_turma === id_turma)?.descricao_turma ?? `Turma ID ${id_turma}`
+            logs.push({
+                tipo: "erro",
+                mensagem: `A turma "${nome}" não tem nenhuma atribuição de professor registada — não é possível gerar horário para ela.`
+            })
+        }
+    }
+
+    const turmasSemDados = turmas.filter(id => !dados_profs.some(p => p.id_turma === id))
+    if (turmasSemDados.length > 0) {
+        return { sucesso: false, totalGeradas: 0, logs }
+    }
+    
     // Buscar os tempos lectivos já alocados para as turmas NÃO selecionadas, para evitar conflitos
     const slotsOcupados = await prisma.tempo_Lectivo.findMany({
         where: {
@@ -73,11 +97,26 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
         select: {
             id_professor: true,
             id_dia: true,
+            id_turma: true,
             id_periodo: true,
             id_sala: true,
             ordem: true,
         }
     })
+
+    // Verificar quais das turmas seleccionadas já têm horário criado na base de dados
+    const turmasComHorario = await prisma.tempo_Lectivo.findMany({
+        where: {
+            id_turma: { in: turmas }
+        },
+        select: {
+            id_turma: true,
+        },
+        distinct: ['id_turma']  // um resultado por turma, sem repetições
+    })
+
+    // Extrair apenas os IDs para facilitar a comparação
+    const idsTurmasComHorario = turmasComHorario.map(t => t.id_turma)
 
     console.log("Aulas Actuais: ", slotsOcupados)
 
@@ -172,6 +211,22 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
 
     //console.log("Aulas: ", JSON.stringify(aulas_nao_alocadas, null, 2))
 
+    /// Se alguma das turmas seleccionadas já tem horário na base de dados, parar imediatamente
+    if (idsTurmasComHorario.length > 0) {
+        for (const id of idsTurmasComHorario) {
+            const entrada = dados_profs.find(p => p.id_turma === id)
+            const nome = entrada?.turma.descricao_turma ?? `Turma ID ${id}`
+
+            logs.push({
+                tipo: "erro",
+                mensagem: `A turma "${nome}" já tem um horário gerado. Apague o horário existente antes de gerar um novo.`
+            })
+        }
+
+        // Devolve imediatamente — não executa o backtracking nem o createMany
+        return { sucesso: false, totalGeradas: 0, logs }
+    }
+
     // Função que retorna true se todas as restrições fomra cumpridas nos 
     //dados introduzidos e false se alguma não foi
     function analisarRestricoes(
@@ -184,6 +239,7 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
         const id_Tempo = `dia_${slot.dia}_per_${slot.periodo}_ordem_${slot.ordem}` // Cria uma chave que representa o dia, período e ordem
 
        // Se existerem slots com o mesmo professor dentro do horários já guardados no tempo_lectivo no mesmo espaço de tempo retorna false
+
         if (slotProibidosProfessores.has(`prof_${aula_livre.id_professor}_${id_Tempo }`)) {
             console.log("Algoritmo encontrou slots ocupados pelo professor na base de dados")
             return false;
@@ -194,7 +250,7 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
             console.log("Algoritmo encontrou slots ocupados pela sala na base de dados")
             return false;
         }
-
+        
         //forLoop que irá percorrer todos horarios já criados pelo algoritmo e analisar se as restrições são cumpridas
         for (const horario of AulasCriadas) {
             //Constante que serve para representar slots repetidos
@@ -365,16 +421,14 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
 
     // No fim da função gerarHorarios, depois de definir todas as funções:
     const solucao = backtrack(aulas_nao_alocadas, [], 0)
-
-   if (solucao === null) {
+    if (solucao === null) {
         // Forçamos o TypeScript a tratar a variável como o tipo correto, 
         // ignorando a análise de fluxo pessimista.
         const aulaFalhada = aulaQueBloqueou as Aula_livre | null;
 
         // NOVO — log específico com nome real da aula que bloqueou
         if (aulaFalhada) {
-            const slotsJaOcupadosNestasTurmas = slotsOcupados
-                .filter(s => s.id_professor === aulaFalhada.id_professor).length
+            const slotsJaOcupadosNestasTurmas = slotsOcupados.filter(s => s.id_professor === aulaFalhada.id_professor).length
 
             if (slotsJaOcupadosNestasTurmas > 0) {
                 logs.push({
@@ -417,6 +471,7 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
     })
 
     console.log(`${solucao!.length} tempos lectivos gravados com sucesso.`)
+
     // NOVO — log de sucesso geral
     logs.push({
         tipo: "sucesso",
@@ -435,4 +490,5 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
 
     // NOVO — devolve resultado estruturado em vez de solucao directamente
     return { sucesso: true, totalGeradas: solucao.length, logs }
+    
 }
