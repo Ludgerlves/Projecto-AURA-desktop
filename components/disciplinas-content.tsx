@@ -285,6 +285,7 @@ export function DisciplinasContent({ disciplinas, turmas }: DisciplinasContentPr
                     <SelectContent>
                       <SelectItem value="normal">Normal</SelectItem>
                       <SelectItem value="Laboratório de Informática">Laboratório de Informática</SelectItem>
+                      <SelectItem value="Oficina">Oficina</SelectItem>
                       <SelectItem value="Campo">Campo</SelectItem>
                     </SelectContent>
                   </Select>

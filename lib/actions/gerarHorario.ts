@@ -241,13 +241,13 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
        // Se existerem slots com o mesmo professor dentro do horários já guardados no tempo_lectivo no mesmo espaço de tempo retorna false
 
         if (slotProibidosProfessores.has(`prof_${aula_livre.id_professor}_${id_Tempo }`)) {
-            console.log("Algoritmo encontrou slots ocupados pelo professor na base de dados")
+            //console.log("Algoritmo encontrou slots ocupados pelo professor na base de dados")
             return false;
         }
 
         // Se existerem slots com a mesma sala dentro do horários já guardados no tempo_lectivo no mesmo espaço de tempo retorna false            
         if (slotProibidosSalas.has(`sala_${aula_livre.sala_preferencial}_${id_Tempo }`)) {
-            console.log("Algoritmo encontrou slots ocupados pela sala na base de dados")
+            //console.log("Algoritmo encontrou slots ocupados pela sala na base de dados")
             return false;
         }
         
@@ -262,19 +262,19 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
             if (mesmoSlot) {
                 // Se existerem slots com o mesmo professor no mesmo espaço de tempo retorna false
                 if (horario.Aula.id_professor === aula_livre.id_professor) {
-                    console.log("Algoritmo encontrou slots ocupados pelo professor na memória interna")
+                    //console.log("Algoritmo encontrou slots ocupados pelo professor na memória interna")
                     return false;
                 }
 
                 // Se existerem slots com a mesma turma no mesmo espaço de tempo retorna false
                 if (horario.Aula.id_turma === aula_livre.id_turma) {
-                    console.log("Algoritmo encontrou slots ocupados pela turma na memória interna")
+                    //console.log("Algoritmo encontrou slots ocupados pela turma na memória interna")
                     return false;
                 }
 
                 // Se existerem slots com a mesma sala no mesmo espaço de tempo retorna false
                 if (horario.id_sala === aula_livre.sala_preferencial) {
-                    console.log("Algoritmo encontrou slots ocupados pela sala na memória interna")
+                    //console.log("Algoritmo encontrou slots ocupados pela sala na memória interna")
                     return false;
                 }
             }
@@ -370,11 +370,11 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
 
         // Tentamos cada slot do domínio desta aula
         for (const slot of aulaActual.dominio) {
-            console.log("-------------------------------------------------------------------------------------------------------------")
-            console.log(`Tentando alocar o professor ${aulaActual.nome_professor} no dia ${slot.dia}, periodo ${slot.periodo} e tempo ${slot.ordem}, lecionando ${aulaActual.descricao_disciplina} na turma ${aulaActual.descricao_turma}`);
+            //console.log("-------------------------------------------------------------------------------------------------------------")
+            //console.log(`Tentando alocar o professor ${aulaActual.nome_professor} no dia ${slot.dia}, periodo ${slot.periodo} e tempo ${slot.ordem}, lecionando ${aulaActual.descricao_disciplina} na turma ${aulaActual.descricao_turma}`);
             // Perguntamos: este slot cria algum conflito?
             if (!analisarRestricoes(aulaActual, slot, slotsProibidosProfessor, slotsProibidosSala, aulas_atribuidas)) {
-                console.log("<-< Conflito Identificado >->")
+                //console.log("<-< Conflito Identificado >->")
                 continue; // sim, há conflito → salta este slot e tenta o próximo
             }
 
@@ -386,7 +386,7 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
                 id_sala: aulaActual.sala_preferencial // simplificado por agora
             };
             aulas_atribuidas.push(novaAtribuicao);
-            console.log("<<<< ALOCAÇÃO BEM SUCEDIDA >>>>")
+            //console.log("<<<< ALOCAÇÃO BEM SUCEDIDA >>>>")
 
             // Chamar forward checking
             const slotsRemovidos = forwardChecking(slot, aulaActual, aulas_nao_atribuidas, indiceAtual)
@@ -404,7 +404,7 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
                 restaurarDominios(aulas_nao_atribuidas, slotsRemovidos)
             }
 
-            console.log("<<<< FALHOU, DESFAZENDO PARA TENTAR OUTRA POSSIBILIDADE >>>>")
+            //console.log("<<<< FALHOU, DESFAZENDO PARA TENTAR OUTRA POSSIBILIDADE >>>>")
             // Se chegámos aqui, a recursão falhou.
             // Desfazemos esta atribuição (o "back" do backtracking)
             // e tentamos o próximo slot do nosso loop
