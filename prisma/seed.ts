@@ -177,6 +177,7 @@ async function main() {
     { nome: "Tecnol.Telec.", tipo: "Normal" },
     { nome: "Telecomunic.", tipo: "Normal" },
   ];
+  
   for (const d of disciplinas) {
     await prisma.disciplina.upsert({
       where: { descricao_disciplina: d.nome },
@@ -246,6 +247,7 @@ async function main() {
     { nome: "Capalandanda", email: "capalandanda.teste@escola.ao", tel: "939000055"},
     { nome: "Vicente", email: "vicente.teste@escola.ao", tel: "939000056"}
   ];
+
   for (const p of professores) {
     await prisma.professor.upsert({
       where: { email: p.email },
@@ -253,9 +255,89 @@ async function main() {
       create: { nome_professor: p.nome, email: p.email, telefone: p.tel }
     });
   }
+
   console.log(`✅ ${professores.length} Professores criados.`);
+
+// 6. Disponibilidade aleatórias para os professores
+console.log("A gerar disponibilidades aleatórias...");
+
+const todosOsProfessores = await prisma.professor.findMany();
+const todosDias = await prisma.diaSemana.findMany();
+const todosPeriodos = await prisma.periodo.findMany();
+
+// Assumindo que o primeiro é Manhã e o segundo é Tarde. 
+const periodoManha = todosPeriodos[0];
+const periodoTarde = todosPeriodos[1];
+
+for (const prof of todosOsProfessores) {
+  const jaTemDisp = await prisma.disponibilidade.count({
+    where: { id_professor: prof.id_professor }
+  });
+  if (jaTemDisp > 0) continue;
+
+  // Escolher entre 2 a 5 dias aleatórios
+  const diasBaralhados = [...todosDias].sort(() => Math.random() - 0.5);
+  const numDias = 2 + Math.floor(Math.random() * 4); // 2, 3, 4 ou 5 dias
+  const diasEscolhidos = diasBaralhados.slice(0, numDias);
+
+  // Criar um mapeamento para saber quais os períodos que cada dia vai ter
+  const periodosPorDia = new Map<number, Set<number>>();
+  diasEscolhidos.forEach(dia => periodosPorDia.set(dia.id_dia, new Set()));
+
+  // 1. Garantir as duas Manhãs em dias distintos
+  const diasParaManha = [...diasEscolhidos].sort(() => Math.random() - 0.5).slice(0, 2);
+  diasParaManha.forEach(dia => periodosPorDia.get(dia.id_dia)!.add(periodoManha.id_periodo));
+
+  // 2. Garantir as duas Tardes em dias distintos
+  // Se o numDias for 2, os dias escolhidos aqui serão obrigatoriamente os mesmos da Manhã.
+  const diasParaTarde = [...diasEscolhidos].sort(() => Math.random() - 0.5).slice(0, 2);
+  diasParaTarde.forEach(dia => periodosPorDia.get(dia.id_dia)!.add(periodoTarde.id_periodo));
+
+  // 3. (Opcional) Adicionar aleatoriedade extra para ultrapassar o mínimo de 24
+  // Há 50% de probabilidade de um professor receber um período extra nos dias que restam
+  for (const dia of diasEscolhidos) {
+    if (Math.random() > 0.5) {
+      const periodoAleatorio = todosPeriodos[Math.floor(Math.random() * todosPeriodos.length)];
+      periodosPorDia.get(dia.id_dia)!.add(periodoAleatorio.id_periodo);
+    }
+  }
+
+  // 4. Transformar os períodos mapeados em slots (6 tempos por cada período)
+  const slots: { id_dia: number; id_periodo: number; ordem: number }[] = [];
+
+  for (const [id_dia, periodos] of periodosPorDia.entries()) {
+    for (const id_periodo of periodos) {
+      for (let ordem = 1; ordem <= 6; ordem++) {
+        slots.push({ id_dia, id_periodo, ordem });
+      }
+    }
+  }
+
+  // 5. Inserir na base de dados
+  for (const slot of slots) {
+    await prisma.disponibilidade.upsert({
+      where: {
+        id_professor_id_dia_id_periodo_ordem: {
+          id_professor: prof.id_professor,
+          id_dia:       slot.id_dia,
+          id_periodo:   slot.id_periodo,
+          ordem:        slot.ordem,
+        }
+      },
+      update: {},
+      create: {
+        id_professor: prof.id_professor,
+        id_dia:       slot.id_dia,
+        id_periodo:   slot.id_periodo,
+        ordem:        slot.ordem,
+      }
+    });
+  }
+}
+
+  console.log(`✅ Disponibilidades aleatórias geradas para ${todosOsProfessores.length} professores`);
   console.log("--------------------------------------------------------------------------------------------")
-  console.log("✅ Dados básicos criados: Dias, Períodos, Classes, Cursos, Salas, Disciplinas e Professores.");
+  console.log("✅ Dados básicos criados: Dias, Períodos, Classes, Cursos, Turmas, Salas, Disciplinas, Professores e as suas Disponbilidades.");
 
   // --- HELPERS PARA ATRIBUIÇÕES ---
   const vincular = async (turmaDesc: string, discDesc: string, profEmail: string, aulas: number) => {
@@ -308,7 +390,7 @@ async function main() {
   await vincular("11ª Classe - Informática", "L. Portuguesa", "ablio.teste@escola.ao", 3);
   await vincular("11ª Classe - Informática", "T.L.P.", "cardine.teste@escola.ao", 5);
   await vincular("11ª Classe - Informática", "Química", "alexandre.teste@escola.ao", 3);
-  await vincular("11ª Classe - Informática", "Matemática", "ablio.teste@escola.ao", 4);
+  await vincular("11ª Classe - Informática", "Matemática", "alberto.teste@escola.ao", 4);
   await vincular("11ª Classe - Informática", "Electrotecnia", "cariongo.teste@escola.ao", 2);
   await vincular("11ª Classe - Informática", "F.A.I.", "olvia.teste@escola.ao", 2);
 

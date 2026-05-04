@@ -212,7 +212,7 @@ export function HorariosContent() {
             {aula.disciplina}
           </div>
           <div className="truncate">{isProf ? `Turma ${aula.turma}` : `Prof. ${aula.professor}`}</div>
-          <div className="opacity-90 font-medium mt-1">Sala {aula.sala}</div>
+          <div className="opacity-90 font-medium mt-1">{aula.sala}</div>
         </div>
       )
     }
