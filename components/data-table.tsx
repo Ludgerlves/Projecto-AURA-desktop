@@ -19,6 +19,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Search, MoreHorizontal, Pencil, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface Column<T> {
@@ -55,6 +65,7 @@ export function DataTable<T extends { id: string | number }>({
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
+  const [pendingDelete, setPendingDelete] = useState<T | null>(null)
   const itemsPerPage = 10
 
   const filteredData = searchKey
@@ -149,7 +160,7 @@ export function DataTable<T extends { id: string | number }>({
                           )}
                           {onDelete && (
                             <DropdownMenuItem
-                              onClick={() => onDelete(item)}
+                              onClick={() => setPendingDelete(item)}
                               className="text-destructive"
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
@@ -196,6 +207,32 @@ export function DataTable<T extends { id: string | number }>({
           </div>
         </div>
       )}
+
+      {/* Confirmação antes de apagar */}
+      <AlertDialog open={pendingDelete !== null} onOpenChange={(open) => { if (!open) setPendingDelete(null) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar eliminação</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem a certeza que deseja eliminar este registo? Esta acção não pode ser revertida.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingDelete && onDelete) {
+                  onDelete(pendingDelete)
+                }
+                setPendingDelete(null)
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

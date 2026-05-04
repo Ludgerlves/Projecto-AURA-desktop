@@ -64,7 +64,31 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
             turma: true,
         }
     })
+    
+    // Buscar os nomes de todas as turmas seleccionadas para usar nos logs
+    const dadosTurmas = await prisma.turma.findMany({
+        where: { id_turma: { in: turmas } },
+        select: { id_turma: true, descricao_turma: true }
+    })
 
+    // Verificar quais das turmas seleccionadas não têm nenhuma atribuição registada
+    for (const id_turma of turmas) {
+        const temDados = dados_profs.some(p => p.id_turma === id_turma)
+
+        if (!temDados) {
+            const nome = dadosTurmas.find(t => t.id_turma === id_turma)?.descricao_turma ?? `Turma ID ${id_turma}`
+            logs.push({
+                tipo: "erro",
+                mensagem: `A turma "${nome}" não tem nenhuma atribuição de professor registada — não é possível gerar horário para ela.`
+            })
+        }
+    }
+
+    const turmasSemDados = turmas.filter(id => !dados_profs.some(p => p.id_turma === id))
+    if (turmasSemDados.length > 0) {
+        return { sucesso: false, totalGeradas: 0, logs }
+    }
+    
     // Buscar os tempos lectivos já alocados para as turmas NÃO selecionadas, para evitar conflitos
     const slotsOcupados = await prisma.tempo_Lectivo.findMany({
         where: {
@@ -73,11 +97,26 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
         select: {
             id_professor: true,
             id_dia: true,
+            id_turma: true,
             id_periodo: true,
             id_sala: true,
             ordem: true,
         }
     })
+
+    // Verificar quais das turmas seleccionadas já têm horário criado na base de dados
+    const turmasComHorario = await prisma.tempo_Lectivo.findMany({
+        where: {
+            id_turma: { in: turmas }
+        },
+        select: {
+            id_turma: true,
+        },
+        distinct: ['id_turma']  // um resultado por turma, sem repetições
+    })
+
+    // Extrair apenas os IDs para facilitar a comparação
+    const idsTurmasComHorario = turmasComHorario.map(t => t.id_turma)
 
     console.log("Aulas Actuais: ", slotsOcupados)
 
@@ -97,6 +136,7 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
     console.log("Slots proibidos para salas: ", slotsProibidosSala)
 
     const aulas_nao_alocadas: Aula_livre[] = []
+    const periodoDB = await prisma.periodo.findMany()
     
     // Cria blocos de domínios para cada aula -- Cria blocos de aulas com base na quantidade de aulas por semana que cada disciplina tem, e no domínio de cada professor (baseado nas disponibilidades)
     for (let c = 0; c < dados_profs.length; c++) {
@@ -104,19 +144,33 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
 
         console.log(`Aulas por semana número ${c}, do professor: ${dados_profs[c].id_professor} e disciplina: ${dados_profs[c].id_disciplina} é: ${aulas_por_semana}`)
 
-        const dominio: Slot[] = dados_profs[c].professor.disponibilidades.map(disp => {
-            return {
-                dia: disp.id_dia,
-                periodo: disp.id_periodo,
-                ordem: disp.ordem
-            }
-        })
-        //console.log(`DOMÍNIO: ${c} `, dominio)
-
         // NOVO — nomes para usar nos logs
         const nome_prof  = dados_profs[c].professor.nome_professor
         const nome_disc  = dados_profs[c].disciplina.descricao_disciplina
         const nome_turma = dados_profs[c].turma.descricao_turma
+
+        // Determina se esta disciplina é Ed. Física
+        const isEdFisica = nome_disc.toLowerCase().includes("física") && nome_disc.toLowerCase().includes("ed")
+
+        // Determina se é uma turma da 12ª (que pode ter aulas de manhã)
+        const is12aClasse = (nome_turma.toLowerCase().includes("12ª") || nome_turma.toLowerCase().includes("12a")) && (!nome_turma.includes("Ciências Económicas e Jurídicas") && !nome_turma.includes("Ciências Físicas e Biológicas"))
+
+        // Carrega os períodos da DB para saber qual ID corresponde a "Tarde"
+        // (fazemos isto UMA vez fora do loop — ver nota abaixo)
+        const idPeriodoTarde = periodoDB.find(p => p.descricao_periodo === "Tarde")?.id_periodo ?? -1
+
+        const dominioCompleto: Slot[] = dados_profs[c].professor.disponibilidades.map(disp => ({
+            dia:     disp.id_dia,
+            periodo: disp.id_periodo,
+            ordem:   disp.ordem
+        }))
+
+        // Filtra o domínio conforme a regra
+        const dominio: Slot[] = dominioCompleto.filter(slot => {
+            if (isEdFisica) return true        // Ed. Física pode ser qualquer período
+            if (is12aClasse) return true       // 12ª pode ter manhã
+            return slot.periodo === idPeriodoTarde  // todos os outros só à tarde
+        })
 
         // NOVO — aviso se o professor não tem disponibilidades de todo
         if (dominio.length === 0) {
@@ -163,6 +217,16 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
         }
     }
 
+    // Remove os slots já ocupados na base de dados dos domínios das aulas que vamos alocar, para evitar que o algoritmo tente alocar nesses slots e falhe mais tarde — é uma forma de "pré-filtrar" os domínios com base nos dados reais da base de dados, reduzindo o espaço de busca do algoritmo desde o início.
+    for (const aula of aulas_nao_alocadas) {
+        aula.dominio = aula.dominio.filter(slot => {
+            const id_Tempo  = `dia_${slot.dia}_per_${slot.periodo}_ordem_${slot.ordem}`
+            const chaveProf = `prof_${aula.id_professor}_${id_Tempo}`
+            const chaveSala = `sala_${aula.sala_preferencial}_${id_Tempo}`
+            return !slotsProibidosProfessor.has(chaveProf) && !slotsProibidosSala.has(chaveSala)
+        })
+    }
+
     // Heurística MVR, organiza a lista de aulas com base em ordem crescente com base naquelas que possuem os menores domínios
     aulas_nao_alocadas.sort((a, b) => a.dominio.length - b.dominio.length)
     /*console.log("Aulas ordenadas por MRV:")
@@ -171,6 +235,22 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
     })*/
 
     //console.log("Aulas: ", JSON.stringify(aulas_nao_alocadas, null, 2))
+
+    /// Se alguma das turmas seleccionadas já tem horário na base de dados, parar imediatamente
+    if (idsTurmasComHorario.length > 0) {
+        for (const id of idsTurmasComHorario) {
+            const entrada = dados_profs.find(p => p.id_turma === id)
+            const nome = entrada?.turma.descricao_turma ?? `Turma ID ${id}`
+
+            logs.push({
+                tipo: "erro",
+                mensagem: `A turma "${nome}" já tem um horário gerado. Apague o horário existente antes de gerar um novo.`
+            })
+        }
+
+        // Devolve imediatamente — não executa o backtracking nem o createMany
+        return { sucesso: false, totalGeradas: 0, logs }
+    }
 
     // Função que retorna true se todas as restrições fomra cumpridas nos 
     //dados introduzidos e false se alguma não foi
@@ -184,17 +264,18 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
         const id_Tempo = `dia_${slot.dia}_per_${slot.periodo}_ordem_${slot.ordem}` // Cria uma chave que representa o dia, período e ordem
 
        // Se existerem slots com o mesmo professor dentro do horários já guardados no tempo_lectivo no mesmo espaço de tempo retorna false
+
         if (slotProibidosProfessores.has(`prof_${aula_livre.id_professor}_${id_Tempo }`)) {
-            console.log("Algoritmo encontrou slots ocupados pelo professor na base de dados")
+            //console.log("Algoritmo encontrou slots ocupados pelo professor na base de dados")
             return false;
         }
 
         // Se existerem slots com a mesma sala dentro do horários já guardados no tempo_lectivo no mesmo espaço de tempo retorna false            
         if (slotProibidosSalas.has(`sala_${aula_livre.sala_preferencial}_${id_Tempo }`)) {
-            console.log("Algoritmo encontrou slots ocupados pela sala na base de dados")
+            //console.log("Algoritmo encontrou slots ocupados pela sala na base de dados")
             return false;
         }
-
+        
         //forLoop que irá percorrer todos horarios já criados pelo algoritmo e analisar se as restrições são cumpridas
         for (const horario of AulasCriadas) {
             //Constante que serve para representar slots repetidos
@@ -206,19 +287,19 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
             if (mesmoSlot) {
                 // Se existerem slots com o mesmo professor no mesmo espaço de tempo retorna false
                 if (horario.Aula.id_professor === aula_livre.id_professor) {
-                    console.log("Algoritmo encontrou slots ocupados pelo professor na memória interna")
+                    //console.log("Algoritmo encontrou slots ocupados pelo professor na memória interna")
                     return false;
                 }
 
                 // Se existerem slots com a mesma turma no mesmo espaço de tempo retorna false
                 if (horario.Aula.id_turma === aula_livre.id_turma) {
-                    console.log("Algoritmo encontrou slots ocupados pela turma na memória interna")
+                    //console.log("Algoritmo encontrou slots ocupados pela turma na memória interna")
                     return false;
                 }
 
                 // Se existerem slots com a mesma sala no mesmo espaço de tempo retorna false
                 if (horario.id_sala === aula_livre.sala_preferencial) {
-                    console.log("Algoritmo encontrou slots ocupados pela sala na memória interna")
+                    //console.log("Algoritmo encontrou slots ocupados pela sala na memória interna")
                     return false;
                 }
             }
@@ -299,60 +380,55 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
     let aulaQueBloqueou: Aula_livre | null = null
 
     function backtrack(
-        aulas_nao_atribuidas: Aula_livre[],           // todas as aulas a alocar (não muda)
-        aulas_atribuidas: Aula_alocada[],   // o que já foi atribuído (vai crescendo e encolhendo)
-        indiceAtual: number           // qual aula estamos a tentar agora
-    ): Aula_alocada[] | null {        // retorna solução ou null se não encontrou
+        aulas_nao_atribuidas: Aula_livre[], // todas as aulas a alocar (não muda)
+        aulas_atribuidas: Aula_alocada[], // o que já foi atribuído (vai crescendo e encolhendo)
+        indicesRestantes: number[]   // ← índices das aulas ainda não alocadas
+    ): Aula_alocada[] | null {      // retorna solução ou null se não encontrou
 
         //CASO BASE: índice chegou ao fim — todas as aulas foram alocadas sem conflitos. Retorna o array completo de aulas alocadas como solução final.
-        if (indiceAtual === aulas_nao_atribuidas.length) {
-            return aulas_atribuidas;
-        }
+        if (indicesRestantes.length === 0) return aulas_atribuidas
+
+        // MRV dinâmico — escolhe sempre a aula com menor domínio actual
+        const idxMRV = indicesRestantes.reduce((melhor, idx) =>
+            aulas_nao_atribuidas[idx].dominio.length < aulas_nao_atribuidas[melhor].dominio.length
+                ? idx : melhor
+        )
 
         // Pegamos na aula actual (a que vamos tentar alocar agora)
-        const aulaActual = aulas_nao_atribuidas[indiceAtual];
+        const aulaActual = aulas_nao_atribuidas[idxMRV]
+        const restantes  = indicesRestantes.filter(i => i !== idxMRV)
 
         // Tentamos cada slot do domínio desta aula
-        for (const slot of aulaActual.dominio) {
-            console.log("-------------------------------------------------------------------------------------------------------------")
-            console.log(`Tentando alocar o professor ${aulaActual.nome_professor} no dia ${slot.dia}, periodo ${slot.periodo} e tempo ${slot.ordem}, lecionando ${aulaActual.descricao_disciplina} na turma ${aulaActual.descricao_turma}`);
+        for (const slot of [...aulaActual.dominio]) {
+
+            //console.log("-------------------------------------------------------------------------------------------------------------")
+            //console.log(`Tentando alocar o professor ${aulaActual.nome_professor} no dia ${slot.dia}, periodo ${slot.periodo} e tempo ${slot.ordem}, lecionando ${aulaActual.descricao_disciplina} na turma ${aulaActual.descricao_turma}`);
+
             // Perguntamos: este slot cria algum conflito?
-            if (!analisarRestricoes(aulaActual, slot, slotsProibidosProfessor, slotsProibidosSala, aulas_atribuidas)) {
-                console.log("<-< Conflito Identificado >->")
-                continue; // sim, há conflito → salta este slot e tenta o próximo
-            }
+            if (!analisarRestricoes(aulaActual, slot, slotsProibidosProfessor, slotsProibidosSala, aulas_atribuidas)) continue
 
             // Chegamos aqui: o slot é válido.
             // Criamos a atribuição e adicionamos à lista.
-            const novaAtribuicao: Aula_alocada = {
-                Slot: slot,
-                Aula: aulaActual,
-                id_sala: aulaActual.sala_preferencial // simplificado por agora
-            };
-            aulas_atribuidas.push(novaAtribuicao);
-            console.log("<<<< ALOCAÇÃO BEM SUCEDIDA >>>>")
+            const novaAtribuicao: Aula_alocada = { Slot: slot, Aula: aulaActual, id_sala: aulaActual.sala_preferencial }
+            aulas_atribuidas.push(novaAtribuicao)
 
             // Chamar forward checking
-            const slotsRemovidos = forwardChecking(slot, aulaActual, aulas_nao_atribuidas, indiceAtual)
+            const slotsRemovidos = forwardChecking(slot, aulaActual, aulas_nao_atribuidas, idxMRV)
 
             // Analisa se existem falhas futuras — se forward checking retornou null, há uma falha futura detectada, então não precisamos de tentar os próximos slots deste domínio — podemos falhar já aqui e voltar para o nível anterior
             if (slotsRemovidos !== null) {
-                const resultado = backtrack(aulas_nao_atribuidas, aulas_atribuidas, indiceAtual + 1)
-                
-                // Se o resultado não for null, a recursão encontrou solução → propagamos
-                if (resultado !== null) {
-                    return resultado
-                }
+                const resultado = backtrack(aulas_nao_atribuidas, aulas_atribuidas, restantes)
+                if (resultado !== null) return resultado                 // Se o resultado não for null, a recursão encontrou solução → propagamos
+                restaurarDominios(aulas_nao_atribuidas, slotsRemovidos)                 // Recursão falhou — restaurar domínios
 
-                // Recursão falhou — restaurar domínios
-                restaurarDominios(aulas_nao_atribuidas, slotsRemovidos)
             }
 
-            console.log("<<<< FALHOU, DESFAZENDO PARA TENTAR OUTRA POSSIBILIDADE >>>>")
+            //console.log("<<<< FALHOU, DESFAZENDO PARA TENTAR OUTRA POSSIBILIDADE >>>>")
+
             // Se chegámos aqui, a recursão falhou.
             // Desfazemos esta atribuição (o "back" do backtracking)
             // e tentamos o próximo slot do nosso loop
-            aulas_atribuidas.pop();
+            aulas_atribuidas.pop()
         }
 
         // Esgotámos todos os slots deste domínio sem encontrar solução
@@ -360,21 +436,20 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
 
         // NOVO — regista a aula que esgotou o domínio sem encontrar solução
         aulaQueBloqueou = aulaActual
-        return null;
+        return null
     }
 
-    // No fim da função gerarHorarios, depois de definir todas as funções:
-    const solucao = backtrack(aulas_nao_alocadas, [], 0)
-
-   if (solucao === null) {
+    const indicesIniciais = aulas_nao_alocadas.map((_, i) => i)
+    const solucao = backtrack(aulas_nao_alocadas, [], indicesIniciais)
+    
+    if (solucao === null) {
         // Forçamos o TypeScript a tratar a variável como o tipo correto, 
         // ignorando a análise de fluxo pessimista.
         const aulaFalhada = aulaQueBloqueou as Aula_livre | null;
 
         // NOVO — log específico com nome real da aula que bloqueou
         if (aulaFalhada) {
-            const slotsJaOcupadosNestasTurmas = slotsOcupados
-                .filter(s => s.id_professor === aulaFalhada.id_professor).length
+            const slotsJaOcupadosNestasTurmas = slotsOcupados.filter(s => s.id_professor === aulaFalhada.id_professor).length
 
             if (slotsJaOcupadosNestasTurmas > 0) {
                 logs.push({
@@ -417,6 +492,7 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
     })
 
     console.log(`${solucao!.length} tempos lectivos gravados com sucesso.`)
+
     // NOVO — log de sucesso geral
     logs.push({
         tipo: "sucesso",
@@ -435,4 +511,5 @@ export default async function gerarHorarios(turmas: any[]): Promise<ResultadoGer
 
     // NOVO — devolve resultado estruturado em vez de solucao directamente
     return { sucesso: true, totalGeradas: solucao.length, logs }
+    
 }
