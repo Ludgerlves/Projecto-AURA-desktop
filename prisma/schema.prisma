@@ -104,7 +104,7 @@ model ProfTurmaDisciplina {
 
   tempo_lectivo Tempo_Lectivo[]
 
-  @@unique([id_professor, id_turma, id_disciplina])
+  @@unique([id_turma, id_disciplina])
   @@map("prof_turma_disciplinas")
 }
 

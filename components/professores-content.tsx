@@ -115,7 +115,7 @@ const MAPA_UI_PARA_PERIODO_DB: Record<string, string> = {
 interface TurmaData {
   id_turma: number
   descricao_turma: string
-  turmaDisciplinas: { disciplina: { descricao_disciplina: string } }[]
+  turmaDisciplinas: { disciplina: { id_disciplina: number; descricao_disciplina: string } }[]
 }
 
 interface DisponibilidadeData {
@@ -153,6 +153,7 @@ interface DisponibilidadeSlot {
 interface Atribuicao {
   turmaId: number
   turmaNome: string
+  disciplinaId: number
   disciplinaNome: string
 }
 
@@ -200,6 +201,7 @@ function mapProfessores(professores: ProfessorData[]): ProfessorRow[] {
       turmas: (p.profTurmaDisciplina || []).map((ptd) => ({
         turmaId: ptd.turma.id_turma,
         turmaNome: ptd.turma.descricao_turma,
+        disciplinaId: ptd.id_disciplina,
         disciplinaNome: ptd.disciplina.descricao_disciplina,
       })),
       disponibilidade: (p.disponibilidades || []).map((d) => {
@@ -631,14 +633,16 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     const turma = turmas.find((t) => t.id_turma === addTurmaId)
     if (!turma) return
 
-    const newAtribuicoes = addDisciplinas
-      .filter((discNome) => !atribuicoes.some(
-        (a) => a.turmaId === addTurmaId && a.disciplinaNome === discNome
+    const newAtribuicoes = turma.turmaDisciplinas
+      .filter((td) => addDisciplinas.includes(td.disciplina.descricao_disciplina))
+      .filter((td) => !atribuicoes.some(
+        (a) => a.turmaId === addTurmaId && a.disciplinaId === td.disciplina.id_disciplina
       ))
-      .map((discNome) => ({
+      .map((td) => ({
         turmaId: addTurmaId,
         turmaNome: turma.descricao_turma,
-        disciplinaNome: discNome,
+        disciplinaId: td.disciplina.id_disciplina,
+        disciplinaNome: td.disciplina.descricao_disciplina,
       }))
 
     setAtribuicoes((prev) => [...prev, ...newAtribuicoes])
@@ -694,13 +698,10 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
 
     const disponibilidade = buildDisponibilidadeFromAll(formData.selectedTempos)
 
-    // Build profTurmaDisciplina from atribuicoes (only in edit mode)
-    const profTurmaDisciplina = editingProfessor
-      ? atribuicoes.map((a) => ({
-          turmaId: a.turmaId,
-          disciplinaNome: a.disciplinaNome,
-        }))
-      : []
+    const profTurmaDisciplina = atribuicoes.map((a) => ({
+      turmaId: a.turmaId,
+      disciplinaId: a.disciplinaId,
+    }))
 
     const fd = new FormData()
     fd.append("nome", formData.nome)
@@ -709,24 +710,34 @@ export function ProfessoresContent({ professores, turmas }: ProfessoresContentPr
     fd.append("profTurmaDisciplina", JSON.stringify(profTurmaDisciplina))
     fd.append("disponibilidade", JSON.stringify(disponibilidade))
 
-    startTransition(async () => {
-      let result
-      if (editingProfessor) {
-        result = await atualizarProfessor(editingProfessor.id_professor, fd)
-      } else {
-        result = await criarProfessor(fd)
-      }
+startTransition(async () => {
+console.log('📤 [UI DEBUG] Enviando formulário...');
+let result
+if (editingProfessor) {
+result = await atualizarProfessor(editingProfessor.id_professor, fd)
+} else {
+result = await criarProfessor(fd)
+}
 
-      if (result.success) {
-        resetForm()
-        router.refresh()
-      } else {
-        if (result.errors) {
-          setFieldErrors(result.errors as Record<string, string[]>)
-        }
-        setError(result.message || "Erro inesperado")
-      }
-    })
+console.log('📥 [UI DEBUG] Resultado recebido:', {
+success: result.success,
+message: result.message,
+errors: result.errors
+});
+
+if (result.success) {
+console.log('✅ [UI DEBUG] Sucesso!');
+resetForm()
+router.refresh()
+} else {
+if (result.errors) {
+console.log('⚠️ [UI DEBUG] Erros de campo:', result.errors);
+setFieldErrors(result.errors as Record<string, string[]>)
+}
+console.log('⚠️ [UI DEBUG] Erro definido:', result.message);
+setError(result.message || "Erro inesperado")
+}
+})
   }
 
   const resetForm = () => {

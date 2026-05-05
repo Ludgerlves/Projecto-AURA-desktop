@@ -6,6 +6,8 @@ import { baseCreateProfessorSchema, updateProfessorSchema } from "@/lib/Validati
 import { prisma } from "@/lib/prisma"
 import { z } from 'zod'
 import { revalidatePath } from 'next/cache'
+import { ActionError } from "@/lib/utils/erros"
+import { Action } from "@radix-ui/react-toast"
 
 export type ActionResponse<T = any> = {
     success: boolean
@@ -26,7 +28,7 @@ interface DisponibilidadeSlot {
 
 interface ProfTurmaDisciplinaInput {
     turmaId: number
-    disciplinaNome: string
+    disciplinaId: number
 }
 
 // ══════════════════════════════════════════════════════════
@@ -92,11 +94,11 @@ async function getPeriodoId(nomePeriodo: string): Promise<number | null> {
     return null
 }
 
-async function getDisciplinaId(nomeDisciplina: string): Promise<number | null> {
+async function getDisciplinaId(disciplinaId: number): Promise<number | null> {
     const disciplina = await prisma.disciplina.findFirst({
-        where: { descricao_disciplina: nomeDisciplina }
+        where: { id_disciplina: disciplinaId }
     })
-    return disciplina?.id_disciplina || null
+    return disciplina?.id_disciplina ?? null
 }
 
 // ══════════════════════════════════════════════════════════
@@ -130,24 +132,48 @@ export async function criarProfessor(formData: FormData): Promise<ActionResponse
         // 1. Criar Professor
         const professor = await professorService.criarProfessor(validatedData)
 
-        // 2. Criar ProfTurmaDisciplina
-        if (profTurmaDisciplina.length > 0) {
-            for (const ptd of profTurmaDisciplina) {
-                const disciplinaId = await getDisciplinaId(ptd.disciplinaNome)
-                
-                if (!disciplinaId) {
-                    console.warn(`Disciplina "${ptd.disciplinaNome}" não encontrada`)
-                    continue
-                }
+// 2. Criar ProfTurmaDisciplina
+if (profTurmaDisciplina.length > 0) {
+console.log('🔍 [DEBUG] Verificando duplicações...', { 
+  profTurmaDisciplina, 
+  qtd: profTurmaDisciplina.length 
+});
 
-                await prisma.profTurmaDisciplina.create({
-                    data: {
-                        id_professor: professor.id_professor,
-                        id_turma: ptd.turmaId,
-                        id_disciplina: disciplinaId
-                    }
-                })
-            }
+const existentes = await prisma.profTurmaDisciplina.findFirst({
+where:{
+OR: profTurmaDisciplina.map(ptd=>({
+id_turma: ptd.turmaId,
+id_disciplina: ptd.disciplinaId,
+}))
+},
+include: {professor: true}
+});
+
+console.log('🔍 [DEBUG] Resultado da verificação:', { 
+  encontrou: !!existentes, 
+  professor: existentes?.professor?.nome_professor 
+});
+
+if(existentes){
+console.log('❌ [DEBUG] Duplicação detetada! Lançando ActionError...');
+throw new ActionError(
+`A turma já tem o Professor ${existentes.professor.nome_professor} para esta disciplina.`,
+"DUPLICATE_ASSIGNMENT"
+);
+}
+
+console.log('✅ [DEBUG] Sem duplicação. Criando associações...');
+const data = profTurmaDisciplina.map(ptd=>({
+id_turma: ptd.turmaId,
+id_disciplina: ptd.disciplinaId,
+id_professor: professor.id_professor
+}));
+
+console.log('💾 [DEBUG] Dados para createMany:', data);
+await prisma.profTurmaDisciplina.createMany({data})
+console.log('✅ [DEBUG] Criação bem-sucedida!');
+        return {success: true}
+
         }
 
         // 3. Criar Disponibilidades
@@ -180,19 +206,37 @@ export async function criarProfessor(formData: FormData): Promise<ActionResponse
 
         revalidatePath('/professores')
         return { success: true, data: professor, message: 'Professor criado com sucesso!' }
-    } catch (error: any) {
-        if (error instanceof z.ZodError) {
-            return { 
-                success: false, 
-                errors: error.flatten().fieldErrors || undefined, 
-                message: 'Verifique os erros nos campos abaixo.' 
-            }
-        }
-        if (error?.code === 'P2002') {
-            return { success: false, message: 'Já existe um professor registado com estes dados (Email).' }
-        }
-        return { success: false, message: error.message || 'Erro inesperado ao criar professor.' }
-    }
+} catch (error: any) {
+console.log('❗ [DEBUG CATCH] Erro capturado:', {
+type: error?.constructor?.name,
+name: error?.name,
+message: error?.message,
+code: error?.code,
+stack: error?.stack?.split('\n')?.[0]
+});
+
+if (error instanceof z.ZodError) {
+console.log('❗ [DEBUG CATCH] ZodError detetado');
+return {
+success: false,
+errors: error.flatten().fieldErrors || undefined,
+message: 'Verifique os erros nos campos abaixo.'
+}
+}
+
+if (error instanceof ActionError) {
+console.log('✅ [DEBUG CATCH] ActionError detetado! Mensagem:', error.message);
+return { success: false, message: error.message }
+}
+
+if (error?.code === 'P2002') {
+console.log('❗ [DEBUG CATCH] P2002 (unique constraint) detetado');
+return { success: false, message: 'Já existe um professor registado com estes dados (Email).' }
+}
+
+console.log('⚠️ [DEBUG CATCH] Erro genérico, message:', error?.message);
+return { success: false, message: error.message || 'Erro inesperado ao criar professor.' }
+}
 }
 
 // ══════════════════════════════════════════════════════════
@@ -232,7 +276,7 @@ export async function atualizarProfessor(id_professor: number, formData: FormDat
 
         if (profTurmaDisciplina.length > 0) {
             for (const ptd of profTurmaDisciplina) {
-                const disciplinaId = await getDisciplinaId(ptd.disciplinaNome)
+                const disciplinaId = await getDisciplinaId(ptd.disciplinaId)
                 
                 if (!disciplinaId) continue
 
