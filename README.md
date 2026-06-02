@@ -4,7 +4,11 @@
 
 # 🌌 AURA — Portal de Horários Académicos
 > **Projecto de Fim de Curso**  
-> Uma aplicação desktop de alta performance desenvolvida para automatizar a geração e a gestão de horários escolares, prevenindo conflitos de recursos (professores, salas e turmas) através de algoritmos de inteligência computacional e satisfação de restrições.
+> Uma aplicação de alta performance desenvolvida para automatizar a geração e a gestão de horários escolares, prevenindo conflitos de recursos (professores, salas e turmas) através de algoritmos de inteligência computacional e satisfação de restrições.
+
+> [!CAUTION]
+> ### 🔌 Requisito Crítico de Ligação à Base de Dados
+> Esta aplicação **só funciona com uma base de dados (PostgreSQL) ativa e conectada**. Se a base de dados não estiver operacional ou a ligação falhar, **o Dashboard e as demais funcionalidades não irão abrir**. Certifique-se de que a sua base de dados PostgreSQL está a correr e acessível antes de iniciar o servidor.
 
 ---
 
@@ -28,8 +32,6 @@ O **AURA** é um sistema completo de gestão de horários académicos criado esp
 
 O AURA resolve esse problema utilizando um motor de busca inteligente baseado em satisfação de restrições (**Constraint Satisfaction Problem - CSP**) com **Backtracking**, Heurística **MRV (Minimum Remaining Values)** e **Forward Checking**, garantindo que todos os horários gerados sejam 100% livres de conflitos.
 
-Originalmente concebido como um **Projecto de Fim de Curso**, o AURA integra tecnologias modernas de desenvolvimento web num ecossistema nativo desktop através do empacotamento com **Electron**.
-
 ---
 
 ## 🚀 Funcionalidades Principais
@@ -46,8 +48,6 @@ Originalmente concebido como um **Projecto de Fim de Curso**, o AURA integra tec
     *   **Turmas:** Vínculo de turmas a cursos, classes, contagem de alunos e sala de aula preferencial.
     *   **Atribuição Docente (ProfTurmaDisciplina):** Vínculo preciso de qual professor ministrará qual disciplina em determinada turma.
 *   **📄 Exportação e Impressão de Relatórios em PDF:** Geração instantânea de horários formatados para impressão em PDF para cada turma ou professor através do `@react-pdf/renderer`.
-*   **🔌 Distribuição Desktop Multiplataforma:** Executável nativo com atualizações automáticas via **Electron Auto-Updater**.
-*   **🐳 Prontidão para Contentores (Docker Ready):** Configurações completas prontas para execução do banco de dados e aplicação web via Docker Compose.
 
 ---
 
@@ -68,56 +68,6 @@ O ecossistema do AURA foi estruturado com uma arquitetura moderna e escalável:
 *   **Prisma ORM v7** (Mapeamento objeto-relacional)
 *   **PostgreSQL** (Banco de dados relacional robusto)
 *   **Zod** (Validação rigorosa de esquemas de dados em tempo de execução)
-
-### Runtime Desktop & Distribuição
-*   **Electron v42.2** (Wrapper de runtime nativo)
-*   **Electron Builder** (Empacotamento multiplataforma)
-*   **Electron Updater** (Gestão de ciclo de vida e novas versões)
-*   **Docker & Docker Compose** (Ambiente isolado para implantação)
-
----
-
-## 📐 Arquitetura do Sistema
-
-O AURA opera em um modelo híbrido. Quando iniciado no desktop, o Electron atua como uma casca nativa que inicia um servidor Next.js em segundo plano (`standalone server`) e carrega o painel web no browser interno isolado.
-
-```mermaid
-graph TD
-    A[Electron Main Process] -->|1. Spawns Child Process| B(Next.js Standalone Server)
-    A -->|2. Loads Local URL| C[BrowserWindow / Renderer]
-    C -->|HTTP/WebSockets| B
-    B -->|Prisma Client| D[(PostgreSQL DB)]
-    A -->|Auto-Updates| E[Remote Release Repository]
-```
-
----
-
-## 🗄️ Modelo de Dados (Prisma Schema)
-
-O banco de dados armazena as entidades académicas estruturadas de forma relacional. A integridade dos horários é assegurada a nível físico por restrições exclusivas compostas (`@@unique`) na tabela de alocação de tempos:
-
-```mermaid
-erDiagram
-    Curso ||--o{ Turma : "possui"
-    Classe ||--o{ Turma : "possui"
-    Sala ||--o{ Turma : "sala preferencial"
-    Sala ||--o{ Tempo_Lectivo : "alocada em"
-    DiaSemana ||--o{ Tempo_Lectivo : "ocorre em"
-    Periodo ||--o{ Tempo_Lectivo : "ocorre em"
-    Professor ||--o{ Disponibilidade : "cadastra"
-    Professor ||--o{ ProfTurmaDisciplina : "vinculado a"
-    Turma ||--o{ ProfTurmaDisciplina : "recebe"
-    Disciplina ||--o{ ProfTurmaDisciplina : "atribuida a"
-    ProfTurmaDisciplina ||--o{ Tempo_Lectivo : "gera"
-    Turma ||--o{ TurmaDisciplina : "carga de"
-    Disciplina ||--o{ TurmaDisciplina : "carga de"
-```
-
-### Chaves de Segurança Contra Conflitos
-Na tabela `Tempo_Lectivo` (mapeada no banco como `tempo_lectivo`), três índices `@@unique` compostos bloqueiam inserções duplicadas concorrentes:
-1.  `no_professor_conflict`: `[id_professor, id_dia, id_periodo, ordem]` -> O mesmo professor não pode dar duas aulas simultâneas.
-2.  `no_sala_conflict`: `[id_sala, id_dia, id_periodo, ordem]` -> Duas turmas não podem usar a mesma sala simultaneamente.
-3.  `no_turma_conflict`: `[id_turma, id_dia, id_periodo, ordem]` -> Uma turma não pode ter duas disciplinas agendadas no mesmo instante.
 
 ---
 
@@ -184,40 +134,23 @@ O arquivo [gerarHorario.ts](file:///Users/mac/Projecto-AURA-desktop/lib/actions/
 
 ---
 
-## ⚙️ Configuração e Instalação
+## ⚙️ Instalação e Preparação
 
-### Pré-requisitos
-*   **Node.js v22.x** (ou superior)
-*   **NPM** ou **PNPM**
-*   **Docker & Docker Compose** (para instanciar o banco PostgreSQL de maneira rápida)
-
-### Passo 1: Variáveis de Ambiente
-Crie um arquivo `.env` na raiz do projeto contendo as credenciais de acesso ao banco. Exemplo:
-
-```env
-# Conexão principal utilizada pelo Prisma
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/aura?schema=public"
-
-# Configurações adicionais de autenticação (opcionais / preparação futura)
-WORKOS_API_KEY="sua_chave_workos_aqui"
-WORKOS_CLIENT_ID="seu_client_id_workos_aqui"
-```
-
-### Passo 2: Instalação de Dependências
+### Passo 1: Instalação de Dependências
 Instale as dependências declaradas no manifesto executando:
 
 ```bash
 npm install
 ```
 
-### Passo 3: Migração e Alimentação do Banco (Seed)
-Execute as migrações do Prisma para estruturar o banco de dados PostgreSQL local e carregue a massa de dados simulada contendo turnos, classes, salas técnicas, cursos e grades iniciais:
+### Passo 2: Sincronização do Banco de Dados (Prisma)
+Execute as migrações para estruturar as tabelas na sua base de dados PostgreSQL ativa e carregue a massa de dados padrão:
 
 ```bash
-# Executar migrations para criar tabelas
+# Executar as migrações para criar as tabelas
 npx prisma migrate dev --name init
 
-# Opcional: Popular banco de dados com dados reais de teste
+# Popular o banco de dados com dados reais de teste
 npx prisma db seed
 ```
 
@@ -225,53 +158,12 @@ npx prisma db seed
 
 ## 💻 Como Executar
 
-O projeto pode ser executado em modo web autónomo ou como aplicação integrada desktop.
-
-### 1. Executando em Modo Web (Next.js isolado)
-Excelente para testar as rotas de API, conexões de banco e estilização CSS no navegador convencional.
+Inicie o servidor de desenvolvimento local Next.js:
 
 ```bash
 npm run dev
 ```
-*Acesse em seu navegador:* `http://localhost:3001`
-
-### 2. Executando em Modo Desktop (Electron + Next.js)
-Compila os scripts do Electron, inicializa o servidor de renderização Next.js e renderiza o software dentro da janela de aplicativo desktop.
-
-```bash
-npm run electron:dev
-```
-
----
-
-## 📦 Compilação e Empacotamento (Build)
-
-Para distribuir o AURA como um aplicativo de desktop empacotado para uso em produção, utilize os scripts integrados do **Electron Builder**:
-
-```bash
-# Compilar Electron + build standalone do Next.js + gerar instalador multiplataforma
-npm run electron:build
-
-# Compilar instalador nativo específico para macOS (.dmg)
-npm run electron:build:mac
-
-# Compilar executável nativo específico para Windows (.exe)
-npm run electron:build:win
-```
-*Os instaladores gerados e os diretórios descompactados serão criados na pasta `/release-mac` ou `/release` conforme as configurações de build do `package.json`.*
-
----
-
-## 🐳 Implantação de Produção com Docker
-
-Para rodar todo o ecossistema (Servidor Next.js + Banco de Dados PostgreSQL) sob contentores isolados de produção, utilize o Docker Compose:
-
-```bash
-# Construir imagens e rodar containers em segundo plano
-docker-compose up -d --build
-```
-
-O container da aplicação rodará um script de entrada (`entrypoint`) que executa automaticamente `npx prisma migrate deploy` antes de subir o servidor Node standalone na porta `3000`.
+*Aceda em seu navegador:* `http://localhost:3001`
 
 ---
 
@@ -296,12 +188,6 @@ Abaixo está o mapa simplificado com as principais pastas do projeto:
 │   ├── gerar-content.tsx     # Interface de seleção e logs de geração
 │   ├── horario-pdf.tsx       # Renderizador de PDF dos horários letivos
 │   └── horarios-content.tsx  # Matriz interativa de exibição de horários
-├── electron/                 # Código-fonte nativo do Electron (Main process)
-│   ├── tsconfig.json         # Configuração TypeScript do Electron
-│   ├── main.ts               # Ciclo de vida nativo e spawn do Next.js
-│   ├── preload.ts            # Ponte de segurança ipcRenderer/ipcMain
-│   └── updater.ts            # Implementação do Auto Updater
-├── hooks/                    # Hooks customizados do React
 ├── lib/                      # Serviços, Validações e Utilitários compartilhados
 │   ├── Service/              # Camada CRUD que interage com o banco via Prisma
 │   ├── Validation/           # Esquemas de validação de formulários (Zod)
